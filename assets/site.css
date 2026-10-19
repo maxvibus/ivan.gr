@@ -122,7 +122,12 @@ figure{margin:0}figure img{width:100%;border-radius:6px}figcaption{margin-top:.8
 .pn small{display:block;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--blue2);margin-bottom:.2rem}
 .back{margin:2rem 0 0;font-style:italic}
 .foot{text-align:center;color:var(--blue2);font-size:.85em;padding:2rem 1.25rem max(2.4rem,env(safe-area-inset-bottom))}
-@media (max-width:30rem){.search{flex:1 1 100%}.search input{width:100%}.mtools{width:100%;justify-content:space-between}}
+@media (max-width:30rem){.search{flex:1 1 100%}.search input{width:100%}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media print{.mast,.bar,.pn,.back,.foot,.night{display:none}body{background:#fff;color:#000}}
 .top:has(> :only-child){grid-template-columns:1fr}
+/* κεφαλίδα στο κινητό: λέξη και φεγγάρι στην πρώτη γραμμή, πλοήγηση και γλώσσες στη δεύτερη */
+@media (max-width:44rem){
+  .mast{display:grid;grid-template-columns:1fr auto;grid-template-areas:"wm night" "nav langs";align-items:center;gap:.5rem 1rem}
+  .mast .wm{grid-area:wm}.mast .mnav{grid-area:nav}.mast .mtools{display:contents}.mast .langs{grid-area:langs}.mast .night{grid-area:night;justify-self:end}
+}

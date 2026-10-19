@@ -4,7 +4,10 @@
 Όλοι οι εσωτερικοί σύνδεσμοι είναι σχετικοί, ώστε ο ιστότοπος να δουλεύει και σε προεπισκόπηση με πρόθεμα."""
 import json, os, re, html, shutil, posixpath, datetime
 from urllib.parse import urlparse
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
+import pyphen
+HYPH = {'el': pyphen.Pyphen(lang='el_GR'), 'en': pyphen.Pyphen(lang='en_GB'), 'fr': pyphen.Pyphen(lang='fr'), 'de': pyphen.Pyphen(lang='de_DE')}
+WORD = re.compile(r'[^\W\d_]{8,}')
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = ROOT  # ο ιστότοπος ζει στη ρίζα του αποθετηρίου
@@ -75,7 +78,16 @@ def norm(s):
     s = ''.join(c for c in s if not unicodedata.combining(c))
     return s.lower().replace('ς', 'σ')
 
-def clean(h, frm):
+def hyphenate(soup, lang):
+    d = HYPH.get(lang)
+    if not d: return
+    for t in soup.find_all(string=True):
+        if not isinstance(t, NavigableString) or t.parent is None or t.parent.name in ('h1','h2','h3','h4','a','script','style','code'): continue
+        if not any(par.name in ('p','li','blockquote','td') for par in t.parents): continue
+        new = WORD.sub(lambda m: d.inserted(m.group(0), hyphen='\u00ad'), str(t))
+        if new != str(t): t.replace_with(NavigableString(new))
+
+def clean(h, frm, lang='el'):
     soup = BeautifulSoup(h, 'html.parser')
     for t in soup.find_all(True):
         for a in ('style', 'class', 'id', 'dir', 'align', 'face', 'size', 'color'):
@@ -89,6 +101,7 @@ def clean(h, frm):
             a['href'] = rel(frm, u.path.lstrip('/')) + (('#' + u.fragment) if u.fragment else '')
         elif u.netloc:
             a['rel'] = 'noopener'
+    hyphenate(soup, lang)
     out = str(soup)
     out = re.sub(r'<p>(\s|&nbsp;| |<br/?>)*</p>', '', out)
     return out
@@ -329,7 +342,7 @@ def issues_build():
 # --- σελίδες κειμένων ------------------------------------------------------
 def page(item, lang, alts, prev=None, nxt=None):
     frm = item['path']; T = L[lang]
-    body = clean(item['html'], frm)
+    body = clean(item['html'], frm, lang)
     desc = excerpt(text_of(item['html']), 180)
     s = head(frm, lang, item['title'].strip() + ' · ivan.gr', desc, frm, alts)
     s += '<body class="text">\n'
