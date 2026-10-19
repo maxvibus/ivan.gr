@@ -232,7 +232,7 @@ LIBNAME = {'el': 'Βιβλιοθήκη', 'en': 'Library', 'fr': 'Bibliothèque',
 def masthead(frm, lang, cur, alts):
     n = []
     if lang == 'el':
-        links = [('front', 'Σήμερα', 'index.html'), ('lib', 'Βιβλιοθήκη', 'keimena/index.html'), ('arch', 'Αρχείο φύλλων', 'fylla/index.html')]
+        links = [('front', 'Σήμερα', 'index.html'), ('lib', 'Βιβλιοθήκη', 'keimena/index.html'), ('arch', 'Αρχείο φύλλων', 'fylla/index.html'), ('map', 'Χάρτης', 'xartis/index.html')]
         for key, lab, to in links:
             if key in ('front', 'arch') and not ISSUES: continue
             a = ' aria-current="page"' if key == cur else ''
@@ -398,10 +398,53 @@ def page(item, lang, alts, prev=None, nxt=None):
     write(frm, s)
 
 NEAR, BYPATH = {}, {}
+
+def xartis():
+    """Χάρτης των κειμένων: στατικό SVG, θέσεις από απλή διάταξη δυνάμεων, ακμές από τα κοντινά κείμενα."""
+    import numpy as np
+    keys = [p['path'] for p in posts]; idx = {k: i for i, k in enumerate(keys)}
+    edges = set()
+    for a in keys:
+        for b, sc in NEAR.get(a, [])[:3]:
+            edges.add(tuple(sorted((idx[a], idx[b]))))
+    n = len(keys); rng = np.random.default_rng(7); P = rng.uniform(-1, 1, (n, 2))
+    E_ = np.array(sorted(edges)); kk = 1.6 / np.sqrt(n); t = .12
+    for it in range(400):
+        d = P[:, None, :] - P[None, :, :]; dist = np.linalg.norm(d, axis=2) + 1e-6
+        F = (d / dist[..., None] * (kk * kk / dist)[..., None]).sum(1)
+        dv = P[E_[:, 0]] - P[E_[:, 1]]; dl = np.linalg.norm(dv, axis=1)[:, None] + 1e-6
+        att = dv / dl * (dl * dl / kk)
+        np.add.at(F, E_[:, 0], -att); np.add.at(F, E_[:, 1], att)
+        F -= P * .05
+        L_ = np.linalg.norm(F, axis=1)[:, None] + 1e-9
+        P += F / L_ * np.minimum(L_, t); t *= .992
+    W, H, pad = 1000, 720, 40
+    mn, mx = P.min(0), P.max(0); S = (P - mn) / (mx - mn)
+    X = pad + S[:, 0] * (W - 2 * pad); Y = pad + S[:, 1] * (H - 2 * pad)
+    frm = 'xartis/index.html'; alts = {'el': frm}
+    s = head(frm, 'el', 'Χάρτης των κειμένων · ivan.gr', 'Κάθε σημείο είναι ένα κείμενο· οι γραμμές ενώνουν κείμενα με κοινό λεξιλόγιο.', frm, alts)
+    s += '<body class="mapp">\n' + masthead(frm, 'el', 'map', alts) + '<main class="wrap wide">\n'
+    s += '<h1 class="libh">Χάρτης των κειμένων</h1>\n'
+    s += '<p class="intro">Κάθε σημείο είναι ένα κείμενο και οι γραμμές ενώνουν κείμενα με κοινό λεξιλόγιο. Τη γειτονιά τη βρίσκει μέτρηση λέξεων, όχι ανάγνωση.</p>\n'
+    s += '<p class="cap" aria-live="polite">Περάστε πάνω από ένα σημείο.</p>\n'
+    s += f'<div class="mapbox"><svg class="map" viewBox="0 0 {W} {H}" role="group" aria-label="Χάρτης των κειμένων"><g class="edges">'
+    for a, b in sorted(edges):
+        s += f'<line x1="{X[a]:.1f}" y1="{Y[a]:.1f}" x2="{X[b]:.1f}" y2="{Y[b]:.1f}" data-a="{a}" data-b="{b}"/>'
+    s += '</g><g class="nodes">'
+    for i, k in enumerate(keys):
+        p = posts[i]; t = p['title'].strip(); words = len(text_of(p['html']).split())
+        r = min(11, 3.2 + (words ** .5) / 9); yr = p['published'][:4]
+        s += (f'<a href="{rel(frm, k)}" data-i="{i}" data-t="{E(t)}" data-d="{E(dlong(p["published"], "el"))}" aria-label="{E(t)}">'
+              f'<circle class="y{yr}" cx="{X[i]:.1f}" cy="{Y[i]:.1f}" r="{r:.1f}"/></a>')
+    s += '</g></svg></div>\n'
+    s += '<p class="legend"><span class="k y2026"></span>2026 <span class="k y2025"></span>2025 · μέγεθος σημείου: μήκος κειμένου</p>\n'
+    s += '</main>\n' + footer(frm) + '</body>\n</html>\n'
+    write(frm, s)
 def run():
     global NEAR, BYPATH
     BYPATH = {p['path']: p for p in posts}
     NEAR = near.neighbours({p['path']: text_of(p['html']) for p in posts}, k=5)
+    xartis()
     for l in LANGS: library(l)
     issues_build()
     for i, p in enumerate(posts):
@@ -422,7 +465,7 @@ def run():
     for p in posts[:30]:
         feed += f'<entry><title>{E(p["title"].strip())}</title><link href="{SITE}/{p["path"]}"/><id>{SITE}/{p["path"]}</id><published>{p["published"]}</published><updated>{p["updated"]}</updated><summary>{E(excerpt(text_of(p["html"]), 400))}</summary></entry>\n'
     write('feed.xml', feed + '</feed>\n')
-    urls = ['', 'keimena/'] + [HOME[l] for l in LANGS[1:]] + ['ek/'] + ([f'fylla/{i["date"]}/' for i in ISSUES] + ['fylla/'] if ISSUES else []) + [p['path'] for p in posts] + [g['path'] for d in trans.values() for g in d.values()] + [g['path'] for g in orphans]
+    urls = ['', 'keimena/', 'xartis/'] + [HOME[l] for l in LANGS[1:]] + ['ek/'] + ([f'fylla/{i["date"]}/' for i in ISSUES] + ['fylla/'] if ISSUES else []) + [p['path'] for p in posts] + [g['path'] for d in trans.values() for g in d.values()] + [g['path'] for g in orphans]
     write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'<url><loc>{SITE}/{u}</loc></url>\n' for u in urls) + '</urlset>\n')
     write('robots.txt', f'User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n')
     og_save()

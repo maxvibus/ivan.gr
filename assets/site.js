@@ -65,6 +65,30 @@
       addEventListener('scroll', function(){ if(!tick){ tick = true; requestAnimationFrame(upd); } }, {passive:true});
       addEventListener('resize', upd); upd(); }
 
+    /* χάρτης: ένα σημείο φωτίζει τους γείτονές του */
+    var map = document.querySelector('svg.map'), cap = document.querySelector('.cap');
+    if(map){
+      var lines = map.querySelectorAll('line'), dots = map.querySelectorAll('a[data-i]');
+      function show(a){
+        var i = a.dataset.i, nb = {}; nb[i] = 1;
+        map.classList.add('on');
+        lines.forEach(function(l){ var h = l.dataset.a === i || l.dataset.b === i; l.classList.toggle('hl', h); if(h){ nb[l.dataset.a] = 1; nb[l.dataset.b] = 1; } });
+        dots.forEach(function(d){ var c = d.firstChild; c.classList.toggle('hl', !!nb[d.dataset.i]); c.classList.toggle('me', d === a); });
+        if(cap){ cap.textContent = a.dataset.t; var sm = document.createElement('small'); sm.textContent = a.dataset.d; cap.appendChild(sm); }
+      }
+      function hide(){ map.classList.remove('on'); }
+      var cur = null, touch = false;
+      dots.forEach(function(a){
+        a.addEventListener('pointerdown', function(e){ touch = e.pointerType !== 'mouse'; });
+        a.addEventListener('pointerenter', function(){ show(a); });
+        a.addEventListener('focus', function(){ show(a); });
+        /* στην αφή: το πρώτο άγγιγμα δείχνει τον τίτλο, το δεύτερο ανοίγει το κείμενο */
+        a.addEventListener('click', function(e){ if(touch && cur !== a){ e.preventDefault(); cur = a; show(a); } });
+      });
+      var box = map.parentNode; if(box && box.scrollWidth > box.clientWidth) box.scrollLeft = (box.scrollWidth - box.clientWidth) / 2;
+      map.addEventListener('pointerleave', hide);
+    }
+
     /* αναζήτηση στη βιβλιοθήκη: πρώτα τίτλοι και αρχές, και μέσα σε όλο το κείμενο μόλις φορτωθεί το ευρετήριο */
     var inp = document.querySelector('.search input'); if(!inp) return;
     var none = document.querySelector('.none'), full = null, loading = false;
