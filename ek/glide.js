@@ -26,4 +26,18 @@
     var t = document.getElementById('book'); if (!t) return;
     e.preventDefault(); glide(t);
   });
+
+  /* διακόπτης νύχτας, κοινός με το ivan.gr */
+  var root = document.documentElement, meta = document.querySelector('meta[name="theme-color"]');
+  function sync(){ var n = root.dataset.theme === 'night';
+    document.querySelectorAll('button.night').forEach(function(b){ b.setAttribute('aria-pressed', String(n)); b.setAttribute('aria-label', n ? 'Ανάγνωση ημέρας' : 'Νυχτερινή ανάγνωση'); });
+    if(meta) meta.setAttribute('content', n ? '#0F1620' : '#EDC89B'); }
+  sync();
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('button.night'); if(!b) return;
+    var n = root.dataset.theme !== 'night';
+    if(n) root.dataset.theme = 'night'; else delete root.dataset.theme;
+    try{ if(n) localStorage.setItem('ivan-theme','night'); else localStorage.removeItem('ivan-theme'); }catch(err){}
+    sync();
+  });
 })();

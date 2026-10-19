@@ -21,6 +21,7 @@
 <meta property="og:image:height" content="630">
 <meta property="book:isbn" content="9786180070309">
 <meta name="twitter:card" content="summary_large_image">
+<script src="theme.js"></script>
 <link rel="icon" href="icon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="site.webmanifest">
@@ -115,10 +116,44 @@ footer{text-align:center;color:var(--blue);opacity:.75;font-size:.85em;padding:2
 }
 @media (prefers-reduced-motion:reduce){.down{animation:none}}
 @media print{.down{display:none}.cover{min-height:auto;padding:2rem 0}}
+
+/* νύχτα: το βιβλίο ως αντικείμενο κάτω από λάμπα, η ώχρα ανασαίνει όπως στο ivan.gr */
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.45s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+:root[data-theme="night"]{--bg:#0F1620;--ink:#E9E3D8;--blue:#8DBBEA;--rule:rgba(141,187,234,.30);color-scheme:dark}
+:root[data-theme="night"],:root[data-theme="night"] body{background:var(--bg)}
+:root[data-theme="night"] .cover-inner{
+  width:min(68vw,21rem);aspect-ratio:11/14.5;justify-content:center;border-radius:4px 10px 10px 4px;
+  background:var(--ochre);box-shadow:0 0 0 1px rgba(237,200,155,.5),0 0 34px 6px rgba(237,200,155,.18);
+  animation:lamp 6s ease-in-out infinite;padding:1.2rem}
+:root[data-theme="night"] .cover-inner h1{color:#005EAB;font-size:clamp(4.5rem,24vw,9.5rem)}
+:root[data-theme="night"] .cover-inner .author,:root[data-theme="night"] .cover-inner .release{color:#005EAB}
+:root[data-theme="night"] .cover-inner .author{font-size:clamp(.95rem,.85rem + .6vw,1.2rem)}
+:root[data-theme="night"] .cover-inner .release{font-size:.9em}
+:root[data-theme="night"] .down{border-color:rgba(141,187,234,.4);background:rgba(255,255,255,.04);color:var(--blue)}
+:root[data-theme="night"] footer{color:var(--blue)}
+@keyframes lamp{0%,100%{box-shadow:0 0 0 1px rgba(237,200,155,.45),0 0 30px 5px rgba(237,200,155,.15)}50%{box-shadow:0 0 0 1px rgba(237,200,155,.7),0 0 54px 12px rgba(237,200,155,.27)}}
+@media (prefers-reduced-motion:reduce){:root[data-theme="night"] .cover-inner{animation:none}@view-transition{navigation:none}}
+.night{position:absolute;top:max(1rem,env(safe-area-inset-top));right:max(1rem,env(safe-area-inset-right));width:2.75rem;height:2.75rem;border-radius:50%;
+  border:1px solid var(--rule);background:transparent;color:var(--blue);display:grid;place-items:center;cursor:pointer;z-index:2}
+:root[data-theme="night"] .night{background:rgba(255,255,255,.03)}
+
+/* διάθεση: έτοιμη, ανενεργή ως την έκδοση */
+.sale{margin-top:2.8rem;border-top:1px solid var(--rule);padding-top:1.6rem}
+.sale h2{font-size:.8rem;letter-spacing:.09em;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:1rem}
+.offers{list-style:none;display:grid;gap:.9rem}
+@media (min-width:36rem){.offers{grid-template-columns:1fr 1fr}}
+.offer{border:1px solid var(--rule);border-radius:8px;padding:1rem 1.1rem;display:grid;gap:.35rem}
+.offer b{color:var(--blue);font-weight:600}
+.offer .price{font-variant-numeric:lining-nums tabular-nums}
+.offer .buy{margin-top:.4rem;justify-self:start;font:inherit;font-size:.95em;padding:.35rem 1rem;border-radius:999px;border:1px solid var(--rule);background:transparent;color:var(--blue)}
+.offer .buy[aria-disabled="true"]{opacity:.6;cursor:not-allowed;border-style:dashed}
+.sale .when{margin-top:1rem;font-size:.9em;font-style:italic;opacity:.85}
 </style>
 </head>
 <body>
 <header class="cover">
+  <button type="button" class="night" aria-label="Νυχτερινή ανάγνωση" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>
   <div class="cover-inner">
     <h1><a class="ek" href="#book" aria-label="εκ — στο κείμενο για το βιβλίο">εκ</a></h1>
     <p class="author">Ιβάν Δ. Αθανασόπουλος</p>
@@ -140,6 +175,15 @@ footer{text-align:center;color:var(--blue);opacity:.75;font-size:.85em;padding:2
       <dt>Έντυπο</dt><dd>ISBN 978-618-00-7030-9</dd>
       <dt>Ηλεκτρονικό</dt><dd>ISBN 978-618-00-7202-0</dd>
     </dl>
+
+    <section class="sale" aria-labelledby="sale-h" data-active="false">
+      <h2 id="sale-h">Διάθεση</h2>
+      <ul class="offers">
+        <li class="offer" data-format="print" data-isbn="978-618-00-7030-9"><b>Έντυπο</b><span class="price">Τιμή: θα ανακοινωθεί</span><button type="button" class="buy" aria-disabled="true">Διαθέσιμο το 2027</button></li>
+        <li class="offer" data-format="ebook" data-isbn="978-618-00-7202-0"><b>Ηλεκτρονικό</b><span class="price">Τιμή: θα ανακοινωθεί</span><button type="button" class="buy" aria-disabled="true">Διαθέσιμο το 2027</button></li>
+      </ul>
+      <p class="when">Η αγορά θα ανοίξει εδώ με την κυκλοφορία του βιβλίου.</p>
+    </section>
 
   </section>
 </main>
