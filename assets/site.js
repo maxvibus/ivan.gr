@@ -47,6 +47,14 @@
       dlg.addEventListener('close', function(){ if(from) from.focus(); });
     });
 
+    /* πρόοδος ανάγνωσης */
+    var prog = document.querySelector('.prog'), art = document.querySelector('.post .body');
+    if(prog && art){ var tick = false;
+      function upd(){ tick = false; var r = art.getBoundingClientRect(), h = r.height - innerHeight * .6;
+        var f = h > 0 ? Math.min(1, Math.max(0, -r.top / h)) : 1; prog.style.transform = 'scaleX(' + f.toFixed(4) + ')'; }
+      addEventListener('scroll', function(){ if(!tick){ tick = true; requestAnimationFrame(upd); } }, {passive:true});
+      addEventListener('resize', upd); upd(); }
+
     /* αναζήτηση στη βιβλιοθήκη */
     var inp = document.querySelector('.search input'); if(!inp) return;
     var none = document.querySelector('.none');

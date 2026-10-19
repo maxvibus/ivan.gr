@@ -340,15 +340,23 @@ def issues_build():
     write(frm, s)
 
 # --- σελίδες κειμένων ------------------------------------------------------
+READ_MIN = {
+    'el': lambda m: f'{m} λεπτό ανάγνωσης' if m == 1 else f'{m} λεπτά ανάγνωσης',
+    'en': lambda m: f'{m} min read',
+    'fr': lambda m: f'{m} min de lecture',
+    'de': lambda m: f'{m} Min. Lesezeit',
+}
+
 def page(item, lang, alts, prev=None, nxt=None):
     frm = item['path']; T = L[lang]
     body = clean(item['html'], frm, lang)
     desc = excerpt(text_of(item['html']), 180)
     s = head(frm, lang, item['title'].strip() + ' · ivan.gr', desc, frm, alts)
-    s += '<body class="text">\n'
+    s += '<body class="text">\n<div class="prog" aria-hidden="true"></div>\n'
     s += f'<header class="bar"><a class="home-link" href="{rel(frm, FRONT[lang])}">ivan.gr</a>{langnav(frm, lang, alts) if len(alts) > 1 else ""}{NIGHT_BTN}</header>\n'
     s += f'<main class="wrap"><article class="post"><h1>{E(item["title"].strip())}</h1>\n'
-    s += f'<p class="date"><time datetime="{item["published"][:10]}">{E(dlong(item["published"], lang))}</time></p>\n'
+    mins = max(1, round(len(text_of(item['html']).split()) / 200))
+    s += f'<p class="date"><time datetime="{item["published"][:10]}">{E(dlong(item["published"], lang))}</time><span class="rt"> · {E(READ_MIN[lang](mins))}</span></p>\n'
     s += f'<div class="body">{body}</div></article>\n<nav class="pn">'
     if nxt: s += f'<a class="nx" href="{rel(frm, nxt["path"])}"><small>{E(T["next"])}</small>{E(nxt["title"].strip())}</a>'
     if prev: s += f'<a class="pv" href="{rel(frm, prev["path"])}"><small>{E(T["prev"])}</small>{E(prev["title"].strip())}</a>'

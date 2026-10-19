@@ -109,7 +109,7 @@ figure{margin:0}figure img{width:100%;border-radius:6px}figcaption{margin-top:.8
 @media (min-width:36rem){.body p{text-align:justify}}
 .body h2,.body h3,.body h4{color:var(--blue);font-weight:600;line-height:1.25;margin:1.8em 0 .6em}
 .body h2{font-size:1.35em}.body h3{font-size:1.15em}.body h4{font-size:1.02em}
-.body a{border-bottom:1px solid var(--rule)}
+.body a{text-decoration:underline;text-decoration-thickness:1px;text-decoration-color:var(--rule);text-underline-offset:.2em;transition:text-decoration-color .2s}.body a:hover{text-decoration-color:currentColor}
 .body blockquote{margin:1.2em 0;padding:0 0 0 1.1em;border-left:2px solid var(--rule)}
 .body hr{border:0;border-top:1px solid var(--rule);margin:2em auto;width:40%}
 .body ul,.body ol{padding-left:1.3em}
@@ -131,3 +131,8 @@ figure{margin:0}figure img{width:100%;border-radius:6px}figcaption{margin-top:.8
   .mast{display:grid;grid-template-columns:1fr auto;grid-template-areas:"wm night" "nav langs";align-items:center;gap:.5rem 1rem}
   .mast .wm{grid-area:wm}.mast .mnav{grid-area:nav}.mast .mtools{display:contents}.mast .langs{grid-area:langs}.mast .night{grid-area:night;justify-self:end}
 }
+/* ένδειξη προόδου ανάγνωσης: λεπτή γραμμή στην κορυφή, χωρίς να τραβά το βλέμμα */
+.prog{position:fixed;top:0;left:0;right:0;height:2px;background:var(--blue);opacity:.55;transform:scaleX(0);transform-origin:0 50%;z-index:20;pointer-events:none}
+:root[data-theme="night"] .prog{background:var(--ochre);opacity:.7}
+.rt{font-style:normal;font-variant-numeric:lining-nums}
+@media print{.prog{display:none}.body a::after{content:" (" attr(href) ")";font-size:.8em}}
