@@ -27,7 +27,7 @@ time{font-variant-numeric:lining-nums}
 /* εξώφυλλο */
 .cover{min-height:88vh;min-height:88svh;display:grid;grid-template-rows:auto 1fr;padding:max(1.6rem,env(safe-area-inset-top)) 1.25rem 4.5rem;position:relative;text-align:center}
 .cover-inner{align-self:center;max-width:34rem;margin:0 auto}
-.wordmark{margin:0 0 .3em;font-weight:800;color:var(--blue);font-size:clamp(3.6rem,17vw,7rem);line-height:1;letter-spacing:-.012em}
+.wordmark{margin:0 0 .45em;font-weight:800;color:var(--blue);font-size:clamp(3.6rem,17vw,7rem);line-height:1;letter-spacing:-.012em}
 .sub{margin:0 0 1.3rem;color:var(--blue);font-weight:600;font-size:clamp(1.12rem,1rem + .6vw,1.4rem)}
 .intro{margin:0;line-height:1.6;text-wrap:pretty}
 .down{position:absolute;left:50%;bottom:max(1.4rem,env(safe-area-inset-bottom));transform:translateX(-50%);width:2.75rem;height:2.75rem;border-radius:50%;

@@ -189,13 +189,12 @@ def home(lang):
     lead, recent = items[0], items[1:7]
     years = {}
     for it in items: years.setdefault(it['date'][:4], []).append(it)
-    s = head(frm, lang, 'ivan.gr · ' + T['sub'], T['intro'], frm, {l: HOME[l] for l in LANGS})
+    s = head(frm, lang, 'ivan.gr', T['intro'], frm, {l: HOME[l] for l in LANGS})
     s += '<body class="home">\n'
     s += f'''<header class="cover">
 {langnav(frm, lang, HOME)}
 <div class="cover-inner">
 <h1 class="wordmark">ivan.gr</h1>
-<p class="sub">{E(T['sub'])}</p>
 <p class="intro">{E(T['intro'])}</p>
 </div>
 <a class="down" href="#texts" aria-label="{E(T['down'])}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
@@ -261,7 +260,7 @@ def run():
     shutil.copytree(src, dst)
     # τροφοδοσία, χάρτης
     now = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
-    feed = f'<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="el"><title>ivan.gr</title><subtitle>{L["el"]["sub"]}</subtitle><link href="{SITE}/"/><link rel="self" href="{SITE}/feed.xml"/><id>{SITE}/</id><updated>{now}</updated><author><name>Ιβάν Δ. Αθανασόπουλος</name></author>\n'
+    feed = f'<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="el"><title>ivan.gr</title><link href="{SITE}/"/><link rel="self" href="{SITE}/feed.xml"/><id>{SITE}/</id><updated>{now}</updated><author><name>Ιβάν Δ. Αθανασόπουλος</name></author>\n'
     for p in posts[:30]:
         feed += f'<entry><title>{E(p["title"].strip())}</title><link href="{SITE}/{p["path"]}"/><id>{SITE}/{p["path"]}</id><published>{p["published"]}</published><updated>{p["updated"]}</updated><summary>{E(excerpt(text_of(p["html"]), 400))}</summary></entry>\n'
     write('feed.xml', feed + '</feed>\n')
