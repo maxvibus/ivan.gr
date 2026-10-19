@@ -136,3 +136,4 @@ figure{margin:0}figure img{width:100%;border-radius:6px}figcaption{margin-top:.8
 :root[data-theme="night"] .prog{background:var(--ochre);opacity:.7}
 .rt{font-style:normal;font-variant-numeric:lining-nums}
 @media print{.prog{display:none}.body a::after{content:" (" attr(href) ")";font-size:.8em}}
+.foot a,.wperm a,.back a{text-decoration:underline;text-decoration-thickness:1px;text-decoration-color:var(--rule);text-underline-offset:.2em}
