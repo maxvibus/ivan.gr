@@ -137,3 +137,10 @@ figure{margin:0}figure img{width:100%;border-radius:6px}figcaption{margin-top:.8
 .rt{font-style:normal;font-variant-numeric:lining-nums}
 @media print{.prog{display:none}.body a::after{content:" (" attr(href) ")";font-size:.8em}}
 .foot a,.wperm a,.back a{text-decoration:underline;text-decoration-thickness:1px;text-decoration-color:var(--rule);text-underline-offset:.2em}
+/* ομαλή μετάβαση ανάμεσα σε σελίδες: ο τίτλος περνά από τη λίστα στη θέση του στο κείμενο */
+@view-transition{navigation:auto}
+.post h1{view-transition-name:vt-title}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.32s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+::view-transition-group(vt-title){animation-duration:.42s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+::view-transition-old(vt-title),::view-transition-new(vt-title){height:100%;object-fit:none;object-position:left top}
+@media (prefers-reduced-motion:reduce){@view-transition{navigation:none}}

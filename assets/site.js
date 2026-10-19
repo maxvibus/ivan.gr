@@ -4,6 +4,16 @@
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function norm(s){ return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/ς/g,'σ'); }
 
+  /* μετάβαση σελίδων: ο τίτλος που πατήθηκε παίρνει το όνομα του τίτλου της επόμενης σελίδας */
+  var lastLink = null;
+  document.addEventListener('click', function(e){ var a = e.target.closest && e.target.closest('a[href]'); if(a) lastLink = a; }, true);
+  addEventListener('pageswap', function(e){
+    if(!e.viewTransition || !lastLink || document.querySelector('.post h1')) return;
+    var t = lastLink.querySelector('span') || lastLink;
+    t.style.viewTransitionName = 'vt-title';
+    e.viewTransition.finished.then(function(){ t.style.viewTransitionName = ''; }, function(){ t.style.viewTransitionName = ''; });
+  });
+
   function ready(fn){ if(document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
   ready(function(){
     /* νύχτα */
