@@ -1,0 +1,11 @@
+[
+ {"url": "https://www.ivan.gr/p/they-have-known-since-2021-it-is-not.html",
+  "replace": [["three linguists and a researcher", "two linguists and two computer scientists"],
+              ["The same companies released", "The same industry released"]]},
+ {"url": "https://www.ivan.gr/p/on-le-sait-depuis-2021-ce-nest-pas-de.html",
+  "replace": [["trois linguistes et une chercheuse", "deux linguistes et deux chercheuses en informatique"],
+              ["les mêmes entreprises mirent", "le même secteur mit"]]},
+ {"url": "https://www.ivan.gr/p/seit-2021-ist-es-bekannt-es-ist-keine.html",
+  "replace": [["drei Linguistinnen und eine Forscherin", "zwei Linguistinnen und zwei Informatikerinnen"],
+              ["stellten dieselben Unternehmen", "stellte dieselbe Branche"]]}
+]
