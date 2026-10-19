@@ -146,7 +146,8 @@ footer{text-align:center;color:var(--blue);opacity:.75;font-size:.85em;padding:2
 .offer{border:1px solid var(--rule);border-radius:8px;padding:1rem 1.1rem;display:grid;gap:.35rem}
 .offer b{color:var(--blue);font-weight:600}
 .offer .price{font-variant-numeric:lining-nums tabular-nums}
-.offer .buy{margin-top:.4rem;justify-self:start;font:inherit;font-size:.95em;padding:.35rem 1rem;border-radius:999px;border:1px solid var(--rule);background:transparent;color:var(--blue)}
+.offer .buys{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.4rem}
+.offer .buy{font:inherit;font-size:.95em;padding:.35rem 1rem;border-radius:999px;border:1px solid var(--rule);background:transparent;color:var(--blue)}
 .offer .buy[aria-disabled="true"]{opacity:.6;cursor:not-allowed;border-style:dashed}
 .sale .when{margin-top:1rem;font-size:.9em;font-style:italic;opacity:.85}
 </style>
@@ -179,10 +180,10 @@ footer{text-align:center;color:var(--blue);opacity:.75;font-size:.85em;padding:2
     <section class="sale" aria-labelledby="sale-h" data-active="false">
       <h2 id="sale-h">Διάθεση</h2>
       <ul class="offers">
-        <li class="offer" data-format="print" data-isbn="978-618-00-7030-9"><b>Έντυπο</b><span class="price">Τιμή: θα ανακοινωθεί</span><button type="button" class="buy" aria-disabled="true">Διαθέσιμο το 2027</button></li>
-        <li class="offer" data-format="ebook" data-isbn="978-618-00-7202-0"><b>Ηλεκτρονικό</b><span class="price">Τιμή: θα ανακοινωθεί</span><button type="button" class="buy" aria-disabled="true">Διαθέσιμο το 2027</button></li>
+        <li class="offer" data-format="print" data-isbn="978-618-00-7030-9"><b>Έντυπο</b><span class="price">Τιμή: θα ανακοινωθεί</span><span class="buys"><button type="button" class="buy" data-channel="direct" aria-disabled="true">Απευθείας · 2027</button><button type="button" class="buy" data-channel="stores" aria-disabled="true">Στα βιβλιοπωλεία · 2027</button></span></li>
+        <li class="offer" data-format="ebook" data-isbn="978-618-00-7202-0"><b>Ηλεκτρονικό</b><span class="price">Τιμή: θα ανακοινωθεί</span><span class="buys"><button type="button" class="buy" data-channel="direct" aria-disabled="true">Απευθείας · 2027</button><button type="button" class="buy" data-channel="stores" aria-disabled="true">Στα βιβλιοπωλεία · 2027</button></span></li>
       </ul>
-      <p class="when">Η αγορά θα ανοίξει εδώ με την κυκλοφορία του βιβλίου.</p>
+      <p class="when">Η αγορά θα ανοίξει εδώ με την κυκλοφορία: απευθείας από τον εκδότη και στα βιβλιοπωλεία, στην ίδια τιμή.</p>
     </section>
 
   </section>
