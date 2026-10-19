@@ -1,31 +1,63 @@
-/* ivan.gr — ήπια κύλιση προς τα κείμενα και αναζήτηση στο ευρετήριο */
+/* ivan.gr — νύχτα/ημέρα, παράθυρα που ανοίγουν από το πλαίσιο, αναζήτηση */
 (function(){
+  var root = document.documentElement;
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function ease(t){ return t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
-  function glide(target){
-    var start = window.scrollY, running = true;
-    var end = Math.max(0, target.getBoundingClientRect().top + start - window.innerHeight*0.12);
-    end = Math.min(end, document.documentElement.scrollHeight - window.innerHeight);
-    if (reduce || Math.abs(end-start) < 2){ window.scrollTo(0,end); return; }
-    var dur = 1500, t0 = null;
-    ['wheel','touchstart','keydown','mousedown'].forEach(function(ev){ window.addEventListener(ev, function(){ running=false; }, {once:true, passive:true}); });
-    function step(ts){ if(!running) return; if(t0===null) t0=ts; var p=Math.min(1,(ts-t0)/dur); window.scrollTo(0,start+(end-start)*ease(p)); if(p<1) requestAnimationFrame(step); }
-    requestAnimationFrame(step);
-  }
-  document.addEventListener('click', function(e){
-    var a = e.target.closest && e.target.closest('a.down'); if(!a) return;
-    var t = document.getElementById('texts'); if(!t) return; e.preventDefault(); glide(t);
-  });
   function norm(s){ return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/ς/g,'σ'); }
-  var inp = document.querySelector('.search input'); if(!inp) return;
-  var none = document.querySelector('.none');
-  inp.addEventListener('input', function(){
-    var v = norm(inp.value.trim()), any = false;
-    document.querySelectorAll('.year').forEach(function(g){
-      var c = 0;
-      g.querySelectorAll('li').forEach(function(li){ var ok = !v || li.getAttribute('data-k').indexOf(v) >= 0; li.hidden = !ok; if(ok) c++; });
-      g.hidden = !c; if(c) any = true;
+
+  function ready(fn){ if(document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
+  ready(function(){
+    /* νύχτα */
+    var btns = document.querySelectorAll('button.night');
+    function sync(){ var n = root.dataset.theme === 'night';
+      btns.forEach(function(b){ b.setAttribute('aria-pressed', String(n)); b.setAttribute('aria-label', n ? 'Ανάγνωση ημέρας' : 'Νυχτερινή ανάγνωση'); }); }
+    sync();
+    btns.forEach(function(b){ b.addEventListener('click', function(){
+      var n = root.dataset.theme !== 'night';
+      if(n) root.dataset.theme = 'night'; else delete root.dataset.theme;
+      try{ if(n) localStorage.setItem('ivan-theme','night'); else localStorage.removeItem('ivan-theme'); }catch(e){}
+      sync();
+    }); });
+
+    /* παράθυρα: μεγαλώνουν από το πλαίσιο και ξαναμαζεύονται εκεί */
+    var from = null;
+    function flip(dlg, card, opening){
+      if(reduce || !card || !dlg.animate) return null;
+      var a = card.getBoundingClientRect(), b = dlg.getBoundingClientRect();
+      var sx = a.width / b.width, sy = a.height / b.height;
+      var dx = (a.left + a.width/2) - (b.left + b.width/2), dy = (a.top + a.height/2) - (b.top + b.height/2);
+      var small = 'translate(' + dx + 'px,' + dy + 'px) scale(' + sx + ',' + sy + ')';
+      var frames = [{ transform: small, opacity: .2 }, { transform: 'none', opacity: 1 }];
+      return dlg.animate(opening ? frames : frames.slice().reverse(), { duration: opening ? 460 : 340, easing: 'cubic-bezier(.2,.8,.2,1)' });
+    }
+    document.querySelectorAll('.card[data-w]').forEach(function(card){
+      card.addEventListener('click', function(){
+        var dlg = document.getElementById('w-' + card.dataset.w); if(!dlg) return;
+        from = card; dlg.showModal(); dlg.scrollTop = 0; flip(dlg, card, true);
+      });
     });
-    if(none) none.hidden = any;
+    function shut(dlg){
+      var an = flip(dlg, from, false);
+      if(an){ an.onfinish = function(){ dlg.close(); }; } else dlg.close();
+    }
+    document.querySelectorAll('dialog.win').forEach(function(dlg){
+      dlg.querySelector('.wclose').addEventListener('click', function(){ shut(dlg); });
+      dlg.addEventListener('click', function(e){ if(e.target === dlg){ var r = dlg.getBoundingClientRect();
+        if(e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) shut(dlg); } });
+      dlg.addEventListener('cancel', function(e){ e.preventDefault(); shut(dlg); });
+      dlg.addEventListener('close', function(){ if(from) from.focus(); });
+    });
+
+    /* αναζήτηση στη βιβλιοθήκη */
+    var inp = document.querySelector('.search input'); if(!inp) return;
+    var none = document.querySelector('.none');
+    inp.addEventListener('input', function(){
+      var v = norm(inp.value.trim()), any = false;
+      document.querySelectorAll('.year').forEach(function(g){
+        var c = 0;
+        g.querySelectorAll('li').forEach(function(li){ var ok = !v || li.getAttribute('data-k').indexOf(v) >= 0; li.hidden = !ok; if(ok) c++; });
+        g.hidden = !c; if(c) any = true;
+      });
+      if(none) none.hidden = any;
+    });
   });
 })();

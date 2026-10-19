@@ -40,7 +40,8 @@ L = {
    short=['Jan.','Feb.','März','Apr.','Mai','Juni','Juli','Aug.','Sept.','Okt.','Nov.','Dez.']),
 }
 LANGS = ['el', 'en', 'fr', 'de']
-HOME = {'el': 'index.html', 'en': 'p/en.html', 'fr': 'p/fr.html', 'de': 'p/de.html'}
+HOME = {'el': 'keimena/index.html', 'en': 'p/en.html', 'fr': 'p/fr.html', 'de': 'p/de.html'}  # βιβλιοθήκη ανά γλώσσα
+FRONT = {'el': 'index.html', 'en': 'p/en.html', 'fr': 'p/fr.html', 'de': 'p/de.html'}  # πρώτη σελίδα ανά γλώσσα
 E = html.escape
 
 def path_of(url):
@@ -108,6 +109,12 @@ def apply_fixes(item):
                 item['html'] = item['html'].replace(old, new)
 
 # --- συλλογή κειμένων -------------------------------------------------------
+newdir = os.path.join(ROOT, 'content', 'new-posts')
+for fn in sorted(os.listdir(newdir)) if os.path.isdir(newdir) else []:
+    if not fn.endswith('.json'): continue
+    n = json.load(open(os.path.join(newdir, fn), encoding='utf-8'))
+    pth = f"{n['date'][:4]}/{n['date'][5:7]}/{n['slug']}.html"
+    data['posts'].append(dict(id=n['slug'], title=n['title'], url=f'{SITE}/{pth}', published=n['date'], updated=n.get('updated', n['date']), labels=n.get('labels', []), html=n['html']))
 posts = sorted(data['posts'], key=lambda p: p['published'], reverse=True)
 for p in posts: p['lang'] = 'el'; p['path'] = path_of(p['url']); apply_fixes(p)
 by_url = {p['url']: p for p in posts}
@@ -146,7 +153,8 @@ def head(frm, lang, title, desc, canon_path, alts=None, extra=''):
 <title>{E(title)}</title>
 <meta name="description" content="{E(desc)}">
 <meta name="author" content="Ιβάν Δ. Αθανασόπουλος">
-<meta name="theme-color" content="#EDC89B">
+<meta name="theme-color" content="#FBF8F2">
+<script>try{{var t=localStorage.getItem('ivan-theme');if(t)document.documentElement.dataset.theme=t;}}catch(e){{}}</script>
 <meta name="referrer" content="no-referrer">
 <link rel="canonical" href="{SITE}/{canon_path.replace('index.html','')}">
 {alt}<meta property="og:title" content="{E(title)}">
@@ -158,6 +166,7 @@ def head(frm, lang, title, desc, canon_path, alts=None, extra=''):
 <link rel="preload" href="{fr}" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{css}">
 <link rel="alternate" type="application/atom+xml" title="ivan.gr" href="{rel(frm,'feed.xml')}">
+<script src="{rel(frm,'assets/site.js')}" defer></script>
 {extra}</head>
 '''
 
@@ -170,6 +179,8 @@ def langnav(frm, cur, targets):
         else: out.append(f'<a href="{rel(frm, targets[l])}" lang="{l}" hreflang="{l}">{lab}</a>')
     return '<nav class="langs" aria-label="Γλώσσα · Language">' + '<i>·</i>'.join(out) + '</nav>'
 
+NIGHT_BTN = '<button type="button" class="night" aria-label="Νυχτερινή ανάγνωση" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>'
+
 def footer(frm):
     return f'<footer class="foot"><a href="{rel(frm,"index.html")}">ivan.gr</a> · © 2025–2026 Ιβάν Δ. Αθανασόπουλος</footer>\n'
 
@@ -177,43 +188,50 @@ def write(p, s):
     fp = os.path.join(OUT, p); os.makedirs(os.path.dirname(fp) or OUT, exist_ok=True)
     open(fp, 'w', encoding='utf-8').write(s)
 
-# --- αρχικές (ανά γλώσσα) ---------------------------------------------------
-def home(lang):
-    frm = HOME[lang]; T = L[lang]
+# --- βιβλιοθήκες (ανά γλώσσα) ---------------------------------------------
+LIBNAME = {'el': 'Βιβλιοθήκη', 'en': 'Library', 'fr': 'Bibliothèque', 'de': 'Bibliothek'}
+
+def masthead(frm, lang, cur, alts):
+    n = []
+    if lang == 'el':
+        links = [('front', 'Σήμερα', 'index.html'), ('lib', 'Βιβλιοθήκη', 'keimena/index.html'), ('arch', 'Αρχείο φύλλων', 'fylla/index.html')]
+        for key, lab, to in links:
+            if key in ('front', 'arch') and not ISSUES: continue
+            a = ' aria-current="page"' if key == cur else ''
+            n.append(f'<a href="{rel(frm, to)}"{a}>{lab}</a>')
+        n.append(f'<a class="ek" href="{rel(frm, "ek/index.html")}">εκ</a>')
+    return (f'<header class="mast"><a class="wm" href="{rel(frm, FRONT[lang])}">ivan.gr</a>'
+            f'<nav class="mnav" aria-label="Πλοήγηση">{"".join(n)}</nav>'
+            f'<div class="mtools">{langnav(frm, lang, alts)}{NIGHT_BTN}</div></header>\n')
+
+def library(lang, frm=None):
+    frm = frm or HOME[lang]; T = L[lang]
     if lang == 'el':
         items = [dict(t=p['title'].strip(), path=p['path'], date=p['published'], txt=text_of(p['html'])) for p in posts]
     else:
         lst = [g for d in trans.values() for l, g in d.items() if l == lang] + [g for g in orphans if g['lang'] == lang]
         lst.sort(key=lambda g: g['published'], reverse=True)
-        items = [dict(t=g['title'].strip(), path=g['path'], date=g['published'], txt=re.sub(r'^.*?(Greek original|Original grec|Griechisches Original)\s*', '', text_of(g['html']))) for g in lst]
+        items = [dict(t=g['title'].strip(), path=g['path'], date=g['published'],
+                      txt=re.sub(r'^.*?(Greek original|Original grec|Griechisches Original)\s*', '', text_of(g['html']))) for g in lst]
     lead, recent = items[0], items[1:7]
     years = {}
     for it in items: years.setdefault(it['date'][:4], []).append(it)
-    s = head(frm, lang, 'ivan.gr', T['intro'], frm, {l: HOME[l] for l in LANGS})
-    s += '<body class="home">\n'
-    s += f'''<header class="cover">
-{langnav(frm, lang, HOME)}
-<div class="cover-inner">
-<h1 class="wordmark">ivan.gr</h1>
-<p class="intro">{E(T['intro'])}</p>
-</div>
-<a class="down" href="#texts" aria-label="{E(T['down'])}"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-</header>
-<main id="texts" class="wrap">
-<article class="lead">
-<p class="kicker">{E(T['latest'])} · <time datetime="{lead['date'][:10]}">{E(dlong(lead['date'], lang))}</time></p>
-<h2><a href="{rel(frm, lead['path'])}">{E(lead['t'])}</a></h2>
-<p class="ex">{E(excerpt(lead['txt']))}</p>
-<p class="go"><a href="{rel(frm, lead['path'])}">{E(T['read'])}</a></p>
-</article>
-<section class="recent"><h2 class="h">{E(T['recent'])}</h2><ol>
-'''
+    alts = dict(HOME)
+    s = head(frm, lang, LIBNAME[lang] + ' · ivan.gr', T['intro'], HOME[lang], alts)
+    s += '<body class="lib">\n' + masthead(frm, lang, 'lib', alts)
+    s += '<main id="texts" class="wrap">\n'
+    s += f'<h1 class="libh">{E(LIBNAME[lang])}</h1>\n<p class="intro">{E(T["intro"])}</p>\n'
+    s += '<article class="lead">\n'
+    s += f'<p class="kicker">{E(T["latest"])} · <time datetime="{lead["date"][:10]}">{E(dlong(lead["date"], lang))}</time></p>\n'
+    s += f'<h2><a href="{rel(frm, lead["path"])}">{E(lead["t"])}</a></h2>\n'
+    s += f'<p class="ex">{E(excerpt(lead["txt"]))}</p>\n'
+    s += f'<p class="go"><a href="{rel(frm, lead["path"])}">{E(T["read"])}</a></p>\n</article>\n'
+    s += f'<section class="recent"><h2 class="h">{E(T["recent"])}</h2><ol>\n'
     for it in recent:
         s += f'<li><a href="{rel(frm, it["path"])}"><time datetime="{it["date"][:10]}">{E(dshort(it["date"], lang))}</time><span>{E(it["t"])}</span></a></li>\n'
-    s += f'''</ol></section>
-<section class="index" id="index"><div class="ihead"><h2 class="h">{E(T['all'])} <span class="n">{len(items)}</span></h2>
-<label class="search"><span class="vh">{E(T['search'])}</span><input type="search" placeholder="{E(T['search'])}" autocomplete="off" spellcheck="false"></label></div>
-'''
+    s += '</ol></section>\n'
+    s += f'<section class="index" id="index"><div class="ihead"><h2 class="h">{E(T["all"])} <span class="n">{len(items)}</span></h2>\n'
+    s += f'<label class="search"><span class="vh">{E(T["search"])}</span><input type="search" placeholder="{E(T["search"])}" autocomplete="off" spellcheck="false"></label></div>\n'
     for y in sorted(years, reverse=True):
         s += f'<div class="year"><h3>{y}</h3><ul>\n'
         for it in years[y]:
@@ -222,10 +240,91 @@ def home(lang):
     s += f'<p class="none" hidden>{E(T["none"])}</p></section>\n'
     if lang == 'el':
         s += f'<p class="book">Μέσα από αυτόν τον διάλογο αναδύθηκε το <a href="{rel(frm, "ek/index.html")}">«εκ»</a> — βιβλίο, 2027.</p>\n'
-    s += '</main>\n' + footer(frm)
-    s += f'<script src="{rel(frm, "assets/site.js")}" defer></script>\n</body>\n</html>\n'
+    s += '</main>\n' + footer(frm) + '</body>\n</html>\n'
     write(frm, s)
-    return items
+
+# --- φύλλα (το φύλλο της ημέρας) -------------------------------------------
+WEEKDAYS = ['Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο', 'Κυριακή']
+ISSUES = []
+_fd = os.path.join(ROOT, 'content', 'fylla')
+for fn in sorted(os.listdir(_fd)) if os.path.isdir(_fd) else []:
+    if fn.endswith('.json'):
+        ISSUES.append(json.load(open(os.path.join(_fd, fn), encoding='utf-8')))
+ISSUES.sort(key=lambda x: x['date'], reverse=True)
+
+def issue_date(d):
+    y, m, dd = dparts(d)
+    wd = WEEKDAYS[datetime.date(y, m, dd).weekday()]
+    return f'{wd} {dd} {L["el"]["months"][m-1]} {y}'
+
+def issue_page(iss, frm, is_front):
+    cards, wins = [], []
+    def window(wid, kind, title, meta, body, perm=None):
+        p = f'<p class="wperm"><a href="{rel(frm, perm)}">Μόνιμη σελίδα</a></p>' if perm else ''
+        wins.append(f'<dialog class="win" id="w-{wid}" aria-labelledby="wt-{wid}"><button type="button" class="wclose" aria-label="Κλείσιμο">'
+                    f'<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>'
+                    f'<p class="wkind">{E(kind)}</p><h2 id="wt-{wid}">{E(title)}</h2>' + (f'<p class="wmeta">{meta}</p>' if meta else '') +
+                    f'<div class="body">{body}</div>{p}</dialog>')
+    t = iss.get('text')
+    if t:
+        post = by_url.get(t['ref']) if 'ref' in t else None
+        if post:
+            title = post['title'].strip(); body = clean(post['html'], frm)
+            cards.append(f'<button type="button" class="card c-text" data-w="text"><span class="ck">Το κείμενο της ημέρας</span>'
+                         f'<span class="ct">{E(title)}</span><span class="ce">{E(excerpt(text_of(post["html"]), 300))}</span>'
+                         f'<span class="cm">{E(dlong(post["published"], "el"))}</span></button>')
+            window('text', 'Το κείμενο της ημέρας', title, E(dlong(post['published'], 'el')), body, post['path'])
+    sk = iss.get('sketch')
+    if sk:
+        img = f'<img src="{rel(frm, sk["image"])}" alt="{E(sk.get("alt", sk.get("title", "")))}" loading="lazy">'
+        cards.append(f'<button type="button" class="card c-sketch" data-w="sketch"><span class="ck">Σκίτσο</span>{img}'
+                     f'<span class="cm">{E(sk.get("caption", ""))}</span></button>')
+        window('sketch', 'Σκίτσο', sk.get('title', ''), '', f'<figure>{img}<figcaption>{sk.get("about", "")}</figcaption></figure>')
+    news = iss.get('news', [])
+    for i, n in enumerate(news):
+        wid = f'n{i}'
+        cards.append(f'<button type="button" class="card c-news" data-w="{wid}"><span class="ck">{E(n["kind"])}</span>'
+                     f'<span class="ct">{E(n["title"])}</span><span class="cl">{E(n.get("line", ""))}</span></button>')
+        src = f'<a href="{E(n["url"])}" rel="noopener" target="_blank">{E(n.get("source", n["url"]))}</a>' if n.get('url') else E(n.get('source', ''))
+        meta = src + (f' · {E(n["date"])}' if n.get('date') else '')
+        body = (f'<p>{E(n["summary"])}</p>' if n.get('summary') else '') + (f'<p class="myline">{E(n["line"])}</p>' if n.get('line') else '')
+        window(wid, n['kind'], n['title'], meta, body)
+    s = head(frm, 'el', 'ivan.gr' if is_front else f'Φύλλο {iss["number"]} · ivan.gr',
+             f'Φύλλο {iss["number"]} · {issue_date(iss["date"])}', 'index.html' if is_front else frm, {'el': 'index.html'})
+    s += '<body class="issue">\n' + masthead(frm, 'el', 'front' if is_front else 'arch', FRONT)
+    s += f'<main class="sheet"><p class="dateline">Φύλλο {iss["number"]} · {issue_date(iss["date"])}</p>\n'
+    top = [c for c in cards if 'c-text' in c or 'c-sketch' in c]
+    if top: s += '<div class="top">' + ''.join(top) + '</div>\n'
+    if news:
+        s += '<section class="news" aria-label="Νέα που διάλεξα"><h2 class="h">Νέα που διάλεξα</h2><div class="ngrid">' + ''.join(c for c in cards if 'c-news' in c) + '</div></section>\n'
+    low = ''
+    if iss.get('note'):
+        low += f'<section class="note"><h2 class="h">Σημείωση</h2><div class="body">{iss["note"]}</div></section>'
+    th = [by_url[u] for u in iss.get('thread', []) if u in by_url]
+    if th:
+        low += '<section class="thread"><h2 class="h">Το νήμα</h2><ul>' + ''.join(
+            f'<li><a href="{rel(frm, p["path"])}">{E(p["title"].strip())}</a> <time>{E(dshort(p["published"], "el"))} {p["published"][:4]}</time></li>' for p in th) + '</ul></section>'
+    if low: s += f'<div class="low">{low}</div>\n'
+    s += f'<p class="intro sheet-intro">{E(L["el"]["intro"])}</p>\n</main>\n' + ''.join(wins) + '\n' + footer(frm) + '</body>\n</html>\n'
+    write(frm, s)
+
+def issues_build():
+    if not ISSUES:
+        library('el', 'index.html')
+        return
+    issue_page(ISSUES[0], 'index.html', True)
+    for iss in ISSUES:
+        issue_page(iss, f'fylla/{iss["date"]}/index.html', False)
+    frm = 'fylla/index.html'
+    s = head(frm, 'el', 'Αρχείο φύλλων · ivan.gr', 'Όλα τα φύλλα του ivan.gr', frm, {'el': frm})
+    s += '<body class="lib">\n' + masthead(frm, 'el', 'arch', FRONT) + '<main class="wrap"><h1 class="libh">Αρχείο φύλλων</h1><ol class="arch">'
+    for iss in ISSUES:
+        head_t = ''
+        t = iss.get('text')
+        if t and t.get('ref') in by_url: head_t = by_url[t['ref']]['title'].strip()
+        s += f'<li><a href="{rel(frm, "fylla/" + iss["date"] + "/index.html")}"><span>Φύλλο {iss["number"]}</span><time>{E(issue_date(iss["date"]))}</time><em>{E(head_t)}</em></a></li>'
+    s += '</ol></main>\n' + footer(frm) + '</body>\n</html>\n'
+    write(frm, s)
 
 # --- σελίδες κειμένων ------------------------------------------------------
 def page(item, lang, alts, prev=None, nxt=None):
@@ -234,7 +333,7 @@ def page(item, lang, alts, prev=None, nxt=None):
     desc = excerpt(text_of(item['html']), 180)
     s = head(frm, lang, item['title'].strip() + ' · ivan.gr', desc, frm, alts)
     s += '<body class="text">\n'
-    s += f'<header class="bar"><a class="home-link" href="{rel(frm, HOME[lang])}">ivan.gr</a>{langnav(frm, lang, alts) if len(alts) > 1 else ""}</header>\n'
+    s += f'<header class="bar"><a class="home-link" href="{rel(frm, FRONT[lang])}">ivan.gr</a>{langnav(frm, lang, alts) if len(alts) > 1 else ""}{NIGHT_BTN}</header>\n'
     s += f'<main class="wrap"><article class="post"><h1>{E(item["title"].strip())}</h1>\n'
     s += f'<p class="date"><time datetime="{item["published"][:10]}">{E(dlong(item["published"], lang))}</time></p>\n'
     s += f'<div class="body">{body}</div></article>\n<nav class="pn">'
@@ -245,7 +344,8 @@ def page(item, lang, alts, prev=None, nxt=None):
     write(frm, s)
 
 def run():
-    for l in LANGS: home(l)
+    for l in LANGS: library(l)
+    issues_build()
     for i, p in enumerate(posts):
         alts = {'el': p['path']}
         for l, g in trans.get(p['url'], {}).items(): alts[l] = g['path']
@@ -264,7 +364,7 @@ def run():
     for p in posts[:30]:
         feed += f'<entry><title>{E(p["title"].strip())}</title><link href="{SITE}/{p["path"]}"/><id>{SITE}/{p["path"]}</id><published>{p["published"]}</published><updated>{p["updated"]}</updated><summary>{E(excerpt(text_of(p["html"]), 400))}</summary></entry>\n'
     write('feed.xml', feed + '</feed>\n')
-    urls = [''] + [HOME[l] for l in LANGS[1:]] + ['ek/'] + [p['path'] for p in posts] + [g['path'] for d in trans.values() for g in d.values()] + [g['path'] for g in orphans]
+    urls = ['', 'keimena/'] + [HOME[l] for l in LANGS[1:]] + ['ek/'] + ([f'fylla/{i["date"]}/' for i in ISSUES] + ['fylla/'] if ISSUES else []) + [p['path'] for p in posts] + [g['path'] for d in trans.values() for g in d.values()] + [g['path'] for g in orphans]
     write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'<url><loc>{SITE}/{u}</loc></url>\n' for u in urls) + '</urlset>\n')
     write('robots.txt', f'User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n')
     print('posts', len(posts), 'translations', sum(len(d) for d in trans.values()), 'orphans', len(orphans))
