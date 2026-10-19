@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup, NavigableString
 import pyphen
 import hashlib, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import og
+import og, near
 HYPH = {'el': pyphen.Pyphen(lang='el_GR'), 'en': pyphen.Pyphen(lang='en_GB'), 'fr': pyphen.Pyphen(lang='fr'), 'de': pyphen.Pyphen(lang='de_DE')}
 WORD = re.compile(r'[^\W\d_]{8,}')
 
@@ -384,14 +384,24 @@ def page(item, lang, alts, prev=None, nxt=None):
     s += f'<header class="bar"><a class="home-link" href="{rel(frm, FRONT[lang])}">ivan.gr</a>{langnav(frm, lang, alts) if len(alts) > 1 else ""}{NIGHT_BTN}</header>\n'
     s += f'<main class="wrap"><article class="post"><h1>{E(item["title"].strip())}</h1>\n'
     s += f'<p class="date"><time datetime="{item["published"][:10]}">{E(dlong(item["published"], lang))}</time><span class="rt"> · {E(READ_MIN[lang](mins))}</span></p>\n'
-    s += f'<div class="body">{body}</div></article>\n<nav class="pn">'
+    s += f'<div class="body">{body}</div></article>\n'
+    skip = {x['path'] for x in (prev, nxt) if x}
+    nb = [q for q in NEAR.get(frm, []) if q[0] not in skip][:3] if lang == 'el' else None
+    if nb:
+        s += '<section class="near"><h2 class="h">Κοντινά κείμενα</h2><ul>' + ''.join(
+            f'<li><a href="{rel(frm, q)}"><span>{E(BYPATH[q]["title"].strip())}</span></a></li>' for q, _ in nb) + '</ul></section>\n'
+    s += '<nav class="pn">'
     if nxt: s += f'<a class="nx" href="{rel(frm, nxt["path"])}"><small>{E(T["next"])}</small>{E(nxt["title"].strip())}</a>'
     if prev: s += f'<a class="pv" href="{rel(frm, prev["path"])}"><small>{E(T["prev"])}</small>{E(prev["title"].strip())}</a>'
     s += f'</nav><p class="back"><a href="{rel(frm, HOME[lang])}#index">{E(T["index"])}</a></p></main>\n' + footer(frm)
     s += '</body>\n</html>\n'
     write(frm, s)
 
+NEAR, BYPATH = {}, {}
 def run():
+    global NEAR, BYPATH
+    BYPATH = {p['path']: p for p in posts}
+    NEAR = near.neighbours({p['path']: text_of(p['html']) for p in posts}, k=5)
     for l in LANGS: library(l)
     issues_build()
     for i, p in enumerate(posts):

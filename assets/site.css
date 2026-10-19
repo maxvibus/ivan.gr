@@ -148,3 +148,8 @@ figure{margin:0}figure img{width:100%;border-radius:6px}figcaption{margin-top:.8
 .snip{margin:.1rem 0 .5rem;font-size:.9em;line-height:1.45;color:var(--muted)}
 .snip mark{background:rgba(237,200,155,.55);color:var(--ink);border-radius:2px;padding:0 .1em}
 :root[data-theme="night"] .snip mark{background:rgba(237,200,155,.28)}
+/* κοντινά κείμενα: λίγοι τίτλοι, χωρίς εικόνες */
+.near{margin:3rem 0 0}
+.near .h{margin:0 0 .6rem}
+.near ul{list-style:none;margin:0;padding:0}
+.near a{display:block;padding:.45rem 0;border-bottom:1px solid var(--rule2);line-height:1.35}
