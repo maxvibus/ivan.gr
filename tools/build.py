@@ -269,13 +269,14 @@ def library(lang, frm=None):
         s += f'<li><a href="{rel(frm, it["path"])}"><time datetime="{it["date"][:10]}">{E(dshort(it["date"], lang))}</time><span>{E(it["t"])}</span></a></li>\n'
     s += '</ol></section>\n'
     s += f'<section class="index" id="index"><div class="ihead"><h2 class="h">{E(T["all"])} <span class="n">{len(items)}</span></h2>\n'
-    s += f'<label class="search"><span class="vh">{E(T["search"])}</span><input type="search" placeholder="{E(T["search"])}" autocomplete="off" spellcheck="false"></label></div>\n'
+    s += f'<label class="search"><span class="vh">{E(T["search"])}</span><input type="search" placeholder="{E(T["search"])}" autocomplete="off" spellcheck="false" data-src="{rel(frm, "search/" + lang + ".json")}"></label></div>\n'
     for y in sorted(years, reverse=True):
         s += f'<div class="year"><h3>{y}</h3><ul>\n'
         for it in years[y]:
-            s += f'<li data-k="{E(norm(it["t"] + " " + it["txt"][:400]))}"><a href="{rel(frm, it["path"])}"><span>{E(it["t"])}</span><time datetime="{it["date"][:10]}">{E(dshort(it["date"], lang))}</time></a></li>\n'
+            s += f'<li data-p="{E(it["path"])}" data-k="{E(norm(it["t"] + " " + it["txt"][:400]))}"><a href="{rel(frm, it["path"])}"><span>{E(it["t"])}</span><time datetime="{it["date"][:10]}">{E(dshort(it["date"], lang))}</time></a></li>\n'
         s += '</ul></div>\n'
     s += f'<p class="none" hidden>{E(T["none"])}</p></section>\n'
+    write('search/' + lang + '.json', json.dumps([{'p': it['path'], 'x': it['txt']} for it in items], ensure_ascii=False, separators=(',', ':')))
     if lang == 'el':
         s += f'<p class="book">Μέσα από αυτόν τον διάλογο αναδύθηκε το <a href="{rel(frm, "ek/index.html")}">«εκ»</a> — βιβλίο, 2027.</p>\n'
     s += '</main>\n' + footer(frm) + '</body>\n</html>\n'

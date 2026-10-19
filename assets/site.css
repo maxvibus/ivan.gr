@@ -144,3 +144,7 @@ figure{margin:0}figure img{width:100%;border-radius:6px}figcaption{margin-top:.8
 ::view-transition-group(vt-title){animation-duration:.42s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
 ::view-transition-old(vt-title),::view-transition-new(vt-title){height:100%;object-fit:none;object-position:left top}
 @media (prefers-reduced-motion:reduce){@view-transition{navigation:none}}
+/* αποσπάσματα αναζήτησης μέσα στο κείμενο */
+.snip{margin:.1rem 0 .5rem;font-size:.9em;line-height:1.45;color:var(--muted)}
+.snip mark{background:rgba(237,200,155,.55);color:var(--ink);border-radius:2px;padding:0 .1em}
+:root[data-theme="night"] .snip mark{background:rgba(237,200,155,.28)}

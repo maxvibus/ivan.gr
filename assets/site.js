@@ -65,17 +65,33 @@
       addEventListener('scroll', function(){ if(!tick){ tick = true; requestAnimationFrame(upd); } }, {passive:true});
       addEventListener('resize', upd); upd(); }
 
-    /* αναζήτηση στη βιβλιοθήκη */
+    /* αναζήτηση στη βιβλιοθήκη: πρώτα τίτλοι και αρχές, και μέσα σε όλο το κείμενο μόλις φορτωθεί το ευρετήριο */
     var inp = document.querySelector('.search input'); if(!inp) return;
-    var none = document.querySelector('.none');
-    inp.addEventListener('input', function(){
+    var none = document.querySelector('.none'), full = null, loading = false;
+    function load(){ if(full || loading || !inp.dataset.src || !window.fetch) return; loading = true;
+      fetch(inp.dataset.src).then(function(r){ return r.json(); }).then(function(d){
+        full = {}; d.forEach(function(e){ full[e.p] = { x: e.x, n: norm(e.x) }; }); run(); }).catch(function(){ loading = false; }); }
+    function esc(s){ return s.replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+    function run(){
       var v = norm(inp.value.trim()), any = false;
       document.querySelectorAll('.year').forEach(function(g){
         var c = 0;
-        g.querySelectorAll('li').forEach(function(li){ var ok = !v || li.getAttribute('data-k').indexOf(v) >= 0; li.hidden = !ok; if(ok) c++; });
+        g.querySelectorAll('li').forEach(function(li){
+          var sn = li.querySelector('.snip'); if(sn) sn.remove();
+          var ok = !v || li.getAttribute('data-k').indexOf(v) >= 0, e = full && full[li.dataset.p];
+          if(v.length > 2 && e){ var i = e.n.indexOf(v);
+            if(i >= 0){ ok = true; var a0 = Math.max(0, i - 70), a1 = Math.min(e.x.length, i + v.length + 90);
+              if(a0){ var s0 = e.x.indexOf(' ', a0); if(s0 > 0 && s0 < i) a0 = s0 + 1; } if(a1 < e.x.length){ var s1 = e.x.lastIndexOf(' ', a1); if(s1 > i + v.length) a1 = s1; }
+              var p = document.createElement('p'); p.className = 'snip';
+              p.innerHTML = (a0 ? '… ' : '') + esc(e.x.slice(a0, i)) + '<mark>' + esc(e.x.slice(i, i + v.length)) + '</mark>' + esc(e.x.slice(i + v.length, a1)) + (a1 < e.x.length ? ' …' : '');
+              li.appendChild(p); } }
+          li.hidden = !ok; if(ok) c++;
+        });
         g.hidden = !c; if(c) any = true;
       });
       if(none) none.hidden = any;
-    });
+    }
+    inp.addEventListener('focus', load);
+    inp.addEventListener('input', function(){ load(); run(); });
   });
 })();
