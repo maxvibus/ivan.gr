@@ -6,6 +6,9 @@ import json, os, re, html, shutil, posixpath, datetime
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup, NavigableString
 import pyphen
+import hashlib, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import og
 HYPH = {'el': pyphen.Pyphen(lang='el_GR'), 'en': pyphen.Pyphen(lang='en_GB'), 'fr': pyphen.Pyphen(lang='fr'), 'de': pyphen.Pyphen(lang='de_DE')}
 WORD = re.compile(r'[^\W\d_]{8,}')
 
@@ -152,7 +155,25 @@ for g in data['pages']:
         g['orig'] = None; orphans.append(g)
 
 # --- κοινά κομμάτια ---------------------------------------------------------
-def head(frm, lang, title, desc, canon_path, alts=None, extra=''):
+OG_IDX_P = None; OG_IDX = {}
+def og_image(key, title, meta):
+    """Φτιάχνει την κάρτα κοινοποίησης μόνο όταν άλλαξε ο τίτλος ή η γραμμή κάτω από αυτόν."""
+    global OG_IDX_P, OG_IDX
+    if OG_IDX_P is None:
+        OG_IDX_P = os.path.join(OUT, 'og', 'index.json')
+        try: OG_IDX = json.load(open(OG_IDX_P, encoding='utf-8'))
+        except Exception: OG_IDX = {}
+    rp = 'og/' + key + '.png'; h = hashlib.sha1((title + '|' + meta).encode()).hexdigest()[:12]
+    if OG_IDX.get(rp) != h or not os.path.exists(os.path.join(OUT, rp)):
+        og.card(title, meta, os.path.join(OUT, rp)); OG_IDX[rp] = h
+    return rp
+
+def og_save():
+    if OG_IDX_P:
+        json.dump(OG_IDX, open(OG_IDX_P, 'w', encoding='utf-8'), ensure_ascii=False, indent=0, sort_keys=True)
+
+def head(frm, lang, title, desc, canon_path, alts=None, extra='', img=None):
+    img = img or og_image('site', 'Κείμενα φιλοσοφίας, θεολογίας και γλώσσας', '')
     css = rel(frm, 'assets/site.css'); ico = rel(frm, 'assets/icon-32.png'); ico180 = rel(frm, 'assets/icon-180.png')
     fr = rel(frm, 'assets/fonts/ebgaramond-regular.woff2')
     alt = ''
@@ -174,6 +195,10 @@ def head(frm, lang, title, desc, canon_path, alts=None, extra=''):
 <meta property="og:description" content="{E(desc)}">
 <meta property="og:url" content="{SITE}/{canon_path.replace('index.html','')}">
 <meta property="og:site_name" content="ivan.gr">
+<meta property="og:image" content="{SITE}/{img}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="{ico}" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="{ico180}">
 <link rel="preload" href="{fr}" as="font" type="font/woff2" crossorigin>
@@ -351,11 +376,12 @@ def page(item, lang, alts, prev=None, nxt=None):
     frm = item['path']; T = L[lang]
     body = clean(item['html'], frm, lang)
     desc = excerpt(text_of(item['html']), 180)
-    s = head(frm, lang, item['title'].strip() + ' · ivan.gr', desc, frm, alts)
+    mins = max(1, round(len(text_of(item['html']).split()) / 200))
+    img = og_image(frm[:-5] if frm.endswith('.html') else frm, item['title'].strip(), dlong(item['published'], lang) + ' · ' + READ_MIN[lang](mins))
+    s = head(frm, lang, item['title'].strip() + ' · ivan.gr', desc, frm, alts, img=img)
     s += '<body class="text">\n<div class="prog" aria-hidden="true"></div>\n'
     s += f'<header class="bar"><a class="home-link" href="{rel(frm, FRONT[lang])}">ivan.gr</a>{langnav(frm, lang, alts) if len(alts) > 1 else ""}{NIGHT_BTN}</header>\n'
     s += f'<main class="wrap"><article class="post"><h1>{E(item["title"].strip())}</h1>\n'
-    mins = max(1, round(len(text_of(item['html']).split()) / 200))
     s += f'<p class="date"><time datetime="{item["published"][:10]}">{E(dlong(item["published"], lang))}</time><span class="rt"> · {E(READ_MIN[lang](mins))}</span></p>\n'
     s += f'<div class="body">{body}</div></article>\n<nav class="pn">'
     if nxt: s += f'<a class="nx" href="{rel(frm, nxt["path"])}"><small>{E(T["next"])}</small>{E(nxt["title"].strip())}</a>'
@@ -388,6 +414,7 @@ def run():
     urls = ['', 'keimena/'] + [HOME[l] for l in LANGS[1:]] + ['ek/'] + ([f'fylla/{i["date"]}/' for i in ISSUES] + ['fylla/'] if ISSUES else []) + [p['path'] for p in posts] + [g['path'] for d in trans.values() for g in d.values()] + [g['path'] for g in orphans]
     write('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'<url><loc>{SITE}/{u}</loc></url>\n' for u in urls) + '</urlset>\n')
     write('robots.txt', f'User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n')
+    og_save()
     print('posts', len(posts), 'translations', sum(len(d) for d in trans.values()), 'orphans', len(orphans))
 
 if __name__ == '__main__':
