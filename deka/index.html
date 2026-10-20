@@ -95,7 +95,7 @@ select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radiu
   <section class="lobby" id="lobby">
     <div class="row">
       <label for="name" class="who">Όνομα</label>
-      <input type="text" id="name" maxlength="16" autocomplete="nickname" placeholder="π.χ. ivan">
+      <input type="text" id="name" maxlength="16" autocomplete="off" placeholder="π.χ. ivan">
     </div>
     <div class="row" id="pick">
       <button id="solo">Παίζω μόνος με τον υπολογιστή</button>
@@ -135,7 +135,8 @@ select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radiu
   <details>
     <summary>Οι κανόνες</summary>
     <ul class="rules">
-      <li>Το ένα έχει 15 δευτερόλεπτα· κάθε επόμενος αριθμός λίγο λιγότερο, ως τα 8 δευτερόλεπτα για το δέκα.</li>
+      <li>Κανείς δεν λέει δύο αριθμούς στη σειρά· όποιος πει έναν, περιμένει να πει άλλος τον επόμενο.</li>
+      <li>Το ένα έχει 12 δευτερόλεπτα· κάθε επόμενος αριθμός λίγο λιγότερο, ως τα 8 για το δέκα. Όσο δεν πατά κανείς, ο κύκλος αδειάζει όλο και πιο γρήγορα.</li>
       <li>Αν δύο ή περισσότεροι πουν τον αριθμό μέσα σε ένα δευτερόλεπτο, είναι σύγκρουση· ξανά από το ένα.</li>
       <li>Αν τελειώσει ο χρόνος χωρίς να πει κανείς τον αριθμό, ξανά από το ένα.</li>
       <li>Ο κύκλος γύρω από τον αριθμό είναι ο χρόνος που απομένει για τον επόμενο· οι τελείες δείχνουν πόσο έχετε φτάσει.</li>
@@ -144,7 +145,7 @@ select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radiu
   </details>
 </main>
 <script>
-const BASE=15, LAST=8, CLASH=1.0, TARGET=10, PREFIX='ivangr-deka-';
+const BASE=12, LAST=8, CLASH=1.0, TARGET=10, PREFIX='ivangr-deka-';
 const BOTNAMES=['Β','Γ','Δ'];
 const $=id=>document.getElementById(id);
 const numEl=$('num'),statusEl=$('status'),logEl=$('log'),sayBtn=$('say'),startBtn=$('start'),arc=$('arc'),dial=$('dial');
@@ -157,13 +158,13 @@ let G={running:false,n:0,last:null,deadline:0,win:0,claims:[],timers:[],best:0,t
 let V={running:false,n:0,last:null,until:0,win:0};
 let raf=0;
 
-try{ $('name').value=localStorage.getItem('deka-name')||''; }catch(e){}
+try{ localStorage.removeItem('deka-name'); }catch(e){}  // το όνομα γράφεται κάθε φορά από την αρχή
 const code=(location.hash||'').replace('#','').toLowerCase().replace(/[^a-z0-9]/g,'');
 if(code){ $('solo').hidden=true; $('host').hidden=true; $('join').hidden=false; statusEl.textContent='Γράψε όνομα και πάτα «Μπαίνω στο δωμάτιο». Όποιος μπει πρώτος, ανοίγει το δωμάτιο.'; }
 
 function stamp(){return new Date().toTimeString().slice(0,8)}
 function showLog(text,cls){const d=document.createElement('div');d.className=cls||'';d.textContent='['+stamp()+'] '+text;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight}
-function getName(){let n=$('name').value.trim().slice(0,16); if(!n){$('name').focus(); statusEl.textContent='Γράψε πρώτα ένα όνομα.'; return null} try{localStorage.setItem('deka-name',n)}catch(e){} return n}
+function getName(){let n=$('name').value.trim().slice(0,16); if(!n){$('name').focus(); statusEl.textContent='Γράψε πρώτα ένα όνομα.'; return null} return n}
 function lockLobby(){ $('pick').hidden=true; $('name').disabled=true; }
 
 /* ---------- προβολή ---------- */
@@ -179,13 +180,15 @@ function render(st){
     else if(!st.running && st.clash && st.clash.includes(p)) li.classList.add('clash');
     else if(p===st.last && st.running) li.classList.add('said');
     pl.appendChild(li); });
-  $('next').textContent=st.n+1; $('best').textContent='καλύτερο: '+st.best; $('tries').textContent='γύροι: '+st.tries;
-  sayBtn.disabled=!(st.running && !(st.claimed||[]).includes(me));
+  sayBtn.textContent = st.running ? 'Λέω το '+(st.n+1) : (st.cls==='num win' ? 'Φτάσατε!' : 'Περιμένουμε…'); $('best').textContent='καλύτερο: '+st.best; $('tries').textContent='γύροι: '+st.tries;
+  sayBtn.disabled=!(st.running && st.last!==me && !(st.claimed||[]).includes(me));
   cancelAnimationFrame(raf); if(st.running) tickView(); else { arc.style.strokeDashoffset=st.cls==='num win'?0:CIRC; dial.classList.remove('late'); $('left').textContent=''; }
 }
+// Ο κύκλος αδειάζει με ταχύτητα που διπλασιάζεται από την αρχή ως το τέλος του χρόνου.
+function used(u){ return (u+u*u/2)/1.5; }
 function tickView(){
-  const left=Math.max(0,(V.until-performance.now())/1000);
-  arc.style.strokeDashoffset=CIRC*(1-left/V.win); dial.classList.toggle('late',left<=3);
+  const left=Math.max(0,(V.until-performance.now())/1000), u=Math.min(1,1-left/V.win);
+  arc.style.strokeDashoffset=CIRC*used(u); dial.classList.toggle('late',left<=2.5);
   $('left').textContent=left.toFixed(1)+' δ.';
   if(left>0) raf=requestAnimationFrame(tickView);
 }
@@ -199,7 +202,7 @@ function snapshot(){
 }
 function push(){ const s=snapshot(); render(s); broadcast({t:'state',st:s}); }
 function clearTimers(){ G.timers.forEach(clearTimeout); G.timers=[]; }
-function windowFor(k){return BASE-(k-1)*(BASE-LAST)/(TARGET-1)}  // 15 → 8 δευτερόλεπτα
+function windowFor(k){return BASE-(k-1)*(BASE-LAST)/(TARGET-1)}  // 12 → 8 δευτερόλεπτα
 function nBots(){ return role==='guest'?0:parseInt($('bots').value,10) }
 function startRound(){
   clearTimers(); G.bots=BOTNAMES.slice(0,nBots());
@@ -211,14 +214,16 @@ function openStep(){
   const k=G.n+1; G.claims=[]; G.win=windowFor(k); G.deadline=performance.now()+G.win*1000;
   G.status='Ποιος θα πει το '+k+';';
   const chance=$('calm').checked?0.33:0.5;
-  let speakers=G.bots.filter(()=>Math.random()<chance);
-  if(G.humans.length===0 && speakers.length===0 && G.bots.length) speakers=[G.bots[Math.floor(Math.random()*G.bots.length)]];
-  speakers.forEach(b=>{ const t=(0.8+Math.random()*(G.win-1.6))*1000; G.timers.push(setTimeout(()=>claim(b,k),t)); });
+  const eligible=G.bots.filter(b=>b!==G.last);
+  let speakers=eligible.filter(()=>Math.random()<chance);
+  const humansFree=G.humans.filter(h=>h!==G.last);
+  if(humansFree.length===0 && speakers.length===0 && eligible.length) speakers=[eligible[Math.floor(Math.random()*eligible.length)]];
+  speakers.forEach(b=>{ const t=(0.8+Math.random()*(G.win-2))*1000; G.timers.push(setTimeout(()=>claim(b,k),t)); });
   G.timers.push(setTimeout(()=>{ if(G.running && G.n===k-1 && G.claims.length===0) fail('Πέρασε ο χρόνος· κανείς δεν είπε το '+k+'.'); }, G.win*1000));
   push();
 }
 function claim(who,k){
-  if(!G.running || k!==G.n+1 || G.claims.some(c=>c.who===who)) return;
+  if(!G.running || k!==G.n+1 || who===G.last || G.claims.some(c=>c.who===who)) return;
   const t=performance.now();
   if(G.claims.length && t-G.claims[0].t>CLASH*1000) return; // άργησε· ο αριθμός έχει ήδη κριθεί
   G.claims.push({who,t}); log('<'+who+'> '+k, who===me?'me':'');
@@ -229,7 +234,7 @@ function settle(k){
   if(!G.running) return;
   if(G.claims.length>1){ G.clash=G.claims.map(c=>c.who); return fail('Σύγκρουση στο '+k+': '+G.clash.join(' και ')+'.'); }
   clearTimers(); G.n=k; G.last=G.claims[0].who; if(k>G.best) G.best=k;
-  if(k>=TARGET){ G.running=false; G.cls='num win'; G.status='Φτάσατε στο δέκα.'; log('*** φτάσατε στο δέκα ***','good'); return push(); }
+  if(k>=TARGET){ G.running=false; G.cls='num win'; startBtn.textContent='Νέος γύρος'; G.status='Φτάσατε στο δέκα.'; log('*** φτάσατε στο δέκα ***','good'); return push(); }
   openStep();
 }
 function fail(msg){
@@ -259,19 +264,31 @@ function openRoom(c, onTaken){
   p.on('open',()=>{ opened=true; peer=p; becomeHost(c); });
 }
 function becomeHost(c){
-  role='host'; G.humans=[me]; $('hostopts').hidden=false; $('bots').value='0';
+  role='host'; G.humans=[me]; $('hostopts').hidden=false; $('bots').value='1';
   try{ history.replaceState(null,'','#'+c); }catch(e){}
   $('link').textContent=location.origin+location.pathname+'#'+c; $('share').hidden=false; startBtn.hidden=false;
   showLog('* Άνοιξες το κανάλι #δέκα. Στείλε τον σύνδεσμο σε όποιον θέλεις να παίξει.','sys');
   showLog('* Κράτα αυτή τη σελίδα ανοιχτή και μπροστά σου όσο παίζετε· αν κλείσει, κλείνει και το δωμάτιο.','sys');
   G.status='Περιμένουμε φίλους· όταν είστε έτοιμοι, πάτα «Ξεκίνα».'; push();
+  const drop=(conn,why)=>{ if(!conns.includes(conn)) return; conns=conns.filter(x=>x!==conn); try{conn.close()}catch(e){}
+    if(conn.who && !conns.some(c=>c.who===conn.who)){ G.humans=G.humans.filter(h=>h!==conn.who); if(why) log('* '+conn.who+' '+why,'sys'); push(); } };
   peer.on('connection',conn=>{
+    conn.seen=Date.now();
     conn.on('data',m=>{
-      if(m&&m.t==='hello'){ conn.who=addHuman(String(m.name||'φίλος').slice(0,16)); conns.push(conn); conn.send({t:'you',name:conn.who}); log('* '+conn.who+' μπήκε στο κανάλι','sys'); push(); }
+      conn.seen=Date.now();
+      if(m&&m.t==='hello'){
+        const name=String(m.name||'φίλος').slice(0,16);
+        // ίδιο όνομα με σύνδεση που ήδη υπάρχει: είναι ο ίδιος που ξαναμπήκε· η παλιά σύνδεση φεύγει
+        const old=conns.find(c=>c.who===name);
+        if(old){ conns=conns.filter(x=>x!==old); try{old.close()}catch(e){} conn.who=name; }
+        else conn.who=addHuman(name);
+        conns.push(conn); conn.send({t:'you',name:conn.who}); log('* '+conn.who+(old?' ξαναμπήκε':' μπήκε στο κανάλι'),'sys'); push(); }
       else if(m&&m.t==='say'&&conn.who){ claim(conn.who,m.k); }
     });
-    conn.on('close',()=>{ conns=conns.filter(x=>x!==conn); if(conn.who){ G.humans=G.humans.filter(h=>h!==conn.who); log('* '+conn.who+' έφυγε','sys'); push(); } });
+    conn.on('close',()=>drop(conn,'έφυγε'));
   });
+  // όποιος δεν έχει δώσει σημεία ζωής για 10 δευτερόλεπτα θεωρείται ότι έφυγε
+  setInterval(()=>{ const now=Date.now(); conns.filter(c=>c.who && now-c.seen>10000).forEach(c=>drop(c,'χάθηκε')); },3000);
 }
 // Με σύνδεσμο: όποιος μπει πρώτος ανοίγει το δωμάτιο, ο επόμενος μπαίνει σε αυτό.
 let tries=0;
@@ -289,7 +306,7 @@ function joinRoom(){
   const timer=setTimeout(retry,9000);
   p.on('open',()=>{
     hostConn=p.connect(PREFIX+code,{reliable:true});
-    hostConn.on('open',()=>{ ok=true; clearTimeout(timer); hostConn.send({t:'hello',name:me}); });
+    hostConn.on('open',()=>{ ok=true; clearTimeout(timer); hostConn.send({t:'hello',name:me}); setInterval(()=>{ try{ hostConn.open&&hostConn.send({t:'ping'}); }catch(e){} },3000); });
     hostConn.on('data',m=>{
       if(m.t==='you'){ me=m.name; showLog('* Μπήκες στο κανάλι #δέκα ως '+me,'sys'); }
       else if(m.t==='log') showLog(m.text, m.text.startsWith('<'+me+'>')?'me':m.cls);
