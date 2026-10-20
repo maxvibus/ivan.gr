@@ -1,0 +1,38 @@
+{
+ "2026/10/blog-post.html": {
+  "slug": "kritiki",
+  "caption": {
+   "el": "Η πόρτα διορθώθηκε. Η κριτική έμεινε.",
+   "en": "The door was fixed. The review stayed.",
+   "fr": "La porte a été réparée. L’avis est resté.",
+   "de": "Die Tür wurde repariert. Die Bewertung blieb."
+  }
+ },
+ "2026/09/2021.html": {
+  "slug": "to-xeroun-2021",
+  "caption": {
+   "el": "Δεν του λείπει η λέξη. Του λείπει το γύρισμα του κεφαλιού.",
+   "en": "It does not lack the word. It lacks the turning of the head.",
+   "fr": "Ce n’est pas le mot qui lui manque. C’est le geste de tourner la tête.",
+   "de": "Ihm fehlt nicht das Wort. Ihm fehlt die Wendung des Kopfes."
+  }
+ },
+ "2026/09/blog-post_442.html": {
+  "slug": "proeidopoiisi",
+  "caption": {
+   "el": "Λείπει από την πρόταση μια μικρή ερώτηση: ποιος.",
+   "en": "A small question is missing from the sentence: who.",
+   "fr": "Il manque à la phrase une petite question : qui.",
+   "de": "Dem Satz fehlt eine kleine Frage: wer."
+  }
+ },
+ "2026/09/blog-post_12.html": {
+  "slug": "den-irthe-apo-exo",
+  "caption": {
+   "el": "Ένα χέρι πάνω στο γυαλί, και δύο μάτια που κλείνουν.",
+   "en": "A hand on the glass, and two eyes closing.",
+   "fr": "Une main sur la vitre, et deux yeux qui se ferment.",
+   "de": "Eine Hand auf dem Glas, und zwei Augen, die sich schließen."
+  }
+ }
+}

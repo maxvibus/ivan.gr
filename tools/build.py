@@ -158,7 +158,7 @@ for g in data['pages']:
     g['lang'] = lg; g['path'] = path_of(g['url']); apply_fixes(g)
     if orig and orig not in by_url and orig.replace('https://www.', 'https://') in by_url: orig = orig.replace('https://www.', 'https://')
     if orig in by_url:
-        g['orig'] = orig; g['published'] = by_url[orig]['published']
+        g['orig'] = orig; g['orig_path'] = by_url[orig]['path']; g['published'] = by_url[orig]['published']
         trans.setdefault(orig, {})[g['lang']] = g
     else:
         g['orig'] = None; orphans.append(g)
@@ -396,6 +396,10 @@ READ_MIN = {
 def page(item, lang, alts, prev=None, nxt=None):
     frm = item['path']; T = L[lang]
     body = clean(item['html'], frm, lang)
+    sk = SKETCHES.get(frm) or SKETCHES.get(item.get('orig_path', ''))
+    if sk and sk.get('approved') and '<figure' not in item['html']:
+        svg = open(os.path.join(ROOT, 'assets', 'sketches', sk['slug'] + '.svg'), encoding='utf-8').read()
+        body = f'<figure class="sketch">{svg}<figcaption>{E(sk["caption"][lang])}</figcaption></figure>' + body
     desc = excerpt(text_of(item['html']), 180)
     mins = max(1, round(len(text_of(item['html']).split()) / 200))
     img = og_image(frm[:-5] if frm.endswith('.html') else frm, item['title'].strip(), dlong(item['published'], lang) + ' · ' + READ_MIN[lang](mins))
@@ -423,6 +427,8 @@ def page(item, lang, alts, prev=None, nxt=None):
     write(frm, s)
 
 NEAR, BYPATH = {}, {}
+try: SKETCHES = json.load(open(os.path.join(ROOT, 'content', 'sketches.json'), encoding='utf-8'))
+except Exception: SKETCHES = {}
 
 LETTERS = []
 _ld = os.path.join(ROOT, 'content', 'epistoles')
