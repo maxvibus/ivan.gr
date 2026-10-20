@@ -141,7 +141,7 @@ select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radiu
       <li>Το ένα έχει 12 δευτερόλεπτα· κάθε επόμενος αριθμός λίγο λιγότερο, ως τα 8 για το δέκα. Όσο δεν πατά κανείς, ο κύκλος αδειάζει όλο και πιο γρήγορα.</li>
       <li>Αν δύο ή περισσότεροι πουν τον αριθμό μέσα σε ένα δευτερόλεπτο, είναι σύγκρουση· ξανά από το ένα.</li>
       <li>Αν τελειώσει ο χρόνος χωρίς να πει κανείς τον αριθμό, ξανά από το ένα.</li>
-      <li>Οι παίκτες του υπολογιστή είναι τα ▲ ● ■ (με διακεκομμένο περίγραμμα). Μαθαίνουν πότε πατά ο καθένας σας μετά από τον καθένα· αν γίνετε προβλέψιμοι, μιλούν την ίδια στιγμή μαζί σας. Αν διστάζετε, λένε οι ίδιοι τον αριθμό. Για να φτάσετε στο δέκα, μην παίζετε πάντα με τον ίδιο ρυθμό.</li>
+      <li>Οι παίκτες του υπολογιστή είναι τα ▲ ● ■ (με διακεκομμένο περίγραμμα). Ο καθένας έχει δικό του ρυθμό που αλλάζει σε κάθε γύρο, και δεν επαναλαμβάνει την ίδια στιγμή. Μαθαίνουν πότε πατά ο καθένας σας μετά από τον καθένα· αν γίνετε προβλέψιμοι, μιλούν την ίδια στιγμή μαζί σας. Για να φτάσετε στο δέκα, μην παίζετε πάντα με τον ίδιο ρυθμό.</li>
       <li>Ο κύκλος γύρω από τον αριθμό είναι ο χρόνος που απομένει για τον επόμενο· οι τελείες δείχνουν πόσο έχετε φτάσει.</li>
       <li>Πλήκτρο: Enter ή διάστημα. Σε δωμάτιο, μόνο όποιος το άνοιξε ξεκινά τον γύρο.</li>
     </ul>
@@ -151,7 +151,9 @@ select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radiu
 const BASE=12, LAST=8, CLASH=1.0, TARGET=10, PREFIX='ivangr-deka-';
 const BOTNAMES=['▲','●','■'];
 // επίθεση: πόσο συχνά ο υπολογιστής «χτυπά» έναν προβλέψιμο παίκτη· γέμισμα: πόσο συχνά λέει ο ίδιος τον αριθμό όταν διστάζετε
-const LEVELS=[{attack:0.3,fill:0.5},{attack:0.6,fill:0.6},{attack:0.9,fill:0.7}];
+const LEVELS=[{attack:0.3,act:0.7},{attack:0.6,act:1.0},{attack:0.9,act:1.25}];
+// Κάθε παίκτης του υπολογιστή έχει δικό του «χαρακτήρα» που αλλάζει σε κάθε γύρο: ρυθμό, διασπορά, βιασύνη, πόσο συχνά συμμετέχει.
+function persona(){ return {mu:Math.exp(Math.log(0.8)+Math.random()*Math.log(5)), sg:0.25+Math.random()*0.35, eager:0.4+Math.random()*0.35, act:0.35+Math.random()*0.35, prev:-9}; }
 const $=id=>document.getElementById(id);
 const numEl=$('num'),statusEl=$('status'),logEl=$('log'),sayBtn=$('say'),startBtn=$('start'),arc=$('arc'),dial=$('dial');
 const CIRC=2*Math.PI*54; arc.style.strokeDasharray=CIRC; arc.style.strokeDashoffset=CIRC;
@@ -213,6 +215,7 @@ function nBots(){ return role==='guest'?0:parseInt($('bots').value,10) }
 function startRound(){
   clearTimers(); G.bots=BOTNAMES.slice(0,nBots());
   if(G.humans.length+G.bots.length<2){ G.status='Χρειάζονται τουλάχιστον δύο· βάλε έναν παίκτη του υπολογιστή ή περίμενε φίλο.'; return push(); }
+  G.P={}; G.bots.forEach(b=>G.P[b]=persona());
   G.running=true; G.n=0; G.last=null; G.clash=null; G.tries++; G.cls='num'; startBtn.textContent='Από την αρχή';
   log('— νέος γύρος · '+[...G.humans,...G.bots].join(', ')+' —','sys'); openStep();
 }
@@ -222,29 +225,28 @@ function openStep(){
   G.stepAt=performance.now();
   const eligible=G.bots.filter(b=>b!==G.last), humansFree=G.humans.filter(h=>h!==G.last);
   if(eligible.length){
-    // Σε κάθε αριθμό ενεργεί ένας μόνο από τους παίκτες του υπολογιστή.
-    const bot=eligible[Math.floor(Math.random()*eligible.length)], L=LEVELS[parseInt($('level').value,10)||0];
-    const at=sec=>G.timers.push(setTimeout(()=>claim(bot,k),Math.min(Math.max(sec,0.15),G.win-0.4)*1000));
-    if(humansFree.length===0){ at(0.8+Math.random()*(G.win-2)); }
-    else{
-      // 1. Πρόβλεψη: για κάθε άνθρωπο που μπορεί να μιλήσει, πόσο αργεί συνήθως μετά από αυτόν που μίλησε τελευταίος.
-      const prev=G.last||'αρχή'; let best=null;
-      humansFree.forEach(h=>{
-        let xs=(G.hist[prev+'>'+h]||[]); if(xs.length<3) xs=(G.hist['*>'+h]||[]);
-        if(xs.length<3) return;
-        const m=xs.reduce((a,b)=>a+b,0)/xs.length, sd=Math.sqrt(xs.reduce((a,b)=>a+(b-m)*(b-m),0)/xs.length);
-        const p=Math.max(0,Math.min(1,1-sd/1.2));          // προβλεψιμότητα: 1 = πατά πάντα την ίδια στιγμή
-        if(!best||p>best.p) best={p,m,sd};
-      });
-      // 2. Επίθεση: όσο πιο προβλέψιμος είναι κάποιος, τόσο πιθανότερο να μιλήσει ο υπολογιστής ακριβώς τότε.
-      if(best && Math.random()<L.attack*best.p){ at(best.m+gauss()*Math.min(best.sd,0.35)); }
-      // 3. Γέμισμα: αν διστάζετε πέρα από το συνηθισμένο σας, λέει ο ίδιος τον αριθμό για να μη σβήσει ο γύρος.
-      else if(Math.random()<L.fill){
-        const all=humansFree.flatMap(h=>G.hist['*>'+h]||[]).sort((a,b)=>a-b);
-        const q80=all.length>=3?all[Math.floor(all.length*0.8)]:3+Math.random()*2;
-        at(q80+1.5);
-      }
-    }
+    const L=LEVELS[parseInt($('level').value,10)||0], W=G.win;
+    const at=(bot,sec)=>{ sec=Math.min(Math.max(sec,0.25),W-0.4); G.P[bot].prev=sec; G.timers.push(setTimeout(()=>claim(bot,k),sec*1000)); };
+    // Πρόβλεψη: για κάθε άνθρωπο που μπορεί να μιλήσει, πόσο αργεί συνήθως μετά από αυτόν που μίλησε τελευταίος.
+    const prev=G.last||'αρχή'; let best=null;
+    humansFree.forEach(h=>{
+      let xs=(G.hist[prev+'>'+h]||[]); if(xs.length<3) xs=(G.hist['*>'+h]||[]);
+      if(xs.length<3) return;
+      const m=xs.reduce((a,b)=>a+b,0)/xs.length, sd=Math.sqrt(xs.reduce((a,b)=>a+(b-m)*(b-m),0)/xs.length);
+      const p=Math.max(0,Math.min(1,1-sd/1.2));            // 1 = πατά πάντα την ίδια στιγμή
+      if(!best||p>best.p) best={p,m,sd};
+    });
+    const pAttack = best ? 1-Math.pow(1-L.attack*best.p, 1/eligible.length) : 0;
+    let acted=0;
+    eligible.forEach(bot=>{
+      const P=G.P[bot]||(G.P[bot]=persona());
+      if(Math.random()<pAttack){ at(bot, best.m+gauss()*Math.min(best.sd,0.35)); acted++; return; }   // χτυπά τον προβλέψιμο
+      if(Math.random()>Math.min(0.95,P.act*L.act)) return;                                            // αυτή τη φορά σωπαίνει
+      // είτε με τον δικό του ρυθμό είτε «στο παρά πέντε»· ποτέ ξανά την ίδια στιγμή με την προηγούμενη φορά
+      let t; for(let i=0;i<4;i++){ t = Math.random()<P.eager ? P.mu*Math.exp(gauss()*P.sg) : W*(0.3+Math.random()*0.45); if(Math.abs(t-P.prev)>=0.5) break; }
+      at(bot,t); acted++;
+    });
+    if(!acted){ at(eligible[Math.floor(Math.random()*eligible.length)], W*(0.3+Math.random()*0.45)); }
   }
   G.timers.push(setTimeout(()=>{ if(G.running && G.n===k-1 && G.claims.length===0) fail('Πέρασε ο χρόνος· κανείς δεν είπε το '+k+'.'); }, G.win*1000));
   push();
