@@ -42,7 +42,7 @@ time{font-variant-numeric:lining-nums}
 /* βιβλιοθήκη */
 .libh{margin:2.2rem 0 .4rem;font-weight:600;color:var(--blue);font-size:clamp(1.8rem,1.4rem + 1.6vw,2.4rem)}
 .intro{margin:0 0 1.4rem;color:var(--muted);font-style:italic;text-wrap:pretty}
-.lead{padding:1.6rem 0 2rem;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.lead{padding:1.6rem 0 2rem;border-bottom:1px solid var(--rule)}  /* η γραμμή της κεφαλίδας αρκεί από πάνω· δεύτερη γραμμή ακριβώς από κάτω της έφτιαχνε σκαλοπάτι */
 .kicker{margin:0 0 .5rem;font-size:.95rem;font-style:italic;color:var(--blue2)}
 .lead h2{margin:0 0 .8rem;font-weight:600;font-size:clamp(1.5rem,1.25rem + 1.2vw,2.05rem);line-height:1.2}
 .ex{margin:0 0 1rem;line-height:1.65;text-wrap:pretty}
