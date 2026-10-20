@@ -75,11 +75,11 @@ Vielleicht hat also jede Konstruktion der Sprache zwei Namen. Den einen gibt ihr
 
 post = {
     'slug': 'diavlos', 'date': '2026-10-20T08:40:00.000+03:00', 'title': 'Δίαυλος',
-    'html': fig('Ο δίαυλος: ο δρόμος των δύο σταδίων, πήγαινε, στροφή στον καμπτήρα, επιστροφή. Οι δύο γραμμές διαβάζονται και ως διπλός αυλός.') + paras(EL),
+    'html': fig('Ο Δαίδαλος άνοιξε τα φτερά του. Εμείς απλώς είπαμε καλημέρα.') + paras(EL),
     'translations': {
-        'en': {'slug': 'diaulos', 'title': 'Diaulos', 'html': fig('The diaulos: the race of two stades, out, round the turning post, and back. The two lines also read as a double pipe.') + paras(EN)},
-        'fr': {'slug': 'diaulos-fr', 'title': 'Diaulos', 'html': fig('Le diaulos : la course de deux stades, l’aller, le tour de la borne, le retour. Les deux lignes se lisent aussi comme un double aulos.') + paras(FR)},
-        'de': {'slug': 'diaulos-de', 'title': 'Diaulos', 'html': fig('Der Diaulos: der Lauf über zwei Stadien, hin, um die Wendemarke, zurück. Die beiden Linien lassen sich auch als Doppelaulos lesen.') + paras(DE)},
+        'en': {'slug': 'diaulos', 'title': 'Diaulos', 'html': fig('Daedalus spread his wings. We only said good morning (καλημέρα).') + paras(EN)},
+        'fr': {'slug': 'diaulos-fr', 'title': 'Diaulos', 'html': fig('Dédale a déployé ses ailes. Nous avons seulement dit bonjour (καλημέρα).') + paras(FR)},
+        'de': {'slug': 'diaulos-de', 'title': 'Diaulos', 'html': fig('Daidalos hat seine Flügel ausgebreitet. Wir haben nur Guten Morgen gesagt (καλημέρα).') + paras(DE)},
     },
 }
 os.makedirs(os.path.join(ROOT, 'content', 'new-posts'), exist_ok=True)
