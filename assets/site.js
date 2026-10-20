@@ -90,9 +90,10 @@
         map.classList.add('on');
         lines.forEach(function(l){ var h = l.dataset.a === i || l.dataset.b === i; l.classList.toggle('hl', h); if(h){ nb[l.dataset.a] = 1; nb[l.dataset.b] = 1; } });
         dots.forEach(function(d){ var c = d.firstChild; c.classList.toggle('hl', !!nb[d.dataset.i]); c.classList.toggle('me', d === a); });
+        map.dispatchEvent(new CustomEvent('ivan-focus', { detail: +i }));
         if(cap){ cap.textContent = a.dataset.t; var sm = document.createElement('small'); sm.textContent = a.dataset.d; cap.appendChild(sm); }
       }
-      function hide(){ map.classList.remove('on'); }
+      function hide(){ map.classList.remove('on'); map.dispatchEvent(new Event('ivan-blur')); }
       var cur = null, touch = false;
       dots.forEach(function(a){
         a.addEventListener('pointerdown', function(e){ touch = e.pointerType !== 'mouse'; });
@@ -136,54 +137,96 @@
   });
 })();
 
-/* χάρτης: ολόκληρος στην οθόνη (όρθιος στο κινητό), μετακίνηση και μεγέθυνση με ελαστικά όρια */
+/* χάρτης: ένα με το χαρτί του τετραδίου. Ο κάνναβος είναι μια επιφάνεια που τα κείμενα σηκώνουν σαν τέντα
+   (όσο μεγαλύτερο το κείμενο, τόσο ψηλότερα)· ένα σημείο που αγγίζεις σηκώνει περισσότερο το χαρτί γύρω του.
+   Στο κινητό η σελίδα κυλά κανονικά· ο χάρτης μετακινείται μόνο όταν έχει μεγεθυνθεί, και μεγεθύνεται με δύο δάχτυλα. */
 window.ivanPanZoom = function(map){
-  var box = map.parentNode, vp = map.querySelector('.vp'), tr = map.querySelector('.tr'); if(!vp || !tr) return;
-  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var W0 = +map.dataset.w, H0 = +map.dataset.h, W, H;
-  function orient(){ var tall = innerWidth < 704 && innerHeight > innerWidth;
-    W = tall ? H0 : W0; H = tall ? W0 : H0;
+  var box = map.parentNode, vp = map.querySelector('.vp'), tr = map.querySelector('.tr'), surf = map.querySelector('.surf'); if(!vp || !tr) return;
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches, NS = 'http://www.w3.org/2000/svg';
+  var W0 = +map.dataset.w, H0 = +map.dataset.h, W, H, tall = false;
+  var links = [].slice.call(tr.querySelectorAll('.nodes a')), C = links.map(function(a){ return a.querySelector('circle'); });
+  var L = [].slice.call(tr.querySelectorAll('.edges line'));
+  var N0 = C.map(function(c){ return { x: +c.getAttribute('cx'), y: +c.getAttribute('cy'), r: +c.getAttribute('r') }; });
+  var lift = N0.map(function(){ return 1; }), goal = N0.map(function(){ return 1; });
+  var N = [], gridH = [], gridV = [], G = 28, SIG = 30, PROJ = 1;
+  function P(i){ var n = N0[i]; return tall ? { x: n.y, y: n.x, r: n.r } : { x: n.x, y: n.y, r: n.r }; }
+  function h(x, y){ var t = 0; for(var i = 0; i < N.length; i++){ var dx = x - N[i].x, dy = y - N[i].y, d2 = dx*dx + dy*dy;
+      if(d2 < 9 * SIG * SIG) t += N[i].a * Math.exp(-d2 / (2 * SIG * SIG)); } return Math.min(t, 60); }
+  function build(){
+    tall = innerWidth < 704 && innerHeight > innerWidth; W = tall ? H0 : W0; H = tall ? W0 : H0;
     map.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-    tr.setAttribute('transform', tall ? 'matrix(0 1 1 0 0 0)' : ''); }
-  orient();
+    N = N0.map(function(_, i){ var p = P(i); return { x: p.x, y: p.y, r: p.r, a: 0 }; });
+    G = Math.max(14, 28 * W / Math.max(1, box.clientWidth));  /* τετραγωνάκια όσο του τετραδίου */
+    SIG = G * 1.05;
+    while(surf.firstChild) surf.removeChild(surf.firstChild); gridH = []; gridV = [];
+    /* οι γραμμές συνεχίζουν ακριβώς τον κάνναβο της σελίδας: ίδια απόσταση, ίδια θέση */
+    var r = box.getBoundingClientRect(), kk = W / Math.max(1, r.width), bw = document.body.clientWidth;
+    var ox = (((bw / 2 - 14) - (r.left + scrollX)) % 28 + 28) % 28, oy = ((0 - (r.top + scrollY)) % 28 + 28) % 28;
+    for(var y = oy * kk; y <= H + .5; y += G){ var e = document.createElementNS(NS, 'path'); surf.appendChild(e); gridH.push({ e: e, v: y }); }
+    for(var x = ox * kk; x <= W + .5; x += G){ var e2 = document.createElementNS(NS, 'path'); surf.appendChild(e2); gridV.push({ e: e2, v: x }); }
+    draw();
+  }
+  function draw(){
+    for(var i = 0; i < N.length; i++) N[i].a = (1.2 + N[i].r * 1.5) * lift[i];
+    var st = G / 3, k, d, pts;
+    gridH.forEach(function(g){ d = ''; for(k = -st; k <= W + st; k += st){ var yy = g.v - PROJ * h(k, g.v); d += (d ? 'L' : 'M') + k.toFixed(1) + ' ' + yy.toFixed(1); } g.e.setAttribute('d', d); });
+    gridV.forEach(function(g){ d = ''; for(k = -st; k <= H + st; k += st){ var yy = k - PROJ * h(g.v, k); d += (d ? 'L' : 'M') + g.v.toFixed(1) + ' ' + yy.toFixed(1); } g.e.setAttribute('d', d); });
+    var Y = N.map(function(n){ return n.y - PROJ * h(n.x, n.y); });
+    C.forEach(function(c, i){ c.setAttribute('cx', N[i].x.toFixed(1)); c.setAttribute('cy', Y[i].toFixed(1)); });
+    L.forEach(function(l){ var a = +l.dataset.a, b = +l.dataset.b;
+      l.setAttribute('x1', N[a].x.toFixed(1)); l.setAttribute('y1', Y[a].toFixed(1)); l.setAttribute('x2', N[b].x.toFixed(1)); l.setAttribute('y2', Y[b].toFixed(1)); });
+  }
+  /* ανασήκωμα γύρω από το σημείο που αγγίζεις: ήπια, με απόσβεση */
+  var araf = 0;
+  function animate(){ cancelAnimationFrame(araf);
+    var step = function(){ var moving = false;
+      for(var i = 0; i < lift.length; i++){ var dl = goal[i] - lift[i]; if(Math.abs(dl) > .01){ lift[i] += dl * .12; moving = true; } else lift[i] = goal[i]; }
+      draw(); if(moving) araf = requestAnimationFrame(step); };
+    if(reduce){ lift = goal.slice(); draw(); } else araf = requestAnimationFrame(step); }
+  map.addEventListener('ivan-focus', function(e){ var i = e.detail, nb = {}; nb[i] = 1;
+    L.forEach(function(l){ if(+l.dataset.a === i) nb[+l.dataset.b] = 1; if(+l.dataset.b === i) nb[+l.dataset.a] = 1; });
+    goal = N0.map(function(_, j){ return j === i ? 3.2 : nb[j] ? 1.8 : 1; }); animate(); });
+  map.addEventListener('ivan-blur', function(){ goal = N0.map(function(){ return 1; }); animate(); });
+
+  /* μετακίνηση και μεγέθυνση */
   var s = 1, x = 0, y = 0, MAXS = 5, vx = 0, vy = 0, raf = 0, moved = false;
   function k(){ return W / box.clientWidth; }
   function limit(v, lo, hi){ return v < lo ? lo : v > hi ? hi : v; }
-  function rub(v, lo, hi){ if(v < lo) return lo - (lo - v) * .35; if(v > hi) return hi + (v - hi) * .35; return v; }
   function lo(){ return { x: W - W * s, y: H - H * s }; }
-  function apply(){ vp.setAttribute('transform', 'translate(' + x.toFixed(2) + ' ' + y.toFixed(2) + ') scale(' + s.toFixed(4) + ')'); }
+  function apply(){ vp.setAttribute('transform', 'translate(' + x.toFixed(2) + ' ' + y.toFixed(2) + ') scale(' + s.toFixed(4) + ')');
+    box.classList.toggle('zoomed', s > 1.02); }
   function settle(){ cancelAnimationFrame(raf);
     var step = function(){
-      var ts = limit(s, 1, MAXS); if(Math.abs(ts - s) > .001){ var cx = W/2, cy = H/2; x = cx - (cx - x) * (s + (ts - s) * .2) / s; y = cy - (cy - y) * (s + (ts - s) * .2) / s; s += (ts - s) * .2; }
+      var ts = limit(s, 1, MAXS); if(Math.abs(ts - s) > .001){ var f = (s + (ts - s) * .2) / s; x = W/2 - (W/2 - x) * f; y = H/2 - (H/2 - y) * f; s *= f; }
       x += vx; y += vy; vx *= .9; vy *= .9;
-      var L = lo(), tx = limit(x, L.x, 0), ty = limit(y, L.y, 0);
+      var B = lo(), tx = limit(x, B.x, 0), ty = limit(y, B.y, 0);
       if(tx !== x){ x += (tx - x) * .18; vx *= .5; } if(ty !== y){ y += (ty - y) * .18; vy *= .5; }
       apply();
       if(Math.abs(vx) + Math.abs(vy) > .05 || Math.abs(tx - x) > .3 || Math.abs(ty - y) > .3 || Math.abs(limit(s,1,MAXS) - s) > .002) raf = requestAnimationFrame(step);
-      else { s = limit(s, 1, MAXS); var L2 = lo(); x = limit(x, L2.x, 0); y = limit(y, L2.y, 0); apply(); }
+      else { s = limit(s, 1, MAXS); var B2 = lo(); x = limit(x, B2.x, 0); y = limit(y, B2.y, 0); apply(); }
     };
-    if(reduce){ s = limit(s,1,MAXS); var L = lo(); x = limit(x, L.x, 0); y = limit(y, L.y, 0); apply(); } else raf = requestAnimationFrame(step); }
+    if(reduce){ s = limit(s,1,MAXS); var B = lo(); x = limit(x, B.x, 0); y = limit(y, B.y, 0); apply(); } else raf = requestAnimationFrame(step); }
   function zoomAt(f, cx, cy){ var ns = s * f; ns = ns > MAXS ? MAXS + (ns - MAXS) * .3 : ns < 1 ? 1 - (1 - ns) * .3 : ns;
     x = cx - (cx - x) * ns / s; y = cy - (cy - y) * ns / s; s = ns; apply(); }
   function pt(e){ var r = box.getBoundingClientRect(), kk = k(); return { x: (e.clientX - r.left) * kk, y: (e.clientY - r.top) * kk }; }
-  var P = {}, last = null, pinch = null, t0 = 0;
-  box.addEventListener('pointerdown', function(e){ P[e.pointerId] = pt(e); cancelAnimationFrame(raf); vx = vy = 0; moved = false; t0 = Date.now();
-    var ids = Object.keys(P); if(ids.length === 2){ var a = P[ids[0]], b = P[ids[1]]; pinch = { d: Math.hypot(a.x-b.x, a.y-b.y), m: {x:(a.x+b.x)/2, y:(a.y+b.y)/2} }; }
-    last = P[e.pointerId]; });
-  box.addEventListener('pointermove', function(e){ if(!(e.pointerId in P)) return; var p = pt(e), ids = Object.keys(P);
-    if(ids.length === 2 && pinch){ P[e.pointerId] = p; var a = P[ids[0]], b = P[ids[1]], d = Math.hypot(a.x-b.x, a.y-b.y), m = {x:(a.x+b.x)/2, y:(a.y+b.y)/2};
+  var Pp = {}, pinch = null;
+  box.addEventListener('pointerdown', function(e){ Pp[e.pointerId] = pt(e); cancelAnimationFrame(raf); vx = vy = 0; moved = false;
+    var ids = Object.keys(Pp); if(ids.length === 2){ var a = Pp[ids[0]], b = Pp[ids[1]]; pinch = { d: Math.hypot(a.x-b.x, a.y-b.y), m: {x:(a.x+b.x)/2, y:(a.y+b.y)/2} }; } });
+  box.addEventListener('pointermove', function(e){ if(!(e.pointerId in Pp)) return; var p = pt(e), ids = Object.keys(Pp);
+    if(ids.length === 2 && pinch){ Pp[e.pointerId] = p; var a = Pp[ids[0]], b = Pp[ids[1]], d = Math.hypot(a.x-b.x, a.y-b.y), m = {x:(a.x+b.x)/2, y:(a.y+b.y)/2};
       zoomAt(d / pinch.d, m.x, m.y); x += m.x - pinch.m.x; y += m.y - pinch.m.y; apply(); pinch = { d: d, m: m }; moved = true; return; }
-    var dx = p.x - P[e.pointerId].x, dy = p.y - P[e.pointerId].y;
+    if(e.pointerType !== 'mouse' && s <= 1.02) return;          /* αμεγέθυντος στην αφή: η σελίδα κυλά, ο χάρτης μένει */
+    var dx = p.x - Pp[e.pointerId].x, dy = p.y - Pp[e.pointerId].y;
     if(!moved && Math.hypot(dx, dy) < 6 * k()) return;
     if(!moved){ moved = true; box.classList.add('drag'); try{ box.setPointerCapture(e.pointerId); }catch(_){} }
-    var L = lo(); var nx = x + dx, ny = y + dy;
-    x = (x < L.x || x > 0) ? x + dx * .35 : rub(nx, L.x, 0); y = (y < L.y || y > 0) ? y + dy * .35 : rub(ny, L.y, 0);
-    vx = dx * .6 + vx * .4; vy = dy * .6 + vy * .4; P[e.pointerId] = p; apply(); });
-  function up(e){ if(!(e.pointerId in P)) return; delete P[e.pointerId]; pinch = null; box.classList.remove('drag');
-    if(Object.keys(P).length === 0) settle(); }
+    var B = lo();
+    x = (x < B.x || x > 0) ? x + dx * .35 : x + dx; y = (y < B.y || y > 0) ? y + dy * .35 : y + dy;
+    vx = dx * .6 + vx * .4; vy = dy * .6 + vy * .4; Pp[e.pointerId] = p; apply(); });
+  function up(e){ if(!(e.pointerId in Pp)) return; delete Pp[e.pointerId]; pinch = null; box.classList.remove('drag');
+    if(Object.keys(Pp).length === 0) settle(); }
   box.addEventListener('pointerup', up); box.addEventListener('pointercancel', up);
   box.addEventListener('click', function(e){ if(moved){ e.preventDefault(); e.stopPropagation(); moved = false; } }, true);
-  box.addEventListener('dblclick', function(e){ e.preventDefault(); var p = pt(e); if(s > 1.5){ vx = vy = 0; var f = 1 / s; zoomAt(f, p.x, p.y); settle(); } else { zoomAt(2.2, p.x, p.y); settle(); } });
+  box.addEventListener('dblclick', function(e){ e.preventDefault(); var p = pt(e); if(s > 1.5) zoomAt(1 / s, p.x, p.y); else zoomAt(2.2, p.x, p.y); settle(); });
   box.addEventListener('wheel', function(e){ if(!e.ctrlKey && !e.metaKey) return; e.preventDefault(); var p = pt(e); zoomAt(Math.exp(-e.deltaY * .004), p.x, p.y); clearTimeout(box._w); box._w = setTimeout(settle, 120); }, {passive:false});
   var z = document.createElement('div'); z.className = 'mapzoom';
   z.innerHTML = '<button type="button" aria-label="Μεγέθυνση">+</button><button type="button" aria-label="Σμίκρυνση">−</button>';
@@ -191,8 +234,8 @@ window.ivanPanZoom = function(map){
   z.addEventListener('pointerdown', function(e){ e.stopPropagation(); });
   z.children[0].addEventListener('click', function(e){ e.stopPropagation(); zoomAt(1.6, W/2, H/2); settle(); });
   z.children[1].addEventListener('click', function(e){ e.stopPropagation(); zoomAt(1/1.6, W/2, H/2); settle(); });
-  addEventListener('resize', function(){ var w = W; orient(); if(w !== W){ s = 1; x = y = 0; apply(); } });
-  apply();
+  var rt = 0; addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){ var t0 = tall; build(); if(t0 !== tall){ s = 1; x = y = 0; } apply(); }, 150); });
+  build(); apply();
 };
 
 /* σύρσιμο στο κινητό: προς τα αριστερά το επόμενο κείμενο, προς τα δεξιά το προηγούμενο */

@@ -287,10 +287,6 @@ def library(lang, frm=None):
     s += f'<h2><a href="{rel(frm, lead["path"])}">{E(lead["t"])}</a></h2>\n'
     s += f'<p class="ex">{E(excerpt(lead["txt"]))}</p>\n'
     s += f'<p class="go"><a href="{rel(frm, lead["path"])}">{E(T["read"])}</a></p>\n</article>\n'
-    s += f'<section class="recent"><h2 class="h">{E(T["recent"])}</h2><ol>\n'
-    for it in recent:
-        s += f'<li><a href="{rel(frm, it["path"])}"><time datetime="{it["date"][:10]}">{E(dshort(it["date"], lang))}</time><span>{E(it["t"])}</span></a></li>\n'
-    s += '</ol></section>\n'
     s += f'<section class="index" id="index"><div class="ihead"><h2 class="h">{E(T["all"])} <span class="n">{len(items)}</span></h2>\n'
     s += f'<label class="search"><span class="vh">{E(T["search"])}</span><input type="search" placeholder="{E(T["search"])}" autocomplete="off" spellcheck="false" data-src="{rel(frm, "search/" + lang + ".json")}"></label></div>\n'
     for y in sorted(years, reverse=True):
@@ -397,7 +393,7 @@ def front():
     s += f'<div class="lt"><p class="kicker">{E(T["latest"])} · <time datetime="{lead["date"][:10]}">{E(dlong(lead["date"], "el"))}</time></p>\n'
     s += f'<h2><a href="{rel(frm, lead["path"])}">{E(lead["t"])}</a></h2>\n<p class="ex">{E(excerpt(lead["txt"]))}</p>\n'
     s += f'<p class="go"><a href="{rel(frm, lead["path"])}">{E(T["read"])}</a></p></div>\n</article>\n'
-    s += '<section class="pages" aria-label="Πρόσφατα"><h2 class="h">Στο τετράδιο</h2><div class="pgrid">\n'
+    s += '<section class="pages" aria-label="Στο τετράδιο"><h2 class="h">Στο τετράδιο</h2><div class="pgrid">\n'
     def thumb(it):
         sk = SKETCHES.get(it['path'])
         if not (sk and sk.get('approved')): return ''
@@ -562,7 +558,7 @@ def xartis():
     s += '<h1 class="libh">Χάρτης των κειμένων</h1>\n'
     s += '<p class="intro">Κάθε σημείο είναι ένα κείμενο και οι γραμμές ενώνουν κείμενα με κοινό λεξιλόγιο. Τη γειτονιά τη βρίσκει μέτρηση λέξεων, όχι ανάγνωση. Σύρετε για να μετακινηθείτε· με δύο δάχτυλα ή με τα κουμπιά, μεγέθυνση.</p>\n'
     s += '<p class="cap" aria-live="polite">Περάστε πάνω από ένα σημείο.</p>\n'
-    s += f'<div class="mapbox"><svg class="map" viewBox="0 0 {W} {H}" data-w="{W}" data-h="{H}" role="group" aria-label="Χάρτης των κειμένων"><g class="vp"><g class="tr"><g class="edges">'
+    s += f'<div class="mapbox"><svg class="map" viewBox="0 0 {W} {H}" data-w="{W}" data-h="{H}" role="group" aria-label="Χάρτης των κειμένων"><g class="vp"><g class="surf" aria-hidden="true"></g><g class="tr"><g class="edges">'
     for a, b in sorted(edges):
         s += f'<line x1="{X[a]:.1f}" y1="{Y[a]:.1f}" x2="{X[b]:.1f}" y2="{Y[b]:.1f}" data-a="{a}" data-b="{b}"/>'
     s += '</g><g class="nodes">'

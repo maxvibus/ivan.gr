@@ -291,9 +291,12 @@ body.text main.wrap{background:var(--card);border:1px solid var(--rule2);border-
 .swipe-hint.l{left:.5rem}.swipe-hint.r{right:.5rem;text-align:right}
 
 /* χάρτης: ολόκληρος στην οθόνη, με ελαστική μετακίνηση και ελάχιστη ανάσα στα σημεία */
-.mapbox{overflow:hidden;touch-action:none;border:1px solid var(--rule2);border-radius:4px;background:var(--card);position:relative;cursor:grab;user-select:none;-webkit-user-select:none}
+.mapbox{overflow:hidden;touch-action:pan-y;position:relative;cursor:grab;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;background:var(--bg)}
+.mapbox.zoomed{touch-action:none}
+.map .surf path{fill:none;stroke:var(--grid);stroke-width:1;vector-effect:non-scaling-stroke}
+.map line,.map circle{vector-effect:non-scaling-stroke}
 .mapbox.drag{cursor:grabbing}
-@media (max-width:44rem){.mapbox{margin:0 -.5rem}.mapbox .map{width:100%;min-width:0}}
+@media (max-width:44rem){.mapbox{margin:0 -1.25rem}.mapbox .map{width:100%;min-width:0}}
 .map .vp{will-change:transform}
 .mapzoom{position:absolute;right:.5rem;bottom:.5rem;display:flex;gap:.35rem}
 .mapzoom button{width:2.5rem;height:2.5rem;border-radius:5px;border:1px solid var(--rule);background:var(--card);color:var(--blue);font:inherit;font-size:1.2rem;cursor:pointer}
