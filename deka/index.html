@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ως το δέκα · ivan.gr</title>
+<meta name="description" content="Ένα παιχνίδι μετρήματος: ως το δέκα, χωρίς να πουν δύο τον ίδιο αριθμό μαζί.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#FBF8F2">
+<script>try{var t=localStorage.getItem('ivan-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="icon" href="../favicon.ico">
+<style>@font-face{font-family:"EB Garamond";src:url(../assets/fonts/ebgaramond-regular.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"EB Garamond";src:url(../assets/fonts/ebgaramond-italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"EB Garamond";src:url(../assets/fonts/ebgaramond-semibold.woff2) format("woff2");font-weight:600;font-style:normal;font-display:swap}
+
+/* Ένα χαρτί και ένα «κανάλι» IRC από κάτω: ο αριθμός στη μέση, το ημερολόγιο του γύρου από κάτω, όπως στο main μιας συνομιλίας. */
+:root{
+  --paper:#FBF8F2; --ink:#1F3550; --soft:#4A5A70; --rule:rgba(0,94,171,.22); --ochre:#B07A35; --warn:#A23B2A; --ok:#2F6B4F; --panel:#F2EDE2; --accent:#005EAB;
+  --serif:"EB Garamond",Garamond,Georgia,serif; --mono:ui-monospace,"SF Mono",Menlo,monospace;
+}
+:root[data-theme="night"]{--paper:#0F1620;--ink:#E9E3D8;--soft:#B8B2A6;--rule:rgba(141,187,234,.25);--ochre:#EDC89B;--warn:#E07A62;--ok:#7CC3A0;--panel:#16202C;--accent:#8DBBEA;color-scheme:dark}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:640px;margin:0 auto;padding-block:28px 40px;display:flex;flex-direction:column;gap:22px}
+header h1{font-weight:400;font-size:2.1rem;margin:0;text-wrap:balance}
+header p{margin:.3rem 0 0;color:var(--soft);max-width:60ch}
+.stage{display:grid;grid-template-columns:1fr;gap:10px;justify-items:center;padding:26px 0 18px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.num{font-size:7.5rem;line-height:1;font-variant-numeric:tabular-nums;transition:color .3s}
+.num.reset{color:var(--warn)} .num.win{color:var(--ok)}
+.status{min-height:1.6em;color:var(--soft);font-style:italic;text-align:center}
+.bar{width:100%;height:4px;background:var(--rule);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--ochre)}
+.meta{font-family:var(--mono);font-size:.78rem;color:var(--soft);display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.controls{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+button{font:inherit;cursor:pointer;border-radius:999px;border:1px solid var(--ink);background:transparent;color:var(--ink);padding:.55em 1.4em}
+button.say{background:var(--ink);color:var(--paper);font-size:1.25rem;padding:.6em 2.2em}
+button:disabled{opacity:.35;cursor:default}
+button:focus-visible{outline:2px solid var(--ochre);outline-offset:3px}
+.log{background:var(--panel);border-radius:6px;padding:12px 14px;font-family:var(--mono);font-size:.82rem;line-height:1.55;height:13.5em;overflow-y:auto}
+.log div{white-space:pre-wrap}
+.log .me{color:var(--ink);font-weight:500} .log .sys{color:var(--soft);font-style:italic}
+.log .bad{color:var(--warn)} .log .good{color:var(--ok)}
+details{color:var(--soft)} details summary{cursor:pointer;color:var(--ink)}
+.rules{margin:.5rem 0 0;padding-left:1.1rem} .rules li{margin:.2rem 0}
+label.opt{display:flex;gap:.5rem;align-items:center;font-size:.95rem}
+@media (prefers-reduced-motion:reduce){.num{transition:none}}
+
+.home{font-size:.95rem;color:var(--soft);text-decoration:none;border-bottom:1px solid var(--rule)} .home:hover{color:var(--accent)}
+body{margin:0}
+</style>
+</head>
+<body>
+
+<main>
+  <header>
+    <a class="home" href="../">ivan.gr</a>
+    <h1>Ως το δέκα</h1>
+    <p>Μετράτε μαζί ως το δέκα, ένας αριθμός τη φορά, χωρίς σειρά. Αν δύο πουν τον ίδιο αριθμό μαζί, ο γύρος ξεκινά από την αρχή.</p>
+  </header>
+
+  <section class="stage" aria-live="polite">
+    <div class="num" id="num">0</div>
+    <div class="status" id="status">Πάτα «Ξεκίνα» όταν είσαι έτοιμος.</div>
+    <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+    <div class="meta"><span id="left">χρόνος: —</span><span id="best">καλύτερο: 0</span><span id="tries">γύροι: 0</span></div>
+  </section>
+
+  <div class="controls">
+    <button class="say" id="say" disabled>Λέω το <span id="next">1</span></button>
+    <button id="start">Ξεκίνα</button>
+  </div>
+
+  <div class="log" id="log" role="log" aria-label="Το κανάλι"></div>
+
+  <details>
+    <summary>Οι κανόνες αυτής της δοκιμής</summary>
+    <ul class="rules">
+      <li>Παίζεις εσύ και τρεις παίκτες του υπολογιστή, ο Β, ο Γ και ο Δ.</li>
+      <li>Κάθε αριθμός έχει 15 δευτερόλεπτα, και για κάθε επόμενο αριθμό προστίθενται 2.</li>
+      <li>Αν δύο ή περισσότεροι πουν τον αριθμό μέσα σε ένα δευτερόλεπτο, είναι σύγκρουση· ξανά από το ένα.</li>
+      <li>Αν τελειώσει ο χρόνος χωρίς να πει κανείς τον αριθμό, ξανά από το ένα.</li>
+      <li>Κανείς δεν λέει δύο αριθμούς στη σειρά.</li>
+      <li>Πλήκτρο: Enter ή διάστημα.</li>
+    </ul>
+    <label class="opt"><input type="checkbox" id="calm"> Πιο ήρεμοι αντίπαλοι (μιλούν σπανιότερα)</label>
+  </details>
+</main>
+
+<script>
+const BASE=15, STEP=2, CLASH=1.0, TARGET=10;
+const BOTS=['Β','Γ','Δ'];
+const $=id=>document.getElementById(id);
+const numEl=$('num'),statusEl=$('status'),bar=$('bar'),logEl=$('log'),sayBtn=$('say'),startBtn=$('start');
+let s={running:false,n:0,last:null,deadline:0,win:0,claims:[],timers:[],raf:0,best:0,tries:0};
+
+function stamp(){const d=new Date();return d.toTimeString().slice(0,8)}
+function log(txt,cls=''){const div=document.createElement('div');div.className=cls;div.textContent=`[${stamp()}] ${txt}`;logEl.appendChild(div);logEl.scrollTop=logEl.scrollHeight}
+function windowFor(k){return BASE+(k-1)*STEP}
+function clearTimers(){s.timers.forEach(clearTimeout);s.timers=[];cancelAnimationFrame(s.raf)}
+
+function start(){
+  clearTimers(); s.running=true; s.n=0; s.last=null; s.tries++; numEl.textContent='0'; numEl.className='num';
+  startBtn.textContent='Από την αρχή'; $('tries').textContent='γύροι: '+s.tries;
+  log('— νέος γύρος —','sys'); openStep();
+}
+function openStep(){
+  const k=s.n+1; s.claims=[]; s.win=windowFor(k); s.deadline=performance.now()+s.win*1000;
+  $('next').textContent=k; sayBtn.disabled = s.last==='εσύ';
+  statusEl.textContent = s.last==='εσύ' ? 'Είπες τον προηγούμενο· άφησε κάποιον άλλον.' : `Ποιος θα πει το ${k};`;
+  // κάθε παίκτης του υπολογιστή αποφασίζει αν και πότε θα μιλήσει
+  const calm=$('calm').checked;
+  const chance = calm ? 0.33 : 0.5;
+  const eligible=BOTS.filter(b=>b!==s.last);
+  let speakers=eligible.filter(()=>Math.random()<chance);
+  // αν μίλησες εσύ τελευταίος, κάποιος από τους άλλους πρέπει να συνεχίσει
+  if(s.last==='εσύ' && speakers.length===0) speakers=[eligible[Math.floor(Math.random()*eligible.length)]];
+  speakers.forEach(b=>{
+    const t=(0.8+Math.random()*(s.win-1.6))*1000;
+    s.timers.push(setTimeout(()=>botSays(b,k),t));
+  });
+  tick();
+}
+function tick(){
+  const left=Math.max(0,(s.deadline-performance.now())/1000);
+  bar.style.width=(100*left/s.win)+'%';
+  $('left').textContent='χρόνος: '+left.toFixed(1)+' δ.';
+  if(left<=0 && s.claims.length===0){ return fail('Πέρασε ο χρόνος· κανείς δεν είπε το '+(s.n+1)+'.'); }
+  s.raf=requestAnimationFrame(tick);
+}
+function botSays(b,k){
+  if(!s.running||k!==s.n+1) return;
+  claim(b,k);
+}
+function claim(who,k){
+  const t=performance.now();
+  log(`<${who}> ${k}`, who==='εσύ'?'me':'');
+  s.claims.push({who,t});
+  if(who==='εσύ') sayBtn.disabled=true;
+  if(s.claims.length===1){
+    // περιμένουμε ένα δευτερόλεπτο να φανεί αν μίλησε και άλλος μαζί
+    s.timers.push(setTimeout(()=>settle(k),CLASH*1000));
+  }
+}
+function settle(k){
+  if(!s.running) return;
+  const first=s.claims[0].t;
+  const clash=s.claims.filter(c=>c.t-first<=CLASH*1000);
+  if(clash.length>1){
+    return fail(`Σύγκρουση στο ${k}: ${clash.map(c=>c.who).join(' και ')}.`);
+  }
+  clearTimers();
+  s.n=k; s.last=s.claims[0].who; numEl.textContent=k;
+  if(k>s.best){s.best=k;$('best').textContent='καλύτερο: '+k}
+  if(k>=TARGET){
+    s.running=false; numEl.className='num win'; sayBtn.disabled=true;
+    statusEl.textContent='Φτάσατε στο δέκα.'; log('*** φτάσατε στο δέκα ***','good'); bar.style.width='0';
+    return;
+  }
+  openStep();
+}
+function fail(msg){
+  clearTimers(); s.running=false; sayBtn.disabled=true; numEl.textContent='0'; numEl.className='num reset';
+  statusEl.textContent=msg+' Ξανά από το ένα.'; log('*** '+msg+' ***','bad'); bar.style.width='0';
+  s.timers.push(setTimeout(start,2600));
+}
+sayBtn.addEventListener('click',()=>{ if(s.running && s.last!=='εσύ' && !sayBtn.disabled) claim('εσύ',s.n+1) });
+startBtn.addEventListener('click',start);
+document.addEventListener('keydown',e=>{
+  if((e.key==='Enter'||e.key===' ') && e.target.tagName!=='BUTTON' && e.target.tagName!=='INPUT'){
+    e.preventDefault(); if(!s.running && s.tries===0) start(); else sayBtn.click();
+  }
+});
+log('* Μπήκες στο κανάλι #δέκα. Εδώ είναι οι Β, Γ, Δ.','sys');
+log('<Β> καλησπέρα· όποτε θέλεις ξεκινάμε','');
+</script>
+
+</body>
+</html>
