@@ -141,7 +141,7 @@ select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radiu
       <li>Το ένα έχει 12 δευτερόλεπτα· κάθε επόμενος αριθμός λίγο λιγότερο, ως τα 8 για το δέκα. Όσο δεν πατά κανείς, ο κύκλος αδειάζει όλο και πιο γρήγορα.</li>
       <li>Αν δύο ή περισσότεροι πουν τον αριθμό μέσα σε ένα δευτερόλεπτο, είναι σύγκρουση· ξανά από το ένα.</li>
       <li>Αν τελειώσει ο χρόνος χωρίς να πει κανείς τον αριθμό, ξανά από το ένα.</li>
-      <li>Οι παίκτες του υπολογιστή είναι τα ▲ ● ■ (με διακεκομμένο περίγραμμα). Ο καθένας έχει δικό του ρυθμό που αλλάζει σε κάθε γύρο, και δεν επαναλαμβάνει την ίδια στιγμή. Μαθαίνουν πότε πατά ο καθένας σας μετά από τον καθένα· αν γίνετε προβλέψιμοι, μιλούν την ίδια στιγμή μαζί σας. Για να φτάσετε στο δέκα, μην παίζετε πάντα με τον ίδιο ρυθμό.</li>
+      <li>Οι παίκτες του υπολογιστή είναι τα ▲ ● ■ (με διακεκομμένο περίγραμμα). Ο καθένας έχει δικό του ρυθμό και χρόνο αντίδρασης που αλλάζουν σε κάθε γύρο, και δεν επαναλαμβάνει την ίδια στιγμή· αν προλάβει να ακούσει ότι μίλησε άλλος, συγκρατείται. Μαθαίνουν πότε πατά ο καθένας σας μετά από τον καθένα· αν γίνετε προβλέψιμοι, μιλούν την ίδια στιγμή μαζί σας. Για να φτάσετε στο δέκα, μην παίζετε πάντα με τον ίδιο ρυθμό.</li>
       <li>Ο κύκλος γύρω από τον αριθμό είναι ο χρόνος που απομένει για τον επόμενο· οι τελείες δείχνουν πόσο έχετε φτάσει.</li>
       <li>Πλήκτρο: Enter ή διάστημα. Σε δωμάτιο, μόνο όποιος το άνοιξε ξεκινά τον γύρο.</li>
     </ul>
@@ -151,9 +151,9 @@ select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radiu
 const BASE=12, LAST=8, CLASH=1.0, TARGET=10, PREFIX='ivangr-deka-';
 const BOTNAMES=['▲','●','■'];
 // επίθεση: πόσο συχνά ο υπολογιστής «χτυπά» έναν προβλέψιμο παίκτη· γέμισμα: πόσο συχνά λέει ο ίδιος τον αριθμό όταν διστάζετε
-const LEVELS=[{attack:0.3,act:0.7},{attack:0.6,act:1.0},{attack:0.9,act:1.25}];
+const LEVELS=[{attack:0.3,act:0.7,react:[0.15,0.4]},{attack:0.6,act:1.0,react:[0.3,0.7]},{attack:0.9,act:1.25,react:[0.5,0.95]}];
 // Κάθε παίκτης του υπολογιστή έχει δικό του «χαρακτήρα» που αλλάζει σε κάθε γύρο: ρυθμό, διασπορά, βιασύνη, πόσο συχνά συμμετέχει.
-function persona(){ return {mu:Math.exp(Math.log(0.8)+Math.random()*Math.log(5)), sg:0.25+Math.random()*0.35, eager:0.4+Math.random()*0.35, act:0.35+Math.random()*0.35, prev:-9}; }
+function persona(){ return {mu:Math.exp(Math.log(0.8)+Math.random()*Math.log(5)), sg:0.25+Math.random()*0.35, eager:0.4+Math.random()*0.35, act:0.35+Math.random()*0.35, react:0.5, prev:-9}; }
 const $=id=>document.getElementById(id);
 const numEl=$('num'),statusEl=$('status'),logEl=$('log'),sayBtn=$('say'),startBtn=$('start'),arc=$('arc'),dial=$('dial');
 const CIRC=2*Math.PI*54; arc.style.strokeDasharray=CIRC; arc.style.strokeDashoffset=CIRC;
@@ -215,7 +215,7 @@ function nBots(){ return role==='guest'?0:parseInt($('bots').value,10) }
 function startRound(){
   clearTimers(); G.bots=BOTNAMES.slice(0,nBots());
   if(G.humans.length+G.bots.length<2){ G.status='Χρειάζονται τουλάχιστον δύο· βάλε έναν παίκτη του υπολογιστή ή περίμενε φίλο.'; return push(); }
-  G.P={}; G.bots.forEach(b=>G.P[b]=persona());
+  G.P={}; { const r=LEVELS[parseInt($('level').value,10)||0].react; G.bots.forEach(b=>{ G.P[b]=persona(); G.P[b].react=r[0]+Math.random()*(r[1]-r[0]); }); }
   G.running=true; G.n=0; G.last=null; G.clash=null; G.tries++; G.cls='num'; startBtn.textContent='Από την αρχή';
   log('— νέος γύρος · '+[...G.humans,...G.bots].join(', ')+' —','sys'); openStep();
 }
@@ -255,6 +255,8 @@ function claim(who,k){
   if(!G.running || k!==G.n+1 || who===G.last || G.claims.some(c=>c.who===who)) return;
   const t=performance.now();
   if(G.claims.length && t-G.claims[0].t>CLASH*1000) return; // άργησε· ο αριθμός έχει ήδη κριθεί
+  // ο παίκτης του υπολογιστή «ακούει»: αν κάποιος μίλησε πριν από περισσότερο από τον χρόνο αντίδρασής του, συγκρατείται
+  if(G.P&&G.P[who] && G.claims.length && t-G.claims[0].t>G.P[who].react*1000) return;
   if(G.humans.includes(who)){ const d=(t-G.stepAt)/1000;
     [(G.last||'αρχή')+'>'+who,'*>'+who].forEach(key=>{ const xs=G.hist[key]||(G.hist[key]=[]); xs.push(d); if(xs.length>8) xs.shift(); }); }
   G.claims.push({who,t}); log('<'+who+'> '+k, who===me?'me':'');
