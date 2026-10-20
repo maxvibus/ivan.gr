@@ -112,7 +112,9 @@ def clean(h, frm, lang='el'):
     return out
 
 def text_of(h):
-    return re.sub(r'\s+', ' ', BeautifulSoup(h, 'html.parser').get_text(' ')).strip()
+    soup = BeautifulSoup(h, 'html.parser')
+    for t in soup.find_all(['figure', 'svg']): t.decompose()   # σχέδια και λεζάντες δεν είναι κείμενο
+    return re.sub(r'\s+', ' ', soup.get_text(' ')).strip()
 
 def excerpt(t, n=320):
     if len(t) <= n: return t
@@ -226,8 +228,10 @@ def langnav(frm, cur, targets):
 
 NIGHT_BTN = '<button type="button" class="night" aria-label="Νυχτερινή ανάγνωση" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>'
 
-def footer(frm):
-    return f'<footer class="foot"><a href="{rel(frm,"index.html")}">ivan.gr</a> · © 2025–2026 Ιβάν Δ. Αθανασόπουλος</footer>\n'
+def footer(frm, lang='el'):
+    # κάτω, μαζί με το ivan.gr: η μία πρόταση που λέει τι είναι ο τόπος, όρθια, όχι πλάγια
+    return (f'<footer class="foot"><p class="ftag"><a href="{rel(frm, FRONT[lang])}">ivan.gr</a> · {E(L[lang]["intro"])}</p>'
+            f'<p class="fcopy">© 2025–2026 {E(L[lang]["author"])}</p></footer>\n')
 
 def write(p, s):
     fp = os.path.join(OUT, p); os.makedirs(os.path.dirname(fp) or OUT, exist_ok=True)
@@ -262,10 +266,11 @@ def library(lang, frm=None):
     years = {}
     for it in items: years.setdefault(it['date'][:4], []).append(it)
     alts = dict(HOME)
-    s = head(frm, lang, LIBNAME[lang] + ' · ivan.gr', T['intro'], HOME[lang], alts)
+    is_front = frm == FRONT[lang]
+    s = head(frm, lang, 'ivan.gr' if is_front else LIBNAME[lang] + ' · ivan.gr', T['intro'], HOME[lang], alts)
     s += '<body class="lib">\n' + masthead(frm, lang, 'lib', alts)
     s += '<main id="texts" class="wrap">\n'
-    s += f'<h1 class="libh">{E(LIBNAME[lang])}</h1>\n<p class="intro">{E(T["intro"])}</p>\n'
+    s += f'<h1 class="vh">{E("ivan.gr" if is_front else LIBNAME[lang])}</h1>\n'
     s += '<article class="lead">\n'
     s += f'<p class="kicker">{E(T["latest"])} · <time datetime="{lead["date"][:10]}">{E(dlong(lead["date"], lang))}</time></p>\n'
     s += f'<h2><a href="{rel(frm, lead["path"])}">{E(lead["t"])}</a></h2>\n'
@@ -286,7 +291,7 @@ def library(lang, frm=None):
     write('search/' + lang + '.json', json.dumps([{'p': it['path'], 'x': it['txt']} for it in items], ensure_ascii=False, separators=(',', ':')))
     if lang == 'el':
         s += f'<p class="book">Μέσα από αυτόν τον διάλογο αναδύθηκε το <a href="{rel(frm, "ek/index.html")}">«εκ»</a> — βιβλίο, 2027.</p>\n'
-    s += '</main>\n' + footer(frm) + '</body>\n</html>\n'
+    s += '</main>\n' + footer(frm, lang) + '</body>\n</html>\n'
     write(frm, s)
 
 # --- φύλλα (το φύλλο της ημέρας) -------------------------------------------
@@ -351,7 +356,7 @@ def issue_page(iss, frm, is_front):
         low += '<section class="thread"><h2 class="h">Το νήμα</h2><ul>' + ''.join(
             f'<li><a href="{rel(frm, p["path"])}">{E(p["title"].strip())}</a> <time>{E(dshort(p["published"], "el"))} {p["published"][:4]}</time></li>' for p in th) + '</ul></section>'
     if low: s += f'<div class="low">{low}</div>\n'
-    s += f'<p class="intro sheet-intro">{E(L["el"]["intro"])}</p>\n</main>\n' + ''.join(wins) + '\n' + footer(frm) + '</body>\n</html>\n'
+    s += '</main>\n' + ''.join(wins) + '\n' + footer(frm) + '</body>\n</html>\n'
     write(frm, s)
 
 def issues_build():
@@ -405,7 +410,7 @@ def page(item, lang, alts, prev=None, nxt=None):
     s += '<nav class="pn">'
     if nxt: s += f'<a class="nx" href="{rel(frm, nxt["path"])}"><small>{E(T["next"])}</small>{E(nxt["title"].strip())}</a>'
     if prev: s += f'<a class="pv" href="{rel(frm, prev["path"])}"><small>{E(T["prev"])}</small>{E(prev["title"].strip())}</a>'
-    s += f'</nav><p class="back"><a href="{rel(frm, HOME[lang])}#index">{E(T["index"])}</a></p></main>\n' + footer(frm)
+    s += f'</nav><p class="back"><a href="{rel(frm, HOME[lang])}#index">{E(T["index"])}</a></p></main>\n' + footer(frm, lang)
     s += '</body>\n</html>\n'
     write(frm, s)
 

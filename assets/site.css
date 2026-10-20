@@ -183,3 +183,7 @@ figure{margin:0}figure img{width:100%;border-radius:6px}figcaption{margin-top:.8
 .body figure{margin:0 0 2rem}
 .body figure svg{display:block;width:100%;height:auto;color:var(--blue)}
 .body figure figcaption{font-size:.9em;text-align:left}
+/* υποσέλιδο: ivan.gr και η πρόταση του τόπου, όρθια */
+.foot p{margin:0}.foot .ftag{color:var(--ink);font-style:normal;max-width:38rem;margin:0 auto .4rem;line-height:1.5;font-size:1.05em}
+.foot .ftag a{font-weight:600;color:var(--blue)}
+.foot .fcopy{color:var(--muted)}
