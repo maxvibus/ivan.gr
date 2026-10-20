@@ -73,7 +73,10 @@ a:hover,a:focus-visible{border-color:var(--blue)}
   padding:max(3rem,env(safe-area-inset-top)) 1.25rem max(3rem,env(safe-area-inset-bottom));
   text-align:center;position:relative;
 }
-.cover-inner{display:flex;flex-direction:column;align-items:center}
+.cover-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  /* το σχήμα του βιβλίου (11 × 14,5) υπάρχει και τη μέρα, αόρατο πάνω στην ώχρα· τη νύχτα φωτίζεται χωρίς να αλλάξει μέγεθος */
+  width:min(80vw,27rem);aspect-ratio:11/14.5;padding:1.2rem;border-radius:4px 10px 10px 4px;
+  background:var(--ochre);box-shadow:0 0 0 1px rgba(237,200,155,0);transition:box-shadow .6s ease}
 h1{
   font-family:"EB Garamond Ek","EB Garamond",serif;font-weight:800;color:var(--blue);
   font-size:clamp(7rem,30vw,15rem);line-height:.9;letter-spacing:-.01em;
@@ -121,15 +124,11 @@ footer{text-align:center;color:var(--blue);opacity:.75;font-size:.85em;padding:2
 @view-transition{navigation:auto}
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.45s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
 :root[data-theme="night"]{--bg:#0F1620;--ink:#E9E3D8;--blue:#8DBBEA;--rule:rgba(141,187,234,.30);color-scheme:dark}
+html,body{transition:background-color .6s ease}
 :root[data-theme="night"],:root[data-theme="night"] body{background:var(--bg)}
-:root[data-theme="night"] .cover-inner{
-  width:min(68vw,21rem);aspect-ratio:11/14.5;justify-content:center;border-radius:4px 10px 10px 4px;
-  background:var(--ochre);box-shadow:0 0 0 1px rgba(237,200,155,.5),0 0 34px 6px rgba(237,200,155,.18);
-  animation:lamp 6s ease-in-out infinite;padding:1.2rem}
-:root[data-theme="night"] .cover-inner h1{color:#005EAB;font-size:clamp(4.5rem,24vw,9.5rem)}
+:root[data-theme="night"] .cover-inner{box-shadow:0 0 0 1px rgba(237,200,155,.5),0 0 34px 6px rgba(237,200,155,.18);animation:lamp 6s ease-in-out infinite}
+:root[data-theme="night"] .cover-inner h1{color:#005EAB}
 :root[data-theme="night"] .cover-inner .author,:root[data-theme="night"] .cover-inner .release{color:#005EAB}
-:root[data-theme="night"] .cover-inner .author{font-size:clamp(.95rem,.85rem + .6vw,1.2rem)}
-:root[data-theme="night"] .cover-inner .release{font-size:.9em}
 :root[data-theme="night"] .down{border-color:rgba(141,187,234,.4);background:rgba(255,255,255,.04);color:var(--blue)}
 :root[data-theme="night"] footer{color:var(--blue)}
 @keyframes lamp{0%,100%{box-shadow:0 0 0 1px rgba(237,200,155,.45),0 0 30px 5px rgba(237,200,155,.15)}50%{box-shadow:0 0 0 1px rgba(237,200,155,.7),0 0 54px 12px rgba(237,200,155,.27)}}
