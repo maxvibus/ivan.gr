@@ -409,9 +409,15 @@ def page(item, lang, alts, prev=None, nxt=None):
     s += f'<main class="wrap"><article class="post"><h1>{E(item["title"].strip())}</h1>\n'
     dinfo = DATES.get(frm) or DATES.get(item.get('orig_path', '')) or {}
     W = DWORDS[lang]
-    def dshow(v):  # «2019», «2019-05» ή πλήρης ημερομηνία
-        return v if len(v) == 4 else (dlong(v + '-01', lang).split(' ', 1)[1] if len(v) == 7 else dlong(v, lang))
-    parts = [f'{W["pub"]} <time datetime="{item["published"][:10]}">{E(dlong(item["published"], lang))}</time>']
+    def dshow(v):  # «2019», «2019-05» ή πλήρης ημερομηνία, με τη σωστή πρόθεση κάθε γλώσσας
+        y = v[:4]
+        if len(v) == 4: return {'el': f'το {y}', 'en': f'in {y}', 'fr': f'en {y}', 'de': f'{y}'}[lang]
+        if len(v) == 7:
+            m = int(v[5:7]) - 1
+            return {'el': f'τον {MONTHS_ACC[m]} του {y}', 'en': f'in {L["en"]["months"][m]} {y}',
+                    'fr': f'en {L["fr"]["months"][m]} {y}', 'de': f'im {L["de"]["months"][m]} {y}'}[lang]
+        return {'el': 'στις ', 'en': 'on ', 'fr': 'le ', 'de': 'am '}[lang] + dlong(v, lang)
+    parts = [f'{W["pub"]} <time datetime="{item["published"][:10]}">{E(dshow(item["published"][:10]))}</time>']
     if dinfo.get('written'): parts.append(f'{W["wr"]} <time datetime="{dinfo["written"]}">{E(dshow(dinfo["written"]))}</time>')
     if dinfo.get('modified'): parts.append(f'{W["mod"]} <time datetime="{dinfo["modified"]}">{E(dshow(dinfo["modified"]))}</time>')
     s += f'<p class="date">{" · ".join(parts)}<span class="rt"> · {E(READ_MIN[lang](mins))}</span></p>\n'
@@ -439,8 +445,9 @@ try: DATES = json.load(open(os.path.join(ROOT, 'content', 'dates.json'), encodin
 except Exception: DATES = {}
 DWORDS = {'el': dict(pub='Δημοσιεύτηκε', wr='Γράφτηκε', mod='Τροποποιήθηκε'),
           'en': dict(pub='Published', wr='Written', mod='Revised'),
-          'fr': dict(pub='Publié le', wr='Écrit en', mod='Modifié le'),
-          'de': dict(pub='Veröffentlicht am', wr='Geschrieben', mod='Überarbeitet am')}
+          'fr': dict(pub='Publié', wr='Écrit', mod='Modifié'),
+          'de': dict(pub='Veröffentlicht', wr='Geschrieben', mod='Überarbeitet')}
+MONTHS_ACC = ['Ιανουάριο', 'Φεβρουάριο', 'Μάρτιο', 'Απρίλιο', 'Μάιο', 'Ιούνιο', 'Ιούλιο', 'Αύγουστο', 'Σεπτέμβριο', 'Οκτώβριο', 'Νοέμβριο', 'Δεκέμβριο']
 try: SKETCHES = json.load(open(os.path.join(ROOT, 'content', 'sketches.json'), encoding='utf-8'))
 except Exception: SKETCHES = {}
 
