@@ -75,11 +75,11 @@ Vielleicht hat also jede Konstruktion der Sprache zwei Namen. Den einen gibt ihr
 
 post = {
     'slug': 'diavlos', 'date': '2026-10-20T08:40:00.000+03:00', 'title': 'Δίαυλος',
-    'html': fig('Ο Δαίδαλος άνοιξε τα φτερά του. Εμείς απλώς είπαμε καλημέρα.') + paras(EL),
+    'html': fig('Ο Δαίδαλος άνοιξε τα φτερά του. Η καλημέρα πήγε και γύρισε.') + paras(EL),
     'translations': {
-        'en': {'slug': 'diaulos', 'title': 'Diaulos', 'html': fig('Daedalus spread his wings. We only said good morning (καλημέρα).') + paras(EN)},
-        'fr': {'slug': 'diaulos-fr', 'title': 'Diaulos', 'html': fig('Dédale a déployé ses ailes. Nous avons seulement dit bonjour (καλημέρα).') + paras(FR)},
-        'de': {'slug': 'diaulos-de', 'title': 'Diaulos', 'html': fig('Daidalos hat seine Flügel ausgebreitet. Wir haben nur Guten Morgen gesagt (καλημέρα).') + paras(DE)},
+        'en': {'slug': 'diaulos', 'title': 'Diaulos', 'html': fig('Daedalus spread his wings. The good morning (καλημέρα) went out and came back.') + paras(EN)},
+        'fr': {'slug': 'diaulos-fr', 'title': 'Diaulos', 'html': fig('Dédale a déployé ses ailes. Le bonjour (καλημέρα) est parti et revenu.') + paras(FR)},
+        'de': {'slug': 'diaulos-de', 'title': 'Diaulos', 'html': fig('Daidalos hat seine Flügel ausgebreitet. Das Guten Morgen (καλημέρα) ging hinaus und kam zurück.') + paras(DE)},
     },
 }
 os.makedirs(os.path.join(ROOT, 'content', 'new-posts'), exist_ok=True)
