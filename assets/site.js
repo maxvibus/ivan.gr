@@ -85,15 +85,19 @@
     var map = document.querySelector('svg.map'), cap = document.querySelector('.cap');
     if(map){
       var lines = map.querySelectorAll('line'), dots = map.querySelectorAll('a[data-i]');
+      var lab2 = document.createElement('div'); lab2.className = 'maplabel'; lab2.hidden = true; lab2.setAttribute('aria-hidden', 'true'); map.parentNode.appendChild(lab2);
       function show(a){
         var i = a.dataset.i, nb = {}; nb[i] = 1;
         map.classList.add('on');
         lines.forEach(function(l){ var h = l.dataset.a === i || l.dataset.b === i; l.classList.toggle('hl', h); if(h){ nb[l.dataset.a] = 1; nb[l.dataset.b] = 1; } });
         dots.forEach(function(d){ var c = d.firstChild; c.classList.toggle('hl', !!nb[d.dataset.i]); c.classList.toggle('me', d === a); });
         map.dispatchEvent(new CustomEvent('ivan-focus', { detail: +i }));
+        if(lab2){ var bx = map.parentNode.getBoundingClientRect(), cr = a.firstChild.getBoundingClientRect();
+          lab2.innerHTML = ''; var tt = document.createElement('b'); tt.textContent = a.dataset.t; var sm2 = document.createElement('small'); sm2.textContent = a.dataset.d; lab2.append(tt, sm2);
+          lab2.hidden = false; placeLabel(lab2, cr.left + cr.width / 2 - bx.left, cr.top - bx.top, bx.width); }
         if(cap){ cap.textContent = a.dataset.t; var sm = document.createElement('small'); sm.textContent = a.dataset.d; cap.appendChild(sm); }
       }
-      function hide(){ map.classList.remove('on'); map.dispatchEvent(new Event('ivan-blur')); }
+      function hide(){ map.classList.remove('on'); map.dispatchEvent(new Event('ivan-blur')); if(lab2) lab2.hidden = true; }
       var cur = null, touch = false;
       dots.forEach(function(a){
         a.addEventListener('pointerdown', function(e){ touch = e.pointerType !== 'mouse'; });
@@ -316,6 +320,119 @@ window.ivanPanZoom = function(map){
     draw(); set(paused || reduce);
     btn.addEventListener('click', function(){ if(reduce) return; set(!paused); try{ localStorage.setItem('ivan-orrery', paused ? 'paused' : 'on'); }catch(e){} });
     document.addEventListener('visibilitychange', function(){ if(document.hidden){ cancelAnimationFrame(raf); } else if(!paused && !reduce){ last = null; raf = requestAnimationFrame(loop); } });
+  }
+  if(document.readyState !== 'loading') go(); else document.addEventListener('DOMContentLoaded', go);
+})();
+
+/* ετικέτα δίπλα στο σημείο: πάνω του, μέσα στα όρια του χάρτη */
+function placeLabel(el, x, y, w){
+  el.style.left = '0px'; el.style.top = '0px';
+  var lw = el.offsetWidth, lh = el.offsetHeight;
+  var lx = Math.max(6, Math.min(w - lw - 6, x - lw / 2)), ly = y - lh - 12;
+  if(ly < 6) ly = y + 18;
+  el.style.left = lx + 'px'; el.style.top = ly + 'px';
+}
+
+/* ο χάρτης στον χώρο: τα κείμενα ως σημεία σε τρεις διαστάσεις, πάνω από το χαρτί του τετραδίου.
+   Γυρίζει πολύ αργά μόνος του· σύρσιμο οριζόντια τον στρέφει (η σελίδα κυλά κανονικά κατακόρυφα),
+   άγγιγμα σε σημείο δείχνει τον τίτλο του, δεύτερο άγγιγμα ανοίγει το κείμενο. */
+(function(){
+  function go(){
+    var data = document.getElementById('map3d'), box = document.querySelector('.mapbox3'), box2 = document.querySelector('.mapbox'), modes = document.querySelector('.mapmode');
+    if(!data || !box || !modes) return;
+    var D = JSON.parse(data.textContent), Nn = D.n, Ee = D.e, cv = box.querySelector('canvas'), lab = box.querySelector('.maplabel'), cap = document.querySelector('.cap');
+    var ctx = cv.getContext('2d'), reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var nb = Nn.map(function(){ return []; }); Ee.forEach(function(e){ nb[e[0]].push(e[1]); nb[e[1]].push(e[0]); });
+    var yaw = .6, pitch = .38, zoom = 1, W = 0, H = 0, dpr = 1, sel = -1, hov = -1, idleUntil = 0, running = false, last = null, raf = 0, visible = true;
+    var P = Nn.map(function(){ return { x: 0, y: 0, z: 0, f: 1 }; });
+    function size(){ dpr = Math.min(2, window.devicePixelRatio || 1); W = box.clientWidth; H = Math.round(Math.min(W * (innerWidth < 704 ? 1.15 : .62), innerHeight * .78));
+      cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + 'px'; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); draw(); }
+    function proj(x, y, z){
+      var cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+      var x1 = x * cy - z * sy, z1 = x * sy + z * cy;
+      var y2 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;
+      var R = Math.min(W, H) * .6 * zoom, f = 3.4 / (3.4 + z2);
+      return { x: W / 2 + x1 * R * f, y: H / 2 + y2 * R * f, z: z2, f: f };
+    }
+    function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+    function draw(){
+      if(!W) return;
+      var blue = css('--blue'), blue2 = css('--blue2'), ochre = css('--ochre'), grid = css('--grid'), rule = css('--rule');
+      var night = document.documentElement.dataset.theme === 'night';
+      ctx.clearRect(0, 0, W, H);
+      /* το χαρτί από κάτω: κάνναβος σε προοπτική */
+      ctx.lineWidth = 1; ctx.strokeStyle = night ? 'rgba(141,187,234,.10)' : 'rgba(0,94,171,.11)';
+      var FY = 1.12, G = 1.2, st = .12;
+      ctx.beginPath();
+      for(var g = -G; g <= G + 1e-6; g += st){ var a = proj(g, FY, -G), b = proj(g, FY, G); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+        var c = proj(-G, FY, g), d = proj(G, FY, g); ctx.moveTo(c.x, c.y); ctx.lineTo(d.x, d.y); }
+      ctx.stroke();
+      for(var i = 0; i < Nn.length; i++){ var q = proj(Nn[i][0], Nn[i][1] * .9, Nn[i][2]); P[i] = q; }
+      var on = sel >= 0 ? sel : hov, mark = {}; if(on >= 0){ mark[on] = 1; nb[on].forEach(function(j){ mark[j] = 1; }); }
+      /* σκιές πάνω στο χαρτί, και για το επιλεγμένο μια κάθετος ως εκεί */
+      ctx.fillStyle = night ? 'rgba(141,187,234,.16)' : 'rgba(0,94,171,.13)';
+      for(i = 0; i < Nn.length; i++){ var fl = proj(Nn[i][0], FY, Nn[i][2]); ctx.beginPath(); ctx.ellipse(fl.x, fl.y, 2.2 * fl.f, .9 * fl.f, 0, 0, 6.2832); ctx.fill();
+        if(mark[i]){ ctx.strokeStyle = night ? 'rgba(237,200,155,.35)' : 'rgba(201,154,94,.45)'; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.moveTo(P[i].x, P[i].y); ctx.lineTo(fl.x, fl.y); ctx.stroke(); ctx.setLineDash([]); } }
+      /* ακμές */
+      Ee.forEach(function(e){ var a = P[e[0]], b = P[e[1]], hl = on >= 0 && (e[0] === on || e[1] === on);
+        var depth = Math.max(.25, Math.min(1, ((a.f + b.f) / 2 - .72) * 2.4));
+        ctx.globalAlpha = hl ? 1 : (on >= 0 ? .14 : .5 * depth);
+        ctx.strokeStyle = hl ? (night ? ochre : '#C99A5E') : rule; ctx.lineWidth = hl ? 1.8 : 1;
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); });
+      /* σημεία, από τα πίσω προς τα μπρος */
+      var order = P.map(function(_, i){ return i; }).sort(function(a, b){ return P[b].z - P[a].z; });
+      order.forEach(function(i){ var q = P[i], n = Nn[i], r = Math.max(1.6, n[3] * .62 * q.f * Math.sqrt(zoom));
+        var depth = Math.max(.45, Math.min(1, (q.f - .7) * 2.6));
+        ctx.globalAlpha = on >= 0 ? (mark[i] ? 1 : .25) : (n[4] >= 2026 ? 1 : .75) * depth;
+        ctx.fillStyle = i === on ? (night ? ochre : '#C99A5E') : (n[4] >= 2026 ? blue : blue2);
+        ctx.beginPath(); ctx.arc(q.x, q.y, r, 0, 6.2832); ctx.fill(); });
+      ctx.globalAlpha = 1;
+      if(on >= 0 && !lab.hidden) placeLabel(lab, P[on].x, P[on].y - 6, W);
+    }
+    function loop(ts){
+      if(last !== null && !reduce && Date.now() > idleUntil) yaw += Math.min(.05, (ts - last) / 1000) * .045;
+      last = ts; draw(); raf = requestAnimationFrame(loop);
+    }
+    function start(){ if(running || !visible || box.hidden || document.hidden) return; running = true; last = null; raf = requestAnimationFrame(loop); }
+    function stop(){ running = false; cancelAnimationFrame(raf); }
+    function pick(x, y){ var best = -1, bd = 22 * 22; for(var i = 0; i < P.length; i++){ var dx = P[i].x - x, dy = P[i].y - y, d = dx*dx + dy*dy; if(d < bd){ bd = d; best = i; } } return best; }
+    function show(i){ sel = i; if(i < 0){ lab.hidden = true; return; }
+      var n = Nn[i]; lab.innerHTML = ''; var a = document.createElement('a'); a.href = n[7]; a.textContent = n[5]; var sm = document.createElement('small'); sm.textContent = n[6];
+      lab.append(a, sm); lab.hidden = false; placeLabel(lab, P[i].x, P[i].y - 6, W);
+      if(cap){ cap.textContent = n[5]; var c2 = document.createElement('small'); c2.textContent = n[6]; cap.appendChild(c2); } draw(); }
+    /* αφή και ποντίκι */
+    var down = null, moved = false, pinch = null, pts = {};
+    function xy(e){ var r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+    cv.addEventListener('pointerdown', function(e){ pts[e.pointerId] = xy(e); down = xy(e); moved = false; idleUntil = Date.now() + 6000;
+      var ids = Object.keys(pts); if(ids.length === 2){ var a = pts[ids[0]], b = pts[ids[1]]; pinch = Math.hypot(a.x - b.x, a.y - b.y); } });
+    cv.addEventListener('pointermove', function(e){ var p = xy(e);
+      if(!(e.pointerId in pts)){ if(e.pointerType === 'mouse'){ var h = pick(p.x, p.y); if(h !== hov){ hov = h; cv.style.cursor = h >= 0 ? 'pointer' : 'grab'; if(!running) draw(); } } return; }
+      var ids = Object.keys(pts);
+      if(ids.length === 2 && pinch){ pts[e.pointerId] = p; var a = pts[ids[0]], b = pts[ids[1]], d = Math.hypot(a.x - b.x, a.y - b.y);
+        zoom = Math.max(.7, Math.min(3.2, zoom * d / pinch)); pinch = d; moved = true; if(!running) draw(); return; }
+      var q = pts[e.pointerId], dx = p.x - q.x, dy = p.y - q.y;
+      if(!moved && Math.hypot(p.x - down.x, p.y - down.y) < 6) return;
+      moved = true; idleUntil = Date.now() + 6000;
+      yaw += dx * .008; if(e.pointerType === 'mouse') pitch = Math.max(-.2, Math.min(1.2, pitch + dy * .006));
+      pts[e.pointerId] = p; if(!running) draw(); });
+    function up(e){ if(!(e.pointerId in pts)) return; delete pts[e.pointerId]; pinch = null;
+      if(!moved && Object.keys(pts).length === 0){ var p = xy(e), i = pick(p.x, p.y);
+        if(i >= 0 && i === sel){ location.href = Nn[i][7]; return; } show(i); } }
+    cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', function(e){ delete pts[e.pointerId]; pinch = null; });
+    cv.addEventListener('pointerleave', function(){ if(hov >= 0){ hov = -1; if(!running) draw(); } });
+    cv.addEventListener('wheel', function(e){ if(!e.ctrlKey && !e.metaKey) return; e.preventDefault(); zoom = Math.max(.7, Math.min(3.2, zoom * Math.exp(-e.deltaY * .003))); if(!running) draw(); }, {passive:false});
+    if('IntersectionObserver' in window) new IntersectionObserver(function(es){ visible = es[0].isIntersecting; if(visible) start(); else stop(); }).observe(box);
+    document.addEventListener('visibilitychange', function(){ if(document.hidden) stop(); else start(); });
+    var rt = 0; addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(function(){ if(!box.hidden) size(); }, 150); });
+    /* επίπεδο ή χώρος */
+    function mode(m){ var three = m === '3d';
+      modes.querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.m === m)); });
+      box.hidden = !three; if(box2) box2.hidden = three;
+      try{ localStorage.setItem('ivan-map-mode', m); }catch(e){}
+      if(three){ size(); start(); } else stop(); }
+    modes.addEventListener('click', function(e){ var b = e.target.closest('button'); if(b) mode(b.dataset.m); });
+    var m0 = '2d'; try{ m0 = localStorage.getItem('ivan-map-mode') || '2d'; }catch(e){}
+    mode(m0);
   }
   if(document.readyState !== 'loading') go(); else document.addEventListener('DOMContentLoaded', go);
 })();

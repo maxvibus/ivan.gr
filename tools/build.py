@@ -556,8 +556,9 @@ def xartis():
     s = head(frm, 'el', 'Χάρτης των κειμένων · ivan.gr', 'Κάθε σημείο είναι ένα κείμενο· οι γραμμές ενώνουν κείμενα με κοινό λεξιλόγιο.', frm, alts)
     s += '<body class="mapp">\n' + masthead(frm, 'el', 'map', alts) + '<main class="wrap wide">\n'
     s += '<h1 class="libh">Χάρτης των κειμένων</h1>\n'
-    s += '<p class="intro">Κάθε σημείο είναι ένα κείμενο και οι γραμμές ενώνουν κείμενα με κοινό λεξιλόγιο. Τη γειτονιά τη βρίσκει μέτρηση λέξεων, όχι ανάγνωση. Σύρετε για να μετακινηθείτε· με δύο δάχτυλα ή με τα κουμπιά, μεγέθυνση.</p>\n'
-    s += '<p class="cap" aria-live="polite">Περάστε πάνω από ένα σημείο.</p>\n'
+    s += '<p class="intro">Κάθε σημείο είναι ένα κείμενο και οι γραμμές ενώνουν κείμενα με κοινό λεξιλόγιο. Τη γειτονιά τη βρίσκει μέτρηση λέξεων, όχι ανάγνωση. Με δύο δάχτυλα ή με τα κουμπιά, μεγέθυνση· στον «Χώρο», σύρετε οριζόντια για να τον γυρίσετε.</p>\n'
+    s += '<div class="mapmode" role="group" aria-label="Προβολή"><button type="button" data-m="2d" aria-pressed="true">Επίπεδο</button><button type="button" data-m="3d" aria-pressed="false">Χώρος</button></div>\n'
+    s += '<p class="cap" aria-live="polite">Αγγίξτε ένα σημείο για να δείτε τον τίτλο του· δεύτερο άγγιγμα, και ανοίγει.</p>\n'
     s += f'<div class="mapbox"><svg class="map" viewBox="0 0 {W} {H}" data-w="{W}" data-h="{H}" role="group" aria-label="Χάρτης των κειμένων"><g class="vp"><g class="surf" aria-hidden="true"></g><g class="tr"><g class="edges">'
     for a, b in sorted(edges):
         s += f'<line x1="{X[a]:.1f}" y1="{Y[a]:.1f}" x2="{X[b]:.1f}" y2="{Y[b]:.1f}" data-a="{a}" data-b="{b}"/>'
@@ -568,6 +569,26 @@ def xartis():
         s += (f'<a href="{rel(frm, k)}" data-i="{i}" data-t="{E(t)}" data-d="{E(dlong(p["published"], "el"))}" aria-label="{E(t)}">'
               f'<circle class="y{yr}" cx="{X[i]:.1f}" cy="{Y[i]:.1f}" r="{r:.1f}"/></a>')
     s += '</g></g></g></svg></div>\n'
+    # ο ίδιος χάρτης στον χώρο: η ίδια διάταξη δυνάμεων σε τρεις διαστάσεις
+    rng3 = np.random.default_rng(11); Q = rng3.uniform(-1, 1, (n, 3)); t = .12
+    for it in range(450):
+        d = Q[:, None, :] - Q[None, :, :]; dist = np.linalg.norm(d, axis=2) + 1e-6
+        F = (d / dist[..., None] * (kk * kk / dist)[..., None]).sum(1)
+        dv = Q[E_[:, 0]] - Q[E_[:, 1]]; dl = np.linalg.norm(dv, axis=1)[:, None] + 1e-6
+        att = dv / dl * (dl * dl / kk)
+        np.add.at(F, E_[:, 0], -att); np.add.at(F, E_[:, 1], att)
+        F -= Q * .05
+        L_ = np.linalg.norm(F, axis=1)[:, None] + 1e-9
+        Q += F / L_ * np.minimum(L_, t); t *= .992
+    Q -= Q.mean(0); Q /= np.abs(Q).max()
+    nodes3 = []
+    for i, k in enumerate(keys):
+        p = posts[i]; words = len(text_of(p['html']).split())
+        nodes3.append([round(float(Q[i, 0]), 4), round(float(Q[i, 1]), 4), round(float(Q[i, 2]), 4), round(min(11, 3.2 + (words ** .5) / 9), 1),
+                       int(p['published'][:4]), p['title'].strip(), dlong(p['published'], 'el'), rel(frm, k)])
+    s += ('<div class="mapbox3" hidden><canvas class="map3" aria-label="Ο χάρτης των κειμένων στον χώρο· σύρετε οριζόντια για να τον γυρίσετε"></canvas>'
+          '<div class="maplabel" hidden></div></div>\n')
+    s += '<script type="application/json" id="map3d">' + json.dumps({'n': nodes3, 'e': [list(map(int, e)) for e in sorted(edges)]}, ensure_ascii=False).replace('</', '<\\/') + '</script>\n'
     s += '<p class="legend"><span class="k y2026"></span>2026 <span class="k y2025"></span>2025 · μέγεθος σημείου: μήκος κειμένου</p>\n'
     s += '</main>\n' + footer(frm) + '</body>\n</html>\n'
     write(frm, s)
