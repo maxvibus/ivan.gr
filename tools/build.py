@@ -238,12 +238,12 @@ def write(p, s):
     open(fp, 'w', encoding='utf-8').write(s)
 
 # --- βιβλιοθήκες (ανά γλώσσα) ---------------------------------------------
-LIBNAME = {'el': 'Βιβλιοθήκη', 'en': 'Library', 'fr': 'Bibliothèque', 'de': 'Bibliothek'}
+LIBNAME = {'el': 'Κείμενα', 'en': 'Texts', 'fr': 'Textes', 'de': 'Texte'}
 
 def masthead(frm, lang, cur, alts):
     n = []
     if lang == 'el':
-        links = [('front', 'Σήμερα', 'index.html'), ('lib', 'Βιβλιοθήκη', 'keimena/index.html'), ('arch', 'Αρχείο φύλλων', 'fylla/index.html'), ('map', 'Χάρτης', 'xartis/index.html')] + ([('letters', 'Επιστολές', 'epistoles/index.html')] if LETTERS_EMAIL else [])
+        links = [('front', 'Σήμερα', 'index.html'), ('lib', 'Κείμενα', 'keimena/index.html'), ('arch', 'Αρχείο φύλλων', 'fylla/index.html'), ('map', 'Χάρτης', 'xartis/index.html')] + ([('letters', 'Επιστολές', 'epistoles/index.html')] if LETTERS_EMAIL else [])
         for key, lab, to in links:
             if key in ('front', 'arch') and not ISSUES: continue
             a = ' aria-current="page"' if key == cur else ''
