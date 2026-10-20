@@ -182,7 +182,7 @@ def og_save():
         json.dump(OG_IDX, open(OG_IDX_P, 'w', encoding='utf-8'), ensure_ascii=False, indent=0, sort_keys=True)
 
 def head(frm, lang, title, desc, canon_path, alts=None, extra='', img=None):
-    img = img or og_image('site', 'Κείμενα φιλοσοφίας, θεολογίας και γλώσσας', '')
+    img = img or og_image('site', 'Ιβάν Δ. Αθανασόπουλος', '')
     css = rel(frm, 'assets/site.css'); ico = rel(frm, 'assets/icon-32.png'); ico180 = rel(frm, 'assets/icon-180.png')
     fr = rel(frm, 'assets/fonts/ebgaramond-regular.woff2')
     alt = ''
@@ -230,7 +230,7 @@ NIGHT_BTN = '<button type="button" class="night" aria-label="Νυχτερινή 
 
 def footer(frm, lang='el'):
     # κάτω, μαζί με το ivan.gr: η μία πρόταση που λέει τι είναι ο τόπος, όρθια, όχι πλάγια
-    return (f'<footer class="foot"><p class="ftag"><a href="{rel(frm, FRONT[lang])}">ivan.gr</a> · {E(L[lang]["intro"])}</p>'
+    return (f'<footer class="foot"><p class="ftag"><a href="{rel(frm, FRONT[lang])}">ivan.gr</a></p>'
             f'<p class="fcopy">© 2025–2026 {E(L[lang]["author"])}</p></footer>\n')
 
 def write(p, s):
@@ -238,6 +238,7 @@ def write(p, s):
     open(fp, 'w', encoding='utf-8').write(s)
 
 # --- βιβλιοθήκες (ανά γλώσσα) ---------------------------------------------
+PLAIN_DESC = {'el': 'Κείμενα του Ιβάν Δ. Αθανασόπουλου.', 'en': 'Texts by Ivan D. Athanasopoulos.', 'fr': 'Textes d’Ivan D. Athanasopoulos.', 'de': 'Texte von Ivan D. Athanasopoulos.'}
 LIBNAME = {'el': 'Κείμενα', 'en': 'Texts', 'fr': 'Textes', 'de': 'Texte'}
 
 def masthead(frm, lang, cur, alts):
@@ -271,10 +272,10 @@ def library(lang, frm=None):
     if is_front:
         ld = ('<script type="application/ld+json">' + json.dumps({
             '@context': 'https://schema.org', '@type': 'WebSite', 'name': 'ivan.gr', 'url': SITE + '/',
-            'inLanguage': lang, 'description': T['intro'],
+            'inLanguage': lang,
             'author': {'@type': 'Person', 'name': L['el']['author'], 'alternateName': [L['en']['author'], 'ivan'], 'url': SITE + '/'}},
             ensure_ascii=False) + '</script>\n')
-    s = head(frm, lang, T['author'] + ' · ivan.gr' if is_front else LIBNAME[lang] + ' · ivan.gr', T['intro'], HOME[lang], alts, extra=ld)
+    s = head(frm, lang, T['author'] + ' · ivan.gr' if is_front else LIBNAME[lang] + ' · ivan.gr', PLAIN_DESC[lang], HOME[lang], alts, extra=ld)
     s += '<body class="lib">\n' + masthead(frm, lang, 'lib', alts)
     s += '<main id="texts" class="wrap">\n'
     s += f'<h1 class="vh">{E("ivan.gr" if is_front else LIBNAME[lang])}</h1>\n'
