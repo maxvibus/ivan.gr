@@ -23,65 +23,131 @@
 @font-face{font-family:"EB Garamond";src:url(../assets/fonts/ebgaramond-italic.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
 @font-face{font-family:"EB Garamond";src:url(../assets/fonts/ebgaramond-semibold.woff2) format("woff2");font-weight:600;font-style:normal;font-display:swap}
 
-/* Ένα χαρτί και ένα «κανάλι» IRC από κάτω: ο αριθμός στη μέση, το ημερολόγιο του γύρου από κάτω, όπως στο main μιας συνομιλίας. */
+/* Χαρτί την ημέρα, σκοτάδι τη νύχτα — τα ίδια χρώματα με τον ιστότοπο.
+   Στο κέντρο ο αριθμός μέσα στον κύκλο του χρόνου, οι παίκτες γύρω του· δίπλα (ή από κάτω) ο πίνακας και το κανάλι. */
 :root{
-  --paper:#FBF8F2; --ink:#1F3550; --soft:#4A5A70; --rule:rgba(0,94,171,.22); --ochre:#B07A35; --warn:#A23B2A; --ok:#2F6B4F; --panel:#F2EDE2; --accent:#005EAB;
+  --paper:#FBF8F2; --card:#FFFFFF; --ink:#1F3550; --soft:#4A5A70; --rule:rgba(0,94,171,.22); --rule2:rgba(0,94,171,.10);
+  --accent:#005EAB; --ochre:#C99A5E; --warn:#A23B2A; --ok:#2F6B4F; --panel:#F3EEE3; --glow:0 0 0 transparent;
+  --shade:0 1px 2px rgba(31,53,80,.06),0 8px 28px rgba(31,53,80,.07);
   --serif:"EB Garamond",Garamond,Georgia,serif; --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  color-scheme:light;
 }
-:root[data-theme="night"]{--paper:#0F1620;--ink:#E9E3D8;--soft:#B8B2A6;--rule:rgba(141,187,234,.25);--ochre:#EDC89B;--warn:#E07A62;--ok:#7CC3A0;--panel:#16202C;--accent:#8DBBEA;color-scheme:dark}
+:root[data-theme="night"]{
+  --paper:#0F1620; --card:#16202C; --ink:#E9E3D8; --soft:#B8B2A6; --rule:rgba(141,187,234,.25); --rule2:rgba(141,187,234,.10);
+  --accent:#8DBBEA; --ochre:#EDC89B; --warn:#E07A62; --ok:#7CC3A0; --panel:#121B26;
+  --glow:0 0 18px rgba(141,187,234,.35); --shade:0 1px 2px rgba(0,0,0,.4),0 12px 36px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
 html,body{height:100%}
-body{background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.5;
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.5;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-main{max-width:640px;margin:0 auto;padding-block:28px 40px;display:flex;flex-direction:column;gap:22px}
-header h1{font-weight:400;font-size:2.1rem;margin:0;text-wrap:balance}
-header p{margin:.3rem 0 0;color:var(--soft);max-width:60ch}
-.stage{display:grid;grid-template-columns:1fr;gap:10px;justify-items:center;padding:26px 0 18px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
-.dial{position:relative;width:min(72vw,260px);aspect-ratio:1}
-.dial svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
-.dial .track{fill:none;stroke:var(--rule);stroke-width:5}
-.dial .arc{fill:none;stroke:var(--accent);stroke-width:5;stroke-linecap:round;transition:stroke .3s}
-.dial.late .arc{stroke:var(--warn)}
-.dial .num{position:absolute;inset:0;display:grid;place-items:center}
-.dial .secs{position:absolute;left:0;right:0;bottom:22%;text-align:center;font-family:var(--mono);font-size:.8rem;color:var(--soft);font-variant-numeric:tabular-nums}
-.num{font-size:6.4rem;line-height:1;font-variant-numeric:tabular-nums;transition:color .3s,transform .15s}
-.num.pop{transform:scale(1.08)}
-.pips{display:flex;gap:8px;justify-content:center}
-.pips i{width:10px;height:10px;border-radius:50%;border:1px solid var(--accent);display:block;transition:background .2s}
-.pips i.on{background:var(--accent)}
-.players{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:0;padding:0;list-style:none}
-.players li{font-size:.92rem;padding:.15em .75em;border:1px solid var(--rule);border-radius:999px;color:var(--soft);transition:all .2s}
-.players li.me{color:var(--ink);border-color:var(--ink)}
-.players li.bot{border-style:dashed}
-.players li.said{background:var(--accent);border-color:var(--accent);color:var(--paper)}
-.players li.clash{background:var(--warn);border-color:var(--warn);color:var(--paper)}
-.num.reset{color:var(--warn)} .num.win{color:var(--ok)}
-.status{min-height:1.6em;color:var(--soft);font-style:italic;text-align:center}
-.meta{font-family:var(--mono);font-size:.78rem;color:var(--soft);display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
-.controls{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-button{font:inherit;cursor:pointer;border-radius:999px;border:1px solid var(--ink);background:transparent;color:var(--ink);padding:.55em 1.4em}
-button.say{background:var(--ink);color:var(--paper);font-size:1.25rem;padding:.6em 2.2em}
-button:disabled{opacity:.35;cursor:default}
-button:focus-visible{outline:2px solid var(--ochre);outline-offset:3px}
-.log{background:var(--panel);border-radius:6px;padding:12px 14px;font-family:var(--mono);font-size:.82rem;line-height:1.55;height:13.5em;overflow-y:auto}
-.log div{white-space:pre-wrap}
-.log .me{color:var(--ink);font-weight:500} .log .sys{color:var(--soft);font-style:italic}
-.log .bad{color:var(--warn)} .log .good{color:var(--ok)}
-details{color:var(--soft)} details summary{cursor:pointer;color:var(--ink)}
-.rules{margin:.5rem 0 0;padding-left:1.1rem} .rules li{margin:.2rem 0}
-label.opt{display:flex;gap:.5rem;align-items:center;font-size:.95rem}
-@media (prefers-reduced-motion:reduce){.num,.dial .arc,.pips i,.players li{transition:none}}
+:root[data-theme="night"]{background:#0F1620}
+:root[data-theme="night"] body{background:radial-gradient(1200px 700px at 50% 0%,#15212E 0%,#0F1620 70%) no-repeat;min-height:100%}
+main{max-width:640px;margin:0 auto;padding-block:24px 40px;display:flex;flex-direction:column;gap:20px}
+[hidden]{display:none!important}
 
-.home{font-size:.95rem;color:var(--soft);text-decoration:none;border-bottom:1px solid var(--rule)} .home:hover{color:var(--accent)}
-body{margin:0}
+header{display:grid;grid-template-columns:1fr auto;gap:.2rem 1rem;align-items:start}
+header .home{font-size:.95rem;color:var(--soft);text-decoration:none;border-bottom:1px solid var(--rule);justify-self:start} header .home:hover{color:var(--accent)}
+header h1{grid-column:1/-1;font-weight:400;font-size:2.1rem;margin:0;line-height:1.15}
+header p{grid-column:1/-1;margin:.2rem 0 0;color:var(--soft);max-width:60ch}
+.theme{width:2.6rem;height:2.6rem;padding:0;border-radius:50%;border:1px solid var(--rule);background:transparent;color:var(--accent);display:grid;place-items:center;cursor:pointer}
+.theme svg{width:1.1rem;height:1.1rem}
+
+button{font:inherit;cursor:pointer;border-radius:999px;border:1px solid var(--ink);background:transparent;color:var(--ink);padding:.5em 1.3em;transition:background .2s,color .2s,box-shadow .2s}
+button:hover:not(:disabled){box-shadow:var(--glow)}
+button.say{background:var(--ink);color:var(--paper);font-size:1.3rem;padding:.6em 2.4em;min-width:11em}
+:root[data-theme="night"] button.say{background:var(--accent);border-color:var(--accent);color:#0F1620}
+button.quiet{border-color:var(--rule);color:var(--soft);font-size:.95rem;padding:.4em 1.1em}
+button:disabled{opacity:.35;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ochre);outline-offset:3px}
+input[type=text]{font:inherit;padding:.45em .8em;border:1px solid var(--rule);border-radius:10px;background:var(--card);color:var(--ink);min-width:0;flex:1 1 12rem}
+select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radius:10px;background:var(--card);color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.who{font-size:.95rem;color:var(--soft)}
+.note{font-size:.95rem;color:var(--soft);margin:0}
+.link{font-family:var(--mono);font-size:.8rem;background:var(--panel);padding:.5em .8em;border-radius:8px;word-break:break-all;flex:1 1 14rem;min-width:0}
 
 .lobby{display:flex;flex-direction:column;gap:12px;padding:16px 0;border-top:1px solid var(--rule)}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-[hidden]{display:none!important}
-input[type=text]{font:inherit;padding:.45em .8em;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink);min-width:0;flex:1 1 12rem}
-select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
-.link{font-family:var(--mono);font-size:.85rem;background:var(--panel);padding:.5em .8em;border-radius:6px;word-break:break-all;flex:1 1 14rem;min-width:0}
-.who{font-size:.95rem;color:var(--soft)} .who b{color:var(--ink);font-weight:500}
-.note{font-size:.95rem;color:var(--soft);margin:0}
+
+/* ---------- σκηνή ---------- */
+.arena{display:grid;grid-template-columns:1fr;gap:22px}
+.stage{display:grid;justify-items:center;gap:12px;padding:14px 0 6px}
+.ring{position:relative;width:min(84vw,360px);aspect-ratio:1;margin-bottom:.6rem}
+.dial{position:absolute;inset:17%;border-radius:50%}
+.dial svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);overflow:visible}
+.dial .track{fill:none;stroke:var(--rule);stroke-width:4}
+.dial .arc{fill:none;stroke:var(--accent);stroke-width:5;stroke-linecap:round;transition:stroke .3s}
+:root[data-theme="night"] .dial .arc{filter:drop-shadow(0 0 4px rgba(141,187,234,.55))}
+.dial.late .arc{stroke:var(--warn)}
+:root[data-theme="night"] .dial.late .arc{filter:drop-shadow(0 0 5px rgba(224,122,98,.6))}
+.dial .face{position:absolute;inset:7%;border-radius:50%;background:var(--card);box-shadow:var(--shade);display:grid;place-items:center}
+.num{font-size:clamp(3.6rem,15vw,6.2rem);line-height:1;font-variant-numeric:tabular-nums;transition:color .3s,transform .15s}
+.num.pop{transform:scale(1.08)} .num.reset{color:var(--warn)} .num.win{color:var(--ok)}
+.secs{position:absolute;left:0;right:0;bottom:21%;text-align:center;font-family:var(--mono);font-size:.75rem;color:var(--soft);font-variant-numeric:tabular-nums}
+
+/* οι παίκτες γύρω από τον κύκλο */
+.seat{position:absolute;width:0;height:0}
+.ava{position:absolute;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:2px;transition:transform .18s}
+.disc{width:2.6rem;height:2.6rem;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:600;font-size:1.05rem;
+  background:var(--c);box-shadow:0 0 0 2px var(--paper),0 0 0 3px var(--c);transition:box-shadow .2s,transform .18s}
+.disc svg{width:1.25rem;height:1.25rem}
+.ava .nm{font-size:.78rem;color:var(--soft);max-width:6.5rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ava.me .nm{color:var(--ink);font-weight:600}
+.ava.said .disc{transform:scale(1.18);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--c),0 0 22px var(--c)}
+.ava.clash .disc{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--warn),0 0 22px var(--warn)}
+.ava.locked .disc{opacity:.55}
+.ava .bubble{position:absolute;bottom:100%;margin-bottom:4px;background:var(--c);color:#fff;font-size:.8rem;padding:0 .45em;border-radius:999px;font-variant-numeric:tabular-nums;opacity:0;transform:translateY(4px);transition:all .2s}
+.ava.said .bubble,.ava.clash .bubble{opacity:1;transform:none}
+
+.pips{display:flex;gap:8px;justify-content:center}
+.pips i{width:10px;height:10px;border-radius:50%;border:1px solid var(--accent);display:block;transition:background .2s,box-shadow .2s}
+.pips i.on{background:var(--accent)} :root[data-theme="night"] .pips i.on{box-shadow:0 0 6px rgba(141,187,234,.7)}
+.status{min-height:1.6em;color:var(--soft);font-style:italic;text-align:center}
+.controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+/* ---------- πλάι: πίνακας, κανάλι, κουβέντα ---------- */
+.side{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border:1px solid var(--rule2);border-radius:14px;padding:12px 14px;box-shadow:var(--shade)}
+.card h2{font-size:1rem;font-weight:600;margin:0 0 6px}
+.totals{display:flex;gap:16px;flex-wrap:wrap;font-size:.92rem;color:var(--soft)} .totals b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+table.stats{width:100%;border-collapse:collapse;font-size:.88rem;font-variant-numeric:tabular-nums;margin-top:6px}
+.stats th{font-weight:400;color:var(--soft);text-align:right;padding:2px 4px;border-bottom:1px solid var(--rule2)}
+.stats th:first-child,.stats td:first-child{text-align:left}
+.stats td{text-align:right;padding:3px 4px}
+.stats .dot{display:inline-block;width:.8em;height:.8em;border-radius:50%;background:var(--c);vertical-align:-.05em;margin-right:.4em}
+.stats tr.top td{font-weight:600}
+.log{font-family:var(--mono);font-size:.78rem;line-height:1.55;height:14em;overflow-y:auto}
+.log div{white-space:pre-wrap}
+.log .me{font-weight:600} .log .sys{color:var(--soft);font-style:italic}
+.log .bad{color:var(--warn)} .log .good{color:var(--ok)} .log .chat{color:var(--accent)}
+.chatrow{display:flex;gap:8px;margin-top:8px} .chatrow input{flex:1}
+details{color:var(--soft)} details summary{cursor:pointer;color:var(--ink)}
+.rules{margin:.5rem 0 0;padding-left:1.1rem} .rules li{margin:.25rem 0}
+
+/* ---------- μεγέθη οθόνης ---------- */
+@media (min-width:980px){
+  main{max-width:1120px}
+  header h1{font-size:2.6rem}
+  .arena{grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);align-items:start}
+  .ring{width:min(46vw,500px)}
+  .num{font-size:8.5rem}
+  .disc{width:3.1rem;height:3.1rem;font-size:1.25rem}
+  .ava .nm{font-size:.9rem}
+  .log{height:20em}
+  .side{position:sticky;top:20px}
+}
+@media (min-width:640px) and (max-width:979px){ .ring{width:min(70vw,440px)} .num{font-size:7.5rem} }
+/* ρολόι χεριού: μόνο ο κύκλος και το κουμπί */
+@media (max-width:300px){
+  body{font-size:15px;padding-left:6px;padding-right:6px}
+  header p,.side,details,.pips,.status,.ava .nm,.playing .lobby,.playing header{display:none}
+  header h1{font-size:1.2rem}
+  .ring{width:96vw}
+  .disc{width:1.7rem;height:1.7rem;font-size:.8rem}
+  button.say{min-width:0;width:100%;font-size:1.05rem;padding:.5em}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 <script src="peerjs-1.5.4.min.js"></script>
 </head>
@@ -89,6 +155,7 @@ select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radiu
 <main>
   <header>
     <a class="home" href="../">ivan.gr</a>
+    <button class="theme" id="theme" type="button" aria-label="Νύχτα ή ημέρα"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></button>
     <h1>Ως το δέκα</h1>
     <p>Μετράτε μαζί ως το δέκα, ένας αριθμός τη φορά, χωρίς σειρά. Αν δύο πουν τον ίδιο αριθμό μαζί, ο γύρος ξεκινά από την αρχή.</p>
   </header>
@@ -99,71 +166,90 @@ select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radiu
       <input type="text" id="name" maxlength="16" autocomplete="off" placeholder="π.χ. ivan">
     </div>
     <div class="row" id="pick">
-      <button id="solo">Παίζω μόνος με τον υπολογιστή</button>
+      <button id="solo">Παίζω με τον υπολογιστή</button>
       <button id="host">Ανοίγω δωμάτιο για φίλους</button>
       <button id="join" hidden>Μπαίνω στο δωμάτιο</button>
     </div>
     <div class="row" id="share" hidden>
-      <span class="link" id="link"></span><button id="copy">Αντιγραφή</button>
+      <span class="link" id="link"></span><button id="copy" class="quiet">Αντιγραφή</button>
     </div>
     <div class="row" id="hostopts" hidden>
       <label class="who" for="bots">Παίκτες του υπολογιστή</label>
-      <select id="bots"><option value="0">κανένας</option><option value="1">▲</option><option value="2">▲ ●</option><option value="3" selected>▲ ● ■</option></select>
+      <select id="bots"><option value="0">κανένας</option><option value="1">ένας</option><option value="2">δύο</option><option value="3" selected>τρεις</option></select>
       <label class="who" for="level">Δυσκολία</label>
       <select id="level"><option value="0">εύκολο</option><option value="1" selected>κανονικό</option><option value="2">δύσκολο</option></select>
     </div>
-    <p class="note" id="who"></p>
   </section>
 
-  <section class="stage" aria-live="polite">
-    <div class="dial" id="dial">
-      <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="54"/><circle class="arc" id="arc" cx="60" cy="60" r="54"/></svg>
-      <div class="num" id="num">0</div>
-      <div class="secs" id="left"></div>
-    </div>
-    <div class="pips" id="pips" aria-hidden="true"></div>
-    <ul class="players" id="players" aria-label="Παίκτες"></ul>
-    <div class="status" id="status">Γράψε ένα όνομα και διάλεξε πώς θα παίξεις.</div>
-    <div class="meta"><span id="best">καλύτερο: 0</span><span id="tries">γύροι: 0</span></div>
-  </section>
+  <div class="arena">
+    <section class="stage" aria-live="polite">
+      <div class="ring" id="ring">
+        <div class="dial" id="dial">
+          <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="56"/><circle class="arc" id="arc" cx="60" cy="60" r="56"/></svg>
+          <div class="face"><div class="num" id="num">0</div></div>
+          <div class="secs" id="left"></div>
+        </div>
+      </div>
+      <div class="pips" id="pips" aria-hidden="true"></div>
+      <div class="status" id="status">Γράψε ένα όνομα και διάλεξε πώς θα παίξεις.</div>
+      <div class="controls">
+        <button class="say" id="say" disabled>Λέω το 1</button>
+      </div>
+      <div class="controls">
+        <button id="start" hidden>Ξεκίνα</button>
+        <button id="pause" class="quiet" hidden>Διακοπή</button>
+        <button id="leave" class="quiet" hidden>Έξοδος</button>
+      </div>
+    </section>
 
-  <div class="controls">
-    <button class="say" id="say" disabled>Λέω το <span id="next">1</span></button>
-    <button id="start" hidden>Ξεκίνα</button>
+    <aside class="side">
+      <div class="card" id="board">
+        <h2>Πίνακας</h2>
+        <div class="totals"><span>γύροι <b id="tRounds">0</b></span><span>δεκάρια <b id="tWins">0</b></span><span>καλύτερο <b id="tBest">0</b></span></div>
+        <table class="stats"><thead><tr><th>παίκτης</th><th>αριθμοί</th><th>συγκρ.</th><th>εύστοχα</th><th>χρόνος</th></tr></thead><tbody id="stats"></tbody></table>
+      </div>
+      <div class="card">
+        <h2>Κανάλι</h2>
+        <div class="log" id="log" role="log" aria-label="Το κανάλι"></div>
+        <form class="chatrow" id="chatform" hidden autocomplete="off">
+          <input type="text" id="chat" maxlength="200" placeholder="Γράψε κάτι στους άλλους…" disabled>
+          <button class="quiet" id="send" disabled>Στείλε</button>
+        </form>
+        <p class="note" id="chatnote" hidden>Στο κανάλι γράφετε στις παύσεις και ανάμεσα στους γύρους.</p>
+      </div>
+      <div class="controls"><button id="short" class="quiet" hidden>Αντιγραφή σύντομου ιστορικού</button></div>
+      <details>
+        <summary>Οι κανόνες</summary>
+        <ul class="rules">
+          <li>Κανείς δεν λέει δύο αριθμούς στη σειρά· όποιος πει έναν, περιμένει να πει άλλος τον επόμενο.</li>
+          <li>Το ένα έχει 12 δευτερόλεπτα· κάθε επόμενος αριθμός λίγο λιγότερο, ως τα 8 για το δέκα. Όσο δεν πατά κανείς, ο κύκλος αδειάζει όλο και πιο γρήγορα.</li>
+          <li>Αν δύο ή περισσότεροι πουν τον αριθμό μέσα σε ένα δευτερόλεπτο, είναι σύγκρουση· ξανά από το ένα. Αν τελειώσει ο χρόνος χωρίς να πει κανείς τον αριθμό, ξανά από το ένα.</li>
+          <li>Οι παίκτες του υπολογιστή (Ώχρα, Λουλάκι, Κυπαρίσσι, με το αστεράκι) έχουν ο καθένας δικό του ρυθμό που αλλάζει σε κάθε γύρο. Μαθαίνουν πότε πατά ο καθένας σας· αν γίνετε προβλέψιμοι, μιλούν την ίδια στιγμή μαζί σας.</li>
+          <li>Αν περάσουν τρεις γύροι χωρίς να παίξει άνθρωπος, το παιχνίδι σταματά μόνο του.</li>
+          <li>Πλήκτρο: Enter ή διάστημα. Σε δωμάτιο, μόνο όποιος το άνοιξε ξεκινά και σταματά τον γύρο.</li>
+        </ul>
+      </details>
+    </aside>
   </div>
-
-  <div class="log" id="log" role="log" aria-label="Το κανάλι"></div>
-  <div class="controls"><button id="short" hidden>Αντιγραφή σύντομου ιστορικού</button></div>
-
-  <details>
-    <summary>Οι κανόνες</summary>
-    <ul class="rules">
-      <li>Κανείς δεν λέει δύο αριθμούς στη σειρά· όποιος πει έναν, περιμένει να πει άλλος τον επόμενο.</li>
-      <li>Το ένα έχει 12 δευτερόλεπτα· κάθε επόμενος αριθμός λίγο λιγότερο, ως τα 8 για το δέκα. Όσο δεν πατά κανείς, ο κύκλος αδειάζει όλο και πιο γρήγορα.</li>
-      <li>Αν δύο ή περισσότεροι πουν τον αριθμό μέσα σε ένα δευτερόλεπτο, είναι σύγκρουση· ξανά από το ένα.</li>
-      <li>Αν τελειώσει ο χρόνος χωρίς να πει κανείς τον αριθμό, ξανά από το ένα.</li>
-      <li>Οι παίκτες του υπολογιστή είναι τα ▲ ● ■ (με διακεκομμένο περίγραμμα). Ο καθένας έχει δικό του ρυθμό και χρόνο αντίδρασης που αλλάζουν σε κάθε γύρο, και δεν επαναλαμβάνει την ίδια στιγμή· αν προλάβει να ακούσει ότι μίλησε άλλος, συγκρατείται. Μαθαίνουν πότε πατά ο καθένας σας μετά από τον καθένα· αν γίνετε προβλέψιμοι, μιλούν την ίδια στιγμή μαζί σας. Για να φτάσετε στο δέκα, μην παίζετε πάντα με τον ίδιο ρυθμό.</li>
-      <li>Ο κύκλος γύρω από τον αριθμό είναι ο χρόνος που απομένει για τον επόμενο· οι τελείες δείχνουν πόσο έχετε φτάσει.</li>
-      <li>Πλήκτρο: Enter ή διάστημα. Σε δωμάτιο, μόνο όποιος το άνοιξε ξεκινά τον γύρο.</li>
-    </ul>
-  </details>
 </main>
 <script>
-const BASE=12, LAST=8, CLASH=1.0, TARGET=10, PREFIX='ivangr-deka-';
-const BOTNAMES=['▲','●','■'];
-// επίθεση: πόσο συχνά ο υπολογιστής «χτυπά» έναν προβλέψιμο παίκτη· γέμισμα: πόσο συχνά λέει ο ίδιος τον αριθμό όταν διστάζετε
-// Η δυσκολία πιέζει τον άνθρωπο (πρόβλεψη, ρυθμός, σιωπές)· μεταξύ τους οι παίκτες του υπολογιστή μένουν καλοί συμπαίκτες με σπάνια λάθη.
+const BASE=12, LAST=8, CLASH=1.0, TARGET=10, PREFIX='ivangr-deka-', IDLE_ROUNDS=3;
+// Οι παίκτες του υπολογιστή έχουν ονόματα χρωμάτων· οι άνθρωποι παίρνουν χρώμα με τη σειρά που μπαίνουν.
+const BOTNAMES=['Ώχρα','Λουλάκι','Κυπαρίσσι'];
+const BOTCOLORS={'Ώχρα':'#C9873A','Λουλάκι':'#4F5FB0','Κυπαρίσσι':'#2F7A63'};
+const HUMANCOLORS=['#005EAB','#B04A6F','#7A5AA8','#2E8C9A','#9A6B2E','#5B7F2A'];
+// Η δυσκολία πιέζει τον άνθρωπο (πρόβλεψη, ρυθμός, σιωπές)· μεταξύ τους οι παίκτες του υπολογιστή μένουν καλοί συμπαίκτες.
 const LEVELS=[{attack:0.35,act:0.8,react:[0.2,0.45],keep:0.97},{attack:0.65,act:1.0,react:[0.2,0.5],keep:0.93},{attack:0.95,act:1.2,react:[0.25,0.55],keep:0.88}];
-// Κάθε παίκτης του υπολογιστή έχει δικό του «χαρακτήρα» που αλλάζει σε κάθε γύρο: ρυθμό, διασπορά, βιασύνη, πόσο συχνά συμμετέχει.
 function persona(){ return {mu:Math.exp(Math.log(0.8)+Math.random()*Math.log(5)), sg:0.25+Math.random()*0.35, eager:0.4+Math.random()*0.35, act:0.35+Math.random()*0.35, react:0.5, prev:-9}; }
 const $=id=>document.getElementById(id);
-const numEl=$('num'),statusEl=$('status'),logEl=$('log'),sayBtn=$('say'),startBtn=$('start'),arc=$('arc'),dial=$('dial');
-const CIRC=2*Math.PI*54; arc.style.strokeDasharray=CIRC; arc.style.strokeDashoffset=CIRC;
+const numEl=$('num'),statusEl=$('status'),logEl=$('log'),sayBtn=$('say'),startBtn=$('start'),arc=$('arc'),dial=$('dial'),ring=$('ring');
+const CIRC=2*Math.PI*56; arc.style.strokeDasharray=CIRC; arc.style.strokeDashoffset=CIRC;
 $('pips').innerHTML='<i></i>'.repeat(TARGET);
+const STAR='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.2 6.6 6.8.2-5.4 4.2 1.9 6.6L12 16.2 6.5 20.1l1.9-6.6L3 9.3l6.8-.2z"/></svg>';
 let role=null, me='', peer=null, conns=[], hostConn=null;
 // κατάσταση του παιχνιδιού: την κρατά μόνο ο «οικοδεσπότης» (ή ο μόνος παίκτης)
-let G={hist:{},running:false,n:0,last:null,deadline:0,win:0,claims:[],timers:[],best:0,tries:0,status:'',cls:'num',humans:[],bots:[]};
-// αυτό που βλέπει ο καθένας στην οθόνη
+let G={hist:{},running:false,paused:false,n:0,last:null,deadline:0,win:0,claims:[],timers:[],best:0,tries:0,wins:0,status:'',cls:'num',
+       humans:[],bots:[],colors:{},stats:{},idle:0,roundHuman:false};
 let V={running:false,n:0,last:null,until:0,win:0};
 let raf=0;
 
@@ -171,26 +257,65 @@ try{ localStorage.removeItem('deka-name'); }catch(e){}  // το όνομα γρ�
 const code=(location.hash||'').replace('#','').toLowerCase().replace(/[^a-z0-9]/g,'');
 if(code){ $('solo').hidden=true; $('host').hidden=true; $('join').hidden=false; statusEl.textContent='Γράψε όνομα και πάτα «Μπαίνω στο δωμάτιο». Όποιος μπει πρώτος, ανοίγει το δωμάτιο.'; }
 
+/* νύχτα / ημέρα, κοινή με τον ιστότοπο */
+$('theme').addEventListener('click',()=>{ const r=document.documentElement, n=r.dataset.theme!=='night';
+  if(n) r.dataset.theme='night'; else delete r.dataset.theme;
+  try{ if(n) localStorage.setItem('ivan-theme','night'); else localStorage.removeItem('ivan-theme'); }catch(e){} });
+
 function stamp(){return new Date().toTimeString().slice(0,8)}
 function showLog(text,cls){const d=document.createElement('div');d.className=cls||'';d.textContent='['+stamp()+'] '+text;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight}
 function getName(){let n=$('name').value.trim().slice(0,16); if(!n){$('name').focus(); statusEl.textContent='Γράψε πρώτα ένα όνομα.'; return null} return n}
-function lockLobby(){ $('pick').hidden=true; $('name').disabled=true; }
+function lockLobby(){ document.body.classList.add('playing'); $('pick').hidden=true; $('name').disabled=true; $('leave').hidden=false; $('chatform').hidden=false; $('chatnote').hidden=false; }
+function colorOf(p,colors){ return BOTCOLORS[p] || (colors&&colors[p]) || '#005EAB'; }
 
 /* ---------- προβολή ---------- */
+let seatsKey='';
+function seats(st){
+  const key=st.players.join('|'); if(key===seatsKey) return; seatsKey=key;
+  ring.querySelectorAll('.ava').forEach(a=>a.remove());
+  const n=st.players.length;
+  st.players.forEach((p,i)=>{
+    const a=-Math.PI/2 + i*2*Math.PI/n, R=41;     // γύρω από τον κύκλο, ξεκινώντας από πάνω
+    const el=document.createElement('div'); el.className='ava'; el.dataset.p=p;
+    el.style.left=(50+R*Math.cos(a))+'%'; el.style.top=(50+R*Math.sin(a))+'%';
+    el.style.setProperty('--c',colorOf(p,st.colors));
+    const disc=document.createElement('div'); disc.className='disc';
+    if(BOTNAMES.includes(p)) disc.innerHTML=STAR; else disc.textContent=p.trim().charAt(0).toUpperCase();
+    const b=document.createElement('span'); b.className='bubble';
+    const nm=document.createElement('span'); nm.className='nm'; nm.textContent=p;
+    el.append(b,disc,nm); ring.appendChild(el);
+  });
+}
 function render(st){
   V={running:st.running,n:st.n,last:st.last,until:performance.now()+st.leftMs,win:st.win,claimed:st.claimed||[]};
   if(numEl.textContent!==String(st.n)){ numEl.classList.add('pop'); setTimeout(()=>numEl.classList.remove('pop'),160); }
   numEl.textContent=st.n; numEl.className=st.cls; statusEl.textContent=st.status;
   [...$('pips').children].forEach((d,i)=>d.classList.toggle('on',i<st.n));
-  const pl=$('players'); pl.innerHTML='';
-  st.players.forEach(p=>{ const li=document.createElement('li'); li.textContent=p;
-    if(p===me) li.classList.add('me'); if(BOTNAMES.includes(p)) li.classList.add('bot');
-    if((st.claimed||[]).includes(p)) li.classList.add((st.claimed||[]).length>1?'clash':'said');
-    else if(!st.running && st.clash && st.clash.includes(p)) li.classList.add('clash');
-    else if(p===st.last && st.running) li.classList.add('said');
-    pl.appendChild(li); });
-  sayBtn.textContent = st.running ? 'Λέω το '+(st.n+1) : (st.cls==='num win' ? 'Φτάσατε!' : 'Περιμένουμε…'); $('best').textContent='καλύτερο: '+st.best; $('tries').textContent='γύροι: '+st.tries;
-  sayBtn.disabled=!(st.running && st.last!==me && !(st.claimed||[]).includes(me));
+  seats(st);
+  const claimed=st.claimed||[];
+  ring.querySelectorAll('.ava').forEach(el=>{ const p=el.dataset.p;
+    el.classList.toggle('me',p===me);
+    const clash=claimed.length>1 ? claimed.includes(p) : (!st.running && st.clash && st.clash.includes(p));
+    el.classList.toggle('clash',!!clash);
+    el.classList.toggle('said',!clash && (claimed.includes(p) || (st.running && p===st.last)));
+    el.classList.toggle('locked',st.running && p===st.last && !claimed.length);
+    el.querySelector('.bubble').textContent = claimed.includes(p) ? st.n+1 : (st.running && p===st.last ? st.n : '');
+  });
+  sayBtn.textContent = st.running ? 'Λέω το '+(st.n+1) : (st.cls==='num win' ? 'Φτάσατε!' : (st.paused?'Διακοπή':'Περιμένουμε…'));
+  sayBtn.disabled=!(st.running && st.last!==me && !claimed.includes(me));
+  // πίνακας
+  $('tRounds').textContent=st.tries; $('tWins').textContent=st.wins||0; $('tBest').textContent=st.best;
+  const rows=st.players.map(p=>{ const s=(st.stats||{})[p]||{said:0,clash:0,t:0};
+    const acc=s.said+s.clash? s.said/(s.said+s.clash):null; return {p,s,acc}; });
+  const bestAcc=Math.max(...rows.map(r=>r.acc??-1));
+  const tb=$('stats'); tb.innerHTML='';
+  rows.forEach(({p,s,acc})=>{ const tr=document.createElement('tr'); if(acc!==null && acc===bestAcc && s.said>0) tr.className='top';
+    const td=(t)=>{const x=document.createElement('td');x.textContent=t;tr.appendChild(x);};
+    const first=document.createElement('td'); const dot=document.createElement('span'); dot.className='dot'; dot.style.setProperty('--c',colorOf(p,st.colors));
+    first.append(dot,document.createTextNode(p)); tr.appendChild(first);
+    td(s.said); td(s.clash); td(acc===null?'—':Math.round(acc*100)+'%'); td(s.said?(s.t/s.said).toFixed(1)+' δ.':'—'); tb.appendChild(tr); });
+  // κουβέντα μόνο εκτός γύρου
+  $('chat').disabled=$('send').disabled=st.running;
   cancelAnimationFrame(raf); if(st.running) tickView(); else { arc.style.strokeDashoffset=st.cls==='num win'?0:CIRC; dial.classList.remove('late'); $('left').textContent=''; }
 }
 // Ο κύκλος αδειάζει με ταχύτητα που διπλασιάζεται από την αρχή ως το τέλος του χρόνου.
@@ -206,14 +331,15 @@ function tickView(){
 function broadcast(msg){ conns.forEach(c=>{try{c.open&&c.send(msg)}catch(e){}}); }
 function log(text,cls){ showLog(text,cls); broadcast({t:'log',text,cls}); }
 function snapshot(){
-  return {running:G.running,n:G.n,last:G.last,leftMs:Math.max(0,G.deadline-performance.now()),win:G.win,status:G.status,cls:G.cls,best:G.best,tries:G.tries,
-          players:[...G.humans,...G.bots],claimed:G.claims.map(c=>c.who),clash:G.clash||null};
+  return {running:G.running,paused:G.paused,n:G.n,last:G.last,leftMs:Math.max(0,G.deadline-performance.now()),win:G.win,status:G.status,cls:G.cls,best:G.best,tries:G.tries,wins:G.wins,
+          players:[...G.humans,...G.bots],colors:G.colors,stats:G.stats,claimed:G.claims.map(c=>c.who),clash:G.clash||null};
 }
 function push(){ const s=snapshot(); render(s); broadcast({t:'state',st:s}); }
 function clearTimers(){ G.timers.forEach(clearTimeout); G.timers=[]; }
 function gauss(){ let u=0,v=0; while(!u)u=Math.random(); while(!v)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
 function windowFor(k){return BASE-(k-1)*(BASE-LAST)/(TARGET-1)}  // 12 → 8 δευτερόλεπτα
 function nBots(){ return role==='guest'?0:parseInt($('bots').value,10) }
+function stat(p){ return G.stats[p]||(G.stats[p]={said:0,clash:0,t:0}); }
 // Σύντομο ιστορικό: μία γραμμή ανά γύρο, «παίκτης:αριθμός@δευτερόλεπτα από τον προηγούμενο αριθμό».
 function rec(x){ const r=G.rec&&G.rec[G.rec.length-1]; if(r) r.items.push(x); }
 function shortLog(){
@@ -221,12 +347,22 @@ function shortLog(){
   return [head,...(G.rec||[]).map(r=>r.n+') '+r.lv+' · '+r.items.join(' '))].join('\n');
 }
 function startRound(){
-  clearTimers(); G.bots=BOTNAMES.slice(0,nBots());
+  clearTimers();
+  // τρεις γύροι χωρίς άνθρωπο: το παιχνίδι σταματά μόνο του
+  if(G.tries>0){ G.idle = G.roundHuman ? 0 : G.idle+1; }
+  if(G.idle>=IDLE_ROUNDS){ G.idle=0; return pause('Σταμάτησα: '+IDLE_ROUNDS+' γύροι χωρίς να παίξει άνθρωπος.'); }
+  G.roundHuman=false; G.paused=false;
+  G.bots=BOTNAMES.slice(0,nBots());
   if(G.humans.length+G.bots.length<2){ G.status='Χρειάζονται τουλάχιστον δύο· βάλε έναν παίκτη του υπολογιστή ή περίμενε φίλο.'; return push(); }
   G.P={}; { const r=LEVELS[parseInt($('level').value,10)||0].react; G.bots.forEach(b=>{ G.P[b]=persona(); G.P[b].react=r[0]+Math.random()*(r[1]-r[0]); }); }
   G.rec=G.rec||[]; G.rec.push({n:G.tries+1,lv:$('level').selectedOptions[0].text,items:[]});
-  G.running=true; G.n=0; G.last=null; G.clash=null; G.tries++; G.cls='num'; startBtn.textContent='Από την αρχή';
+  G.running=true; G.n=0; G.last=null; G.clash=null; G.tries++; G.cls='num'; startBtn.textContent='Από την αρχή'; $('pause').hidden=false;
   log('— νέος γύρος · '+[...G.humans,...G.bots].join(', ')+' —','sys'); openStep();
+}
+function pause(msg){
+  clearTimers(); G.running=false; G.paused=true; G.claims=[]; G.cls='num';
+  G.status=(msg?msg+' ':'')+'Διακοπή· γράψτε στο κανάλι αν θέλετε. Πάτα «Συνέχεια» για νέο γύρο.';
+  startBtn.textContent='Συνέχεια'; $('pause').hidden=true; log('— διακοπή —','sys'); push();
 }
 function openStep(){
   const k=G.n+1; G.claims=[]; G.win=windowFor(k); G.deadline=performance.now()+G.win*1000;
@@ -246,16 +382,17 @@ function openStep(){
       if(!best||p>best.p) best={p,m,sd};
     });
     const pAttack = best ? 1-Math.pow(1-L.attack*best.p, 1/eligible.length) : 0;
+    // Όσοι περισσότεροι μπορούν να μιλήσουν, τόσο πιο συγκρατημένος ο καθένας (όπως στα δίκτυα τυχαίας πρόσβασης):
+    // κατά μέσο όρο περίπου ένας επιχειρεί σε κάθε αριθμό, ώστε να μη συγκρούονται μεταξύ τους όλη την ώρα.
+    const share=1.4/eligible.length;
     let acted=0;
     eligible.forEach(bot=>{
       const P=G.P[bot]||(G.P[bot]=persona());
       if(Math.random()<pAttack){ at(bot, best.m+gauss()*Math.min(best.sd,0.35)); acted++; return; }   // χτυπά τον προβλέψιμο
-      if(Math.random()>Math.min(0.95,P.act*L.act)) return;                                            // αυτή τη φορά σωπαίνει
-      // είτε με τον δικό του ρυθμό είτε «στο παρά πέντε»· ποτέ ξανά την ίδια στιγμή με την προηγούμενη φορά
+      if(Math.random()>Math.min(0.9,P.act*L.act*share*1.6)) return;                                 // αυτή τη φορά σωπαίνει
       let t; for(let i=0;i<4;i++){ t = Math.random()<P.eager ? P.mu*Math.exp(gauss()*P.sg) : W*(0.3+Math.random()*0.45); if(Math.abs(t-P.prev)>=0.5) break; }
       at(bot,t); acted++;
     });
-    // συνήθως κάποιος σώζει τον αριθμό· όχι πάντα — αν τους αφήσετε μόνους, ο γύρος μπορεί να σβήσει απρόβλεπτα
     if(!acted && Math.random()<L.keep){ at(eligible[Math.floor(Math.random()*eligible.length)], W*(0.3+Math.random()*0.45)); }
   }
   G.timers.push(setTimeout(()=>{ if(G.running && G.n===k-1 && G.claims.length===0) { rec('⌛'+k); fail('Πέρασε ο χρόνος· κανείς δεν είπε το '+k+'.'); } }, G.win*1000));
@@ -267,30 +404,35 @@ function claim(who,k){
   if(G.claims.length && t-G.claims[0].t>CLASH*1000) return; // άργησε· ο αριθμός έχει ήδη κριθεί
   // ο παίκτης του υπολογιστή «ακούει»: αν κάποιος μίλησε πριν από περισσότερο από τον χρόνο αντίδρασής του, συγκρατείται
   if(G.P&&G.P[who] && G.claims.length && t-G.claims[0].t>G.P[who].react*1000) return;
-  if(G.humans.includes(who)){ const d=(t-G.stepAt)/1000;
+  const d=(t-G.stepAt)/1000;
+  if(G.humans.includes(who)){ G.roundHuman=true;
     [(G.last||'αρχή')+'>'+who,'*>'+who].forEach(key=>{ const xs=G.hist[key]||(G.hist[key]=[]); xs.push(d); if(xs.length>8) xs.shift(); }); }
-  rec(who+':'+k+'@'+((t-G.stepAt)/1000).toFixed(1));
-  G.claims.push({who,t}); log('<'+who+'> '+k, who===me?'me':'');
+  rec(who+':'+k+'@'+d.toFixed(1));
+  G.claims.push({who,t,d}); log('<'+who+'> '+k, who===me?'me':'');
   if(G.claims.length===1) G.timers.push(setTimeout(()=>settle(k),CLASH*1000));
   push();
 }
 function settle(k){
   if(!G.running) return;
-  if(G.claims.length>1){ G.clash=G.claims.map(c=>c.who); rec('✗'+k+' '+G.clash.join('+')); return fail('Σύγκρουση στο '+k+': '+G.clash.join(' και ')+'.'); }
-  clearTimers(); G.n=k; G.last=G.claims[0].who; if(k>G.best) G.best=k;
-  if(k>=TARGET){ rec('✓'); G.running=false; G.cls='num win'; startBtn.textContent='Νέος γύρος'; G.status='Φτάσατε στο δέκα.'; log('*** φτάσατε στο δέκα ***','good'); return push(); }
+  if(G.claims.length>1){ G.clash=G.claims.map(c=>c.who); G.clash.forEach(p=>stat(p).clash++);
+    rec('✗'+k+' '+G.clash.join('+')); return fail('Σύγκρουση στο '+k+': '+G.clash.join(' και ')+'.'); }
+  const c=G.claims[0]; stat(c.who).said++; stat(c.who).t+=c.d;
+  clearTimers(); G.n=k; G.last=c.who; if(k>G.best) G.best=k;
+  if(k>=TARGET){ rec('✓'); G.wins++; G.running=false; G.cls='num win'; startBtn.textContent='Νέος γύρος'; G.status='Φτάσατε στο δέκα.'; log('*** φτάσατε στο δέκα ***','good'); return push(); }
   openStep();
 }
 function fail(msg){
   clearTimers(); G.running=false; G.n=0; G.cls='num reset'; G.status=msg+' Ξανά από το ένα.'; log('*** '+msg+' ***','bad'); push();
-  G.timers.push(setTimeout(()=>{ if(!G.running) startRound(); },2800));
+  G.timers.push(setTimeout(()=>{ if(!G.running && !G.paused) startRound(); },2800));
 }
-function addHuman(name){ let n=name, i=2; while(G.humans.includes(n)||BOTNAMES.includes(n)) n=name+i++; G.humans.push(n); return n; }
+function addHuman(name){ let n=name, i=2; while(G.humans.includes(n)||BOTNAMES.includes(n)) n=name+i++; G.humans.push(n);
+  if(!G.colors[n]) G.colors[n]=HUMANCOLORS[Object.keys(G.colors).length%HUMANCOLORS.length]; return n; }
 
 /* ---------- ρόλοι ---------- */
+function hostControls(){ $('hostopts').hidden=false; startBtn.hidden=false; $('short').hidden=false; }
 function asSolo(){
-  const n=getName(); if(!n) return; role='solo'; me=n; G.humans=[n]; lockLobby();
-  $('hostopts').hidden=false; startBtn.hidden=false; $('short').hidden=false; showLog('* Μπήκες στο κανάλι #δέκα. Εδώ είναι οι παίκτες του υπολογιστή ▲ ● ■.','sys');
+  const n=getName(); if(!n) return; role='solo'; me=n; G.humans=[]; addHuman(n); lockLobby(); hostControls();
+  showLog('* Μπήκες στο κανάλι #δέκα. Εδώ είναι οι Ώχρα, Λουλάκι και Κυπαρίσσι.','sys');
   G.status='Πάτα «Ξεκίνα».'; push();
 }
 function asHost(){
@@ -308,9 +450,9 @@ function openRoom(c, onTaken){
   p.on('open',()=>{ opened=true; peer=p; becomeHost(c); });
 }
 function becomeHost(c){
-  role='host'; G.humans=[me]; $('hostopts').hidden=false; $('bots').value='1';
+  role='host'; G.humans=[]; addHuman(me); hostControls(); $('bots').value='1';
   try{ history.replaceState(null,'','#'+c); }catch(e){}
-  $('link').textContent=location.origin+location.pathname+'#'+c; $('share').hidden=false; startBtn.hidden=false; $('short').hidden=false;
+  $('link').textContent=location.origin+location.pathname+'#'+c; $('share').hidden=false;
   showLog('* Άνοιξες το κανάλι #δέκα. Στείλε τον σύνδεσμο σε όποιον θέλεις να παίξει.','sys');
   showLog('* Κράτα αυτή τη σελίδα ανοιχτή και μπροστά σου όσο παίζετε· αν κλείσει, κλείνει και το δωμάτιο.','sys');
   G.status='Περιμένουμε φίλους· όταν είστε έτοιμοι, πάτα «Ξεκίνα».'; push();
@@ -322,19 +464,19 @@ function becomeHost(c){
       conn.seen=Date.now();
       if(m&&m.t==='hello'){
         const name=String(m.name||'φίλος').slice(0,16);
-        // ίδιο όνομα με σύνδεση που ήδη υπάρχει: είναι ο ίδιος που ξαναμπήκε· η παλιά σύνδεση φεύγει
         const old=conns.find(c=>c.who===name);
         if(old){ conns=conns.filter(x=>x!==old); try{old.close()}catch(e){} conn.who=name; }
         else conn.who=addHuman(name);
         conns.push(conn); conn.send({t:'you',name:conn.who}); log('* '+conn.who+(old?' ξαναμπήκε':' μπήκε στο κανάλι'),'sys'); push(); }
       else if(m&&m.t==='say'&&conn.who){ claim(conn.who,m.k); }
+      else if(m&&m.t==='chat'&&conn.who&&!G.running){ chatLine(conn.who,m.text); }
+      else if(m&&m.t==='bye'){ drop(conn,'αποχώρησε'); }
     });
     conn.on('close',()=>drop(conn,'αποχώρησε'));
   });
-  // όποιος δεν έχει δώσει σημεία ζωής για 10 δευτερόλεπτα θεωρείται ότι έφυγε
   setInterval(()=>{ const now=Date.now(); conns.filter(c=>c.who && now-c.seen>10000).forEach(c=>drop(c,'αποχώρησε')); },3000);
 }
-// Με σύνδεσμο: όποιος μπει πρώτος ανοίγει το δωμάτιο, ο επόμενος μπαίνει σε αυτό.
+function chatLine(who,text){ text=String(text||'').trim().slice(0,200); if(text) log('💬 '+who+': '+text,'chat'); }
 let tries=0;
 function asGuest(){
   const n=getName(); if(!n) return; if(!window.Peer){statusEl.textContent='Δεν φορτώθηκε η σύνδεση· δοκίμασε ξανά.';return}
@@ -365,14 +507,23 @@ function say(){
   if(role==='guest'){ hostConn&&hostConn.open&&hostConn.send({t:'say',k}); sayBtn.disabled=true; }
   else claim(me,k);
 }
+function leave(){
+  try{ if(role==='guest'&&hostConn) hostConn.send({t:'bye'}); }catch(e){}
+  try{ if(role==='host') broadcast({t:'log',text:'* ο οικοδεσπότης έκλεισε το δωμάτιο',cls:'sys'}); }catch(e){}
+  setTimeout(()=>{ try{peer&&peer.destroy()}catch(e){} location.href=location.pathname; },150);
+}
 
 $('solo').addEventListener('click',asSolo);
-$('short').addEventListener('click',()=>{ const t=shortLog(); const done=()=>{ $('short').textContent='Αντιγράφηκε'; setTimeout(()=>$('short').textContent='Αντιγραφή σύντομου ιστορικού',2000); };
-  if(navigator.clipboard) navigator.clipboard.writeText(t).then(done,()=>prompt('Αντίγραψε:',t)); else prompt('Αντίγραψε:',t); });
 $('host').addEventListener('click',asHost);
 $('join').addEventListener('click',asGuest);
 startBtn.addEventListener('click',startRound);
+$('pause').addEventListener('click',()=>pause(''));
+$('leave').addEventListener('click',leave);
 sayBtn.addEventListener('click',say);
+$('chatform').addEventListener('submit',e=>{ e.preventDefault(); const t=$('chat').value; if(!t.trim()) return; $('chat').value='';
+  if(role==='guest'){ hostConn&&hostConn.open&&hostConn.send({t:'chat',text:t}); } else if(!G.running) chatLine(me,t); });
+$('short').addEventListener('click',()=>{ const t=shortLog(); const done=()=>{ $('short').textContent='Αντιγράφηκε'; setTimeout(()=>$('short').textContent='Αντιγραφή σύντομου ιστορικού',2000); };
+  if(navigator.clipboard) navigator.clipboard.writeText(t).then(done,()=>prompt('Αντίγραψε:',t)); else prompt('Αντίγραψε:',t); });
 $('copy').addEventListener('click',()=>{ const t=$('link').textContent; navigator.clipboard&&navigator.clipboard.writeText(t).then(()=>{$('copy').textContent='Αντιγράφηκε'},()=>{}); });
 document.addEventListener('keydown',e=>{
   if((e.key==='Enter'||e.key===' ') && !['BUTTON','INPUT','SELECT'].includes(e.target.tagName)){ e.preventDefault(); say(); }
