@@ -48,10 +48,18 @@ label.opt{display:flex;gap:.5rem;align-items:center;font-size:.95rem}
 
 .home{font-size:.95rem;color:var(--soft);text-decoration:none;border-bottom:1px solid var(--rule)} .home:hover{color:var(--accent)}
 body{margin:0}
+
+.lobby{display:flex;flex-direction:column;gap:12px;padding:16px 0;border-top:1px solid var(--rule)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input[type=text]{font:inherit;padding:.45em .8em;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink);min-width:0;flex:1 1 12rem}
+select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
+.link{font-family:var(--mono);font-size:.85rem;background:var(--panel);padding:.5em .8em;border-radius:6px;word-break:break-all;flex:1 1 14rem;min-width:0}
+.who{font-size:.95rem;color:var(--soft)} .who b{color:var(--ink);font-weight:500}
+.note{font-size:.95rem;color:var(--soft);margin:0}
 </style>
+<script src="peerjs-1.5.4.min.js"></script>
 </head>
 <body>
-
 <main>
   <header>
     <a class="home" href="../">ivan.gr</a>
@@ -59,121 +67,197 @@ body{margin:0}
     <p>Μετράτε μαζί ως το δέκα, ένας αριθμός τη φορά, χωρίς σειρά. Αν δύο πουν τον ίδιο αριθμό μαζί, ο γύρος ξεκινά από την αρχή.</p>
   </header>
 
+  <section class="lobby" id="lobby">
+    <div class="row">
+      <label for="name" class="who">Όνομα</label>
+      <input type="text" id="name" maxlength="16" autocomplete="nickname" placeholder="π.χ. ivan">
+    </div>
+    <div class="row" id="pick">
+      <button id="solo">Παίζω μόνος με τον υπολογιστή</button>
+      <button id="host">Ανοίγω δωμάτιο για φίλους</button>
+      <button id="join" hidden>Μπαίνω στο δωμάτιο</button>
+    </div>
+    <div class="row" id="share" hidden>
+      <span class="link" id="link"></span><button id="copy">Αντιγραφή</button>
+    </div>
+    <div class="row" id="hostopts" hidden>
+      <label class="who" for="bots">Παίκτες του υπολογιστή</label>
+      <select id="bots"><option value="0">κανένας</option><option value="1">ένας</option><option value="2">δύο</option><option value="3" selected>τρεις</option></select>
+      <label class="who"><input type="checkbox" id="calm"> πιο ήρεμοι</label>
+    </div>
+    <p class="note" id="who"></p>
+  </section>
+
   <section class="stage" aria-live="polite">
     <div class="num" id="num">0</div>
-    <div class="status" id="status">Πάτα «Ξεκίνα» όταν είσαι έτοιμος.</div>
+    <div class="status" id="status">Γράψε ένα όνομα και διάλεξε πώς θα παίξεις.</div>
     <div class="bar" aria-hidden="true"><i id="bar"></i></div>
     <div class="meta"><span id="left">χρόνος: —</span><span id="best">καλύτερο: 0</span><span id="tries">γύροι: 0</span></div>
   </section>
 
   <div class="controls">
     <button class="say" id="say" disabled>Λέω το <span id="next">1</span></button>
-    <button id="start">Ξεκίνα</button>
+    <button id="start" hidden>Ξεκίνα</button>
   </div>
 
   <div class="log" id="log" role="log" aria-label="Το κανάλι"></div>
 
   <details>
-    <summary>Οι κανόνες αυτής της δοκιμής</summary>
+    <summary>Οι κανόνες</summary>
     <ul class="rules">
-      <li>Παίζεις εσύ και τρεις παίκτες του υπολογιστή, ο Β, ο Γ και ο Δ.</li>
-      <li>Κάθε αριθμός έχει 15 δευτερόλεπτα, και για κάθε επόμενο αριθμό προστίθενται 2.</li>
+      <li>Κάθε αριθμός έχει 15 δευτερόλεπτα· για κάθε επόμενο προστίθενται 2.</li>
       <li>Αν δύο ή περισσότεροι πουν τον αριθμό μέσα σε ένα δευτερόλεπτο, είναι σύγκρουση· ξανά από το ένα.</li>
       <li>Αν τελειώσει ο χρόνος χωρίς να πει κανείς τον αριθμό, ξανά από το ένα.</li>
       <li>Κανείς δεν λέει δύο αριθμούς στη σειρά.</li>
-      <li>Πλήκτρο: Enter ή διάστημα.</li>
+      <li>Πλήκτρο: Enter ή διάστημα. Σε δωμάτιο, μόνο όποιος το άνοιξε ξεκινά τον γύρο.</li>
     </ul>
-    <label class="opt"><input type="checkbox" id="calm"> Πιο ήρεμοι αντίπαλοι (μιλούν σπανιότερα)</label>
   </details>
 </main>
-
 <script>
-const BASE=15, STEP=2, CLASH=1.0, TARGET=10;
-const BOTS=['Β','Γ','Δ'];
+const BASE=15, STEP=2, CLASH=1.0, TARGET=10, PREFIX='ivangr-deka-';
+const BOTNAMES=['Β','Γ','Δ'];
 const $=id=>document.getElementById(id);
 const numEl=$('num'),statusEl=$('status'),bar=$('bar'),logEl=$('log'),sayBtn=$('say'),startBtn=$('start');
-let s={running:false,n:0,last:null,deadline:0,win:0,claims:[],timers:[],raf:0,best:0,tries:0};
+let role=null, me='', peer=null, conns=[], hostConn=null;
+// κατάσταση του παιχνιδιού: την κρατά μόνο ο «οικοδεσπότης» (ή ο μόνος παίκτης)
+let G={running:false,n:0,last:null,deadline:0,win:0,claims:[],timers:[],best:0,tries:0,status:'',cls:'num',humans:[],bots:[]};
+// αυτό που βλέπει ο καθένας στην οθόνη
+let V={running:false,n:0,last:null,until:0,win:0};
+let raf=0;
 
-function stamp(){const d=new Date();return d.toTimeString().slice(0,8)}
-function log(txt,cls=''){const div=document.createElement('div');div.className=cls;div.textContent=`[${stamp()}] ${txt}`;logEl.appendChild(div);logEl.scrollTop=logEl.scrollHeight}
+try{ $('name').value=localStorage.getItem('deka-name')||''; }catch(e){}
+const code=(location.hash||'').replace('#','').toLowerCase().replace(/[^a-z0-9]/g,'');
+if(code){ $('solo').hidden=true; $('host').hidden=true; $('join').hidden=false; statusEl.textContent='Σε κάλεσαν σε δωμάτιο. Γράψε όνομα και μπες.'; }
+
+function stamp(){return new Date().toTimeString().slice(0,8)}
+function showLog(text,cls){const d=document.createElement('div');d.className=cls||'';d.textContent='['+stamp()+'] '+text;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight}
+function getName(){let n=$('name').value.trim().slice(0,16); if(!n){$('name').focus(); statusEl.textContent='Γράψε πρώτα ένα όνομα.'; return null} try{localStorage.setItem('deka-name',n)}catch(e){} return n}
+function lockLobby(){ $('pick').hidden=true; $('name').disabled=true; }
+
+/* ---------- προβολή ---------- */
+function render(st){
+  V={running:st.running,n:st.n,last:st.last,until:performance.now()+st.leftMs,win:st.win,claimed:st.claimed||[]};
+  numEl.textContent=st.n; numEl.className=st.cls; statusEl.textContent=st.status;
+  $('next').textContent=st.n+1; $('best').textContent='καλύτερο: '+st.best; $('tries').textContent='γύροι: '+st.tries;
+  $('who').innerHTML='';
+  const w=document.createElement('span'); w.textContent='Στο δωμάτιο: '+st.players.join(', '); $('who').appendChild(w);
+  sayBtn.disabled=!(st.running && st.last!==me && !(st.claimed||[]).includes(me));
+  cancelAnimationFrame(raf); if(st.running) tickView(); else {bar.style.width='0'; $('left').textContent='χρόνος: —';}
+}
+function tickView(){
+  const left=Math.max(0,(V.until-performance.now())/1000);
+  bar.style.width=(100*left/V.win)+'%'; $('left').textContent='χρόνος: '+left.toFixed(1)+' δ.';
+  if(left>0) raf=requestAnimationFrame(tickView);
+}
+
+/* ---------- μηχανή (οικοδεσπότης) ---------- */
+function broadcast(msg){ conns.forEach(c=>{try{c.open&&c.send(msg)}catch(e){}}); }
+function log(text,cls){ showLog(text,cls); broadcast({t:'log',text,cls}); }
+function snapshot(){
+  return {running:G.running,n:G.n,last:G.last,leftMs:Math.max(0,G.deadline-performance.now()),win:G.win,status:G.status,cls:G.cls,best:G.best,tries:G.tries,
+          players:[...G.humans,...G.bots],claimed:G.claims.map(c=>c.who)};
+}
+function push(){ const s=snapshot(); render(s); broadcast({t:'state',st:s}); }
+function clearTimers(){ G.timers.forEach(clearTimeout); G.timers=[]; }
 function windowFor(k){return BASE+(k-1)*STEP}
-function clearTimers(){s.timers.forEach(clearTimeout);s.timers=[];cancelAnimationFrame(s.raf)}
-
-function start(){
-  clearTimers(); s.running=true; s.n=0; s.last=null; s.tries++; numEl.textContent='0'; numEl.className='num';
-  startBtn.textContent='Από την αρχή'; $('tries').textContent='γύροι: '+s.tries;
-  log('— νέος γύρος —','sys'); openStep();
+function nBots(){ return role==='guest'?0:parseInt($('bots').value,10) }
+function startRound(){
+  clearTimers(); G.bots=BOTNAMES.slice(0,nBots());
+  if(G.humans.length+G.bots.length<2){ G.status='Χρειάζονται τουλάχιστον δύο· βάλε έναν παίκτη του υπολογιστή ή περίμενε φίλο.'; return push(); }
+  G.running=true; G.n=0; G.last=null; G.tries++; G.cls='num'; startBtn.textContent='Από την αρχή';
+  log('— νέος γύρος · '+[...G.humans,...G.bots].join(', ')+' —','sys'); openStep();
 }
 function openStep(){
-  const k=s.n+1; s.claims=[]; s.win=windowFor(k); s.deadline=performance.now()+s.win*1000;
-  $('next').textContent=k; sayBtn.disabled = s.last==='εσύ';
-  statusEl.textContent = s.last==='εσύ' ? 'Είπες τον προηγούμενο· άφησε κάποιον άλλον.' : `Ποιος θα πει το ${k};`;
-  // κάθε παίκτης του υπολογιστή αποφασίζει αν και πότε θα μιλήσει
-  const calm=$('calm').checked;
-  const chance = calm ? 0.33 : 0.5;
-  const eligible=BOTS.filter(b=>b!==s.last);
+  const k=G.n+1; G.claims=[]; G.win=windowFor(k); G.deadline=performance.now()+G.win*1000;
+  G.status='Ποιος θα πει το '+k+';';
+  const chance=$('calm').checked?0.33:0.5;
+  const eligible=G.bots.filter(b=>b!==G.last);
   let speakers=eligible.filter(()=>Math.random()<chance);
-  // αν μίλησες εσύ τελευταίος, κάποιος από τους άλλους πρέπει να συνεχίσει
-  if(s.last==='εσύ' && speakers.length===0) speakers=[eligible[Math.floor(Math.random()*eligible.length)]];
-  speakers.forEach(b=>{
-    const t=(0.8+Math.random()*(s.win-1.6))*1000;
-    s.timers.push(setTimeout(()=>botSays(b,k),t));
-  });
-  tick();
-}
-function tick(){
-  const left=Math.max(0,(s.deadline-performance.now())/1000);
-  bar.style.width=(100*left/s.win)+'%';
-  $('left').textContent='χρόνος: '+left.toFixed(1)+' δ.';
-  if(left<=0 && s.claims.length===0){ return fail('Πέρασε ο χρόνος· κανείς δεν είπε το '+(s.n+1)+'.'); }
-  s.raf=requestAnimationFrame(tick);
-}
-function botSays(b,k){
-  if(!s.running||k!==s.n+1) return;
-  claim(b,k);
+  const humansFree=G.humans.filter(h=>h!==G.last);
+  if(humansFree.length===0 && speakers.length===0 && eligible.length) speakers=[eligible[Math.floor(Math.random()*eligible.length)]];
+  speakers.forEach(b=>{ const t=(0.8+Math.random()*(G.win-1.6))*1000; G.timers.push(setTimeout(()=>claim(b,k),t)); });
+  G.timers.push(setTimeout(()=>{ if(G.running && G.n===k-1 && G.claims.length===0) fail('Πέρασε ο χρόνος· κανείς δεν είπε το '+k+'.'); }, G.win*1000));
+  push();
 }
 function claim(who,k){
+  if(!G.running || k!==G.n+1 || who===G.last || G.claims.some(c=>c.who===who)) return;
   const t=performance.now();
-  log(`<${who}> ${k}`, who==='εσύ'?'me':'');
-  s.claims.push({who,t});
-  if(who==='εσύ') sayBtn.disabled=true;
-  if(s.claims.length===1){
-    // περιμένουμε ένα δευτερόλεπτο να φανεί αν μίλησε και άλλος μαζί
-    s.timers.push(setTimeout(()=>settle(k),CLASH*1000));
-  }
+  if(G.claims.length && t-G.claims[0].t>CLASH*1000) return; // άργησε· ο αριθμός έχει ήδη κριθεί
+  G.claims.push({who,t}); log('<'+who+'> '+k, who===me?'me':'');
+  if(G.claims.length===1) G.timers.push(setTimeout(()=>settle(k),CLASH*1000));
+  push();
 }
 function settle(k){
-  if(!s.running) return;
-  const first=s.claims[0].t;
-  const clash=s.claims.filter(c=>c.t-first<=CLASH*1000);
-  if(clash.length>1){
-    return fail(`Σύγκρουση στο ${k}: ${clash.map(c=>c.who).join(' και ')}.`);
-  }
-  clearTimers();
-  s.n=k; s.last=s.claims[0].who; numEl.textContent=k;
-  if(k>s.best){s.best=k;$('best').textContent='καλύτερο: '+k}
-  if(k>=TARGET){
-    s.running=false; numEl.className='num win'; sayBtn.disabled=true;
-    statusEl.textContent='Φτάσατε στο δέκα.'; log('*** φτάσατε στο δέκα ***','good'); bar.style.width='0';
-    return;
-  }
+  if(!G.running) return;
+  if(G.claims.length>1) return fail('Σύγκρουση στο '+k+': '+G.claims.map(c=>c.who).join(' και ')+'.');
+  clearTimers(); G.n=k; G.last=G.claims[0].who; if(k>G.best) G.best=k;
+  if(k>=TARGET){ G.running=false; G.cls='num win'; G.status='Φτάσατε στο δέκα.'; log('*** φτάσατε στο δέκα ***','good'); return push(); }
   openStep();
 }
 function fail(msg){
-  clearTimers(); s.running=false; sayBtn.disabled=true; numEl.textContent='0'; numEl.className='num reset';
-  statusEl.textContent=msg+' Ξανά από το ένα.'; log('*** '+msg+' ***','bad'); bar.style.width='0';
-  s.timers.push(setTimeout(start,2600));
+  clearTimers(); G.running=false; G.n=0; G.cls='num reset'; G.status=msg+' Ξανά από το ένα.'; log('*** '+msg+' ***','bad'); push();
+  G.timers.push(setTimeout(()=>{ if(!G.running) startRound(); },2800));
 }
-sayBtn.addEventListener('click',()=>{ if(s.running && s.last!=='εσύ' && !sayBtn.disabled) claim('εσύ',s.n+1) });
-startBtn.addEventListener('click',start);
-document.addEventListener('keydown',e=>{
-  if((e.key==='Enter'||e.key===' ') && e.target.tagName!=='BUTTON' && e.target.tagName!=='INPUT'){
-    e.preventDefault(); if(!s.running && s.tries===0) start(); else sayBtn.click();
-  }
-});
-log('* Μπήκες στο κανάλι #δέκα. Εδώ είναι οι Β, Γ, Δ.','sys');
-log('<Β> καλησπέρα· όποτε θέλεις ξεκινάμε','');
-</script>
+function addHuman(name){ let n=name, i=2; while(G.humans.includes(n)||BOTNAMES.includes(n)) n=name+i++; G.humans.push(n); return n; }
 
+/* ---------- ρόλοι ---------- */
+function asSolo(){
+  const n=getName(); if(!n) return; role='solo'; me=n; G.humans=[n]; lockLobby();
+  $('hostopts').hidden=false; startBtn.hidden=false; showLog('* Μπήκες στο κανάλι #δέκα. Εδώ είναι οι Β, Γ, Δ.','sys');
+  G.status='Πάτα «Ξεκίνα».'; push();
+}
+function asHost(){
+  const n=getName(); if(!n) return; if(!window.Peer){statusEl.textContent='Δεν φορτώθηκε η σύνδεση· δοκίμασε ξανά.';return}
+  role='host'; me=n; G.humans=[n]; lockLobby(); $('hostopts').hidden=false; $('bots').value='0';
+  const c=Math.random().toString(36).slice(2,7);
+  statusEl.textContent='Ανοίγει το δωμάτιο…';
+  peer=new Peer(PREFIX+c);
+  peer.on('open',()=>{
+    const url=location.origin+location.pathname+'#'+c;
+    $('link').textContent=url; $('share').hidden=false; startBtn.hidden=false;
+    showLog('* Άνοιξες το κανάλι #δέκα. Στείλε τον σύνδεσμο σε όποιον θέλεις να παίξει.','sys');
+    G.status='Περιμένουμε φίλους· όταν είστε έτοιμοι, πάτα «Ξεκίνα».'; push();
+  });
+  peer.on('connection',conn=>{
+    conn.on('data',m=>{
+      if(m&&m.t==='hello'){ conn.who=addHuman(String(m.name||'φίλος').slice(0,16)); conns.push(conn); conn.send({t:'you',name:conn.who}); log('* '+conn.who+' μπήκε στο κανάλι','sys'); push(); }
+      else if(m&&m.t==='say'&&conn.who){ claim(conn.who,m.k); }
+    });
+    conn.on('close',()=>{ conns=conns.filter(x=>x!==conn); if(conn.who){ G.humans=G.humans.filter(h=>h!==conn.who); log('* '+conn.who+' έφυγε','sys'); push(); } });
+  });
+  peer.on('error',e=>{ statusEl.textContent='Πρόβλημα σύνδεσης ('+e.type+'). Ξαναφόρτωσε τη σελίδα.'; });
+}
+function asGuest(){
+  const n=getName(); if(!n) return; if(!window.Peer){statusEl.textContent='Δεν φορτώθηκε η σύνδεση· δοκίμασε ξανά.';return}
+  role='guest'; me=n; lockLobby(); statusEl.textContent='Συνδέεται…';
+  peer=new Peer();
+  peer.on('open',()=>{
+    hostConn=peer.connect(PREFIX+code,{reliable:true});
+    hostConn.on('open',()=>{ hostConn.send({t:'hello',name:n}); });
+    hostConn.on('data',m=>{
+      if(m.t==='you'){ me=m.name; showLog('* Μπήκες στο κανάλι #δέκα ως '+me,'sys'); }
+      else if(m.t==='log') showLog(m.text, m.text.startsWith('<'+me+'>')?'me':m.cls);
+      else if(m.t==='state') render(m.st);
+    });
+    hostConn.on('close',()=>{ statusEl.textContent='Ο οικοδεσπότης έκλεισε το δωμάτιο.'; sayBtn.disabled=true; cancelAnimationFrame(raf); });
+  });
+  peer.on('error',e=>{ statusEl.textContent = e.type==='peer-unavailable' ? 'Το δωμάτιο δεν βρέθηκε· ζήτα νέο σύνδεσμο.' : 'Πρόβλημα σύνδεσης ('+e.type+').'; });
+}
+function say(){
+  if(sayBtn.disabled) return; const k=V.n+1;
+  if(role==='guest'){ hostConn&&hostConn.open&&hostConn.send({t:'say',k}); sayBtn.disabled=true; }
+  else claim(me,k);
+}
+
+$('solo').addEventListener('click',asSolo);
+$('host').addEventListener('click',asHost);
+$('join').addEventListener('click',asGuest);
+startBtn.addEventListener('click',startRound);
+sayBtn.addEventListener('click',say);
+$('copy').addEventListener('click',()=>{ const t=$('link').textContent; navigator.clipboard&&navigator.clipboard.writeText(t).then(()=>{$('copy').textContent='Αντιγράφηκε'},()=>{}); });
+document.addEventListener('keydown',e=>{
+  if((e.key==='Enter'||e.key===' ') && !['BUTTON','INPUT','SELECT'].includes(e.target.tagName)){ e.preventDefault(); say(); }
+});
+</script>
 </body>
 </html>
