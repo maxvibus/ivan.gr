@@ -179,3 +179,7 @@ figure{margin:0}figure img{width:100%;border-radius:6px}figcaption{margin-top:.8
 .lfrom{margin:0 0 .6rem;font-size:.9rem;color:var(--blue2);font-style:italic}
 .ltext p,.lreply p{margin:0 0 .8em}
 .lreply{margin-top:1rem;padding-top:.9rem;border-top:1px solid var(--rule2)}
+/* σκίτσο της ημέρας μέσα στο κείμενο: μελάνι στο χρώμα του ιστότοπου, και τη νύχτα */
+.body figure{margin:0 0 2rem}
+.body figure svg{display:block;width:100%;height:auto;color:var(--blue)}
+.body figure figcaption{font-size:.9em;text-align:left}

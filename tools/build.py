@@ -127,12 +127,17 @@ def apply_fixes(item):
                 item['html'] = item['html'].replace(old, new)
 
 # --- συλλογή κειμένων -------------------------------------------------------
+TNOTE = {'en': ('AI-assisted translation from the Greek.', 'Greek original'), 'fr': ('Traduction du grec assistée par IA.', 'Original grec'), 'de': ('KI-gestützte Übersetzung aus dem Griechischen.', 'Griechisches Original')}
 newdir = os.path.join(ROOT, 'content', 'new-posts')
 for fn in sorted(os.listdir(newdir)) if os.path.isdir(newdir) else []:
     if not fn.endswith('.json'): continue
     n = json.load(open(os.path.join(newdir, fn), encoding='utf-8'))
     pth = f"{n['date'][:4]}/{n['date'][5:7]}/{n['slug']}.html"
     data['posts'].append(dict(id=n['slug'], title=n['title'], url=f'{SITE}/{pth}', published=n['date'], updated=n.get('updated', n['date']), labels=n.get('labels', []), html=n['html']))
+    for lg, t in n.get('translations', {}).items():
+        note, back = TNOTE[lg]
+        data['pages'].append(dict(id=t['slug'], title=t['title'], url=f"{SITE}/p/{t['slug']}.html", published=n['date'], updated=n['date'], labels=[],
+            html=f'<div class="ivan-translation" lang="{lg}"><p class="ivan-translation-note">{note} <a href="{SITE}/{pth}">{back}</a></p>' + t['html'] + '</div>'))
 posts = sorted(data['posts'], key=lambda p: p['published'], reverse=True)
 for p in posts: p['lang'] = 'el'; p['path'] = path_of(p['url']); apply_fixes(p)
 by_url = {p['url']: p for p in posts}
