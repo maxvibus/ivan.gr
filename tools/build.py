@@ -15,6 +15,8 @@ WORD = re.compile(r'[^\W\d_]{8,}')
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = ROOT  # ο ιστότοπος ζει στη ρίζα του αποθετηρίου
 SITE = 'https://www.ivan.gr'
+# διεύθυνση για τις επιστολές αναγνωστών· όσο είναι κενή, η δυνατότητα μένει κρυφή
+LETTERS_EMAIL = ''
 data = json.load(open(os.path.join(ROOT, 'content', 'texts.json'), encoding='utf-8'))
 fixes = json.load(open(os.path.join(ROOT, 'content', 'fixes.json'), encoding='utf-8'))
 manual = json.load(open(os.path.join(ROOT, 'content', 'manual-translations.json'), encoding='utf-8'))
@@ -232,7 +234,7 @@ LIBNAME = {'el': 'Βιβλιοθήκη', 'en': 'Library', 'fr': 'Bibliothèque',
 def masthead(frm, lang, cur, alts):
     n = []
     if lang == 'el':
-        links = [('front', 'Σήμερα', 'index.html'), ('lib', 'Βιβλιοθήκη', 'keimena/index.html'), ('arch', 'Αρχείο φύλλων', 'fylla/index.html'), ('map', 'Χάρτης', 'xartis/index.html')]
+        links = [('front', 'Σήμερα', 'index.html'), ('lib', 'Βιβλιοθήκη', 'keimena/index.html'), ('arch', 'Αρχείο φύλλων', 'fylla/index.html'), ('map', 'Χάρτης', 'xartis/index.html')] + ([('letters', 'Επιστολές', 'epistoles/index.html')] if LETTERS_EMAIL else [])
         for key, lab, to in links:
             if key in ('front', 'arch') and not ISSUES: continue
             a = ' aria-current="page"' if key == cur else ''
@@ -385,6 +387,11 @@ def page(item, lang, alts, prev=None, nxt=None):
     s += f'<main class="wrap"><article class="post"><h1>{E(item["title"].strip())}</h1>\n'
     s += f'<p class="date"><time datetime="{item["published"][:10]}">{E(dlong(item["published"], lang))}</time><span class="rt"> · {E(READ_MIN[lang](mins))}</span></p>\n'
     s += f'<div class="body">{body}</div></article>\n'
+    if lang == 'el':
+        mine = [lt for lt in LETTERS if lt.get('about') == frm]
+        if mine and LETTERS_EMAIL:
+            s += '<section class="letters"><h2 class="h">Επιστολές για αυτό το κείμενο</h2>' + ''.join(letter_html(lt, frm, False) for lt in mine) + '</section>\n'
+        s += write_link(frm, item['title'].strip())
     skip = {x['path'] for x in (prev, nxt) if x}
     nb = [q for q in NEAR.get(frm, []) if q[0] not in skip][:3] if lang == 'el' else None
     if nb:
@@ -398,6 +405,44 @@ def page(item, lang, alts, prev=None, nxt=None):
     write(frm, s)
 
 NEAR, BYPATH = {}, {}
+
+LETTERS = []
+_ld = os.path.join(ROOT, 'content', 'epistoles')
+for fn in sorted(os.listdir(_ld)) if os.path.isdir(_ld) else []:
+    if fn.endswith('.json'):
+        LETTERS.append(json.load(open(os.path.join(_ld, fn), encoding='utf-8')))
+LETTERS.sort(key=lambda x: x['date'], reverse=True)
+
+def letter_html(lt, frm, show_about=True):
+    s = f'<article class="letter"><p class="lfrom">{E(lt["from"])} · <time datetime="{lt["date"]}">{E(dlong(lt["date"], "el"))}</time>'
+    if show_about and lt.get('about') and lt['about'] in BYPATH:
+        s += f' · για το κείμενο «<a href="{rel(frm, lt["about"])}">{E(BYPATH[lt["about"]]["title"].strip())}</a>»'
+    s += f'</p><div class="ltext">{lt["text"]}</div>'
+    if lt.get('reply'):
+        s += f'<div class="lreply"><p class="lfrom">Απάντηση του ivan</p>{lt["reply"]}</div>'
+    return s + '</article>\n'
+
+def write_link(frm, title):
+    from urllib.parse import quote
+    if not LETTERS_EMAIL: return ''
+    return (f'<p class="write"><a href="mailto:{LETTERS_EMAIL}?subject={quote("Για το κείμενο: " + title)}">Γράψε για αυτό το κείμενο</a>'
+            f' <span>· επιστολή προς τον ivan, που μπορεί να δημοσιευτεί μόνο με τη συγκατάθεσή σου</span></p>\n')
+
+def epistoles():
+    if not LETTERS_EMAIL: return
+    frm = 'epistoles/index.html'; alts = {'el': frm}
+    s = head(frm, 'el', 'Επιστολές · ivan.gr', 'Επιστολές αναγνωστών προς τον ivan και οι απαντήσεις του.', frm, alts)
+    s += '<body class="lib">\n' + masthead(frm, 'el', 'letters', alts) + '<main class="wrap">\n'
+    s += '<h1 class="libh">Επιστολές</h1>\n'
+    s += (f'<p class="intro">Τα κείμενα αυτού του τόπου γεννήθηκαν μέσα σε διάλογο. Οι επιστολές τον συνεχίζουν. '
+          f'Γράψτε στο <a href="mailto:{LETTERS_EMAIL}">{LETTERS_EMAIL}</a>. Κάθε επιστολή διαβάζεται. '
+          f'Όσες δημοσιεύονται, δημοσιεύονται μόνο με τη συγκατάθεσή σας, με το όνομα που επιλέγετε και χωρίς τη διεύθυνσή σας.</p>\n')
+    if LETTERS:
+        s += ''.join(letter_html(lt, frm) for lt in LETTERS)
+    else:
+        s += '<p class="none-yet">Δεν έχει δημοσιευτεί ακόμη καμία επιστολή.</p>\n'
+    s += '</main>\n' + footer(frm) + '</body>\n</html>\n'
+    write(frm, s)
 
 def xartis():
     """Χάρτης των κειμένων: στατικό SVG, θέσεις από απλή διάταξη δυνάμεων, ακμές από τα κοντινά κείμενα."""
@@ -445,6 +490,7 @@ def run():
     BYPATH = {p['path']: p for p in posts}
     NEAR = near.neighbours({p['path']: text_of(p['html']) for p in posts}, k=5)
     xartis()
+    epistoles()
     for l in LANGS: library(l)
     issues_build()
     for i, p in enumerate(posts):
