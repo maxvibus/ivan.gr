@@ -22,6 +22,8 @@ EL = """
 
 Κάθε δίαυλος έχει δύο άκρα, και ο δρόμος υπάρχει για να τον τρέχουν. Τα μεγάλα έργα ανοίγουν σιγά σιγά. Πρώτα τελειώνει η κατασκευή, ύστερα ορίζεται ποιος θα μπει και πώς, και μόνο με τον καιρό ο δρόμος γεμίζει δρομείς. Το όνομα που δίνεται σε ένα έργο δείχνει σε ποιο σημείο αυτής της διαδρομής βρίσκεται. Το «Δαίδαλος» είναι το όνομα της στιγμής που το έργο ολοκληρώνεται. Το «Δίαυλος» είναι το όνομα της στιγμής που αρχίζει να χρησιμοποιείται.
 
+Και ο ίδιος ο μύθος, διαβασμένος ως το τέλος, το ξέρει. Ο Δαίδαλος δεν είναι αυτός που έπεσε. Πέταξε με μέτρο, ούτε τόσο χαμηλά ώστε να βρέξει τα φτερά ούτε τόσο ψηλά ώστε να λιώσει το κερί, και έφτασε σώος. Έπεσε ο Ίκαρος, που δεν κράτησε το μέτρο. Κατά μία εκδοχή, ο Δαίδαλος έδωσε και στην Αριάδνη τον μίτο, το νήμα με το οποίο ο Θησέας βγήκε από τον λαβύρινθο. Ο ίδιος τεχνίτης έφτιαξε τον διάδρομο που κλείνει και το νήμα που οδηγεί πίσω. Μπαίνεις κρατώντας μια άκρη και βγαίνεις ακολουθώντας την. Διαβασμένος ως το τέλος, ο Δαίδαλος είναι ήδη μισός δίαυλος.
+
 Ίσως λοιπόν κάθε κατασκευή γλώσσας να έχει δύο ονόματα. Το ένα το δίνει ο κατασκευαστής. Το άλλο το κερδίζει η χρήση, και κανείς δεν το γράφει πάνω της. Ο Δαίδαλος έφτιαξε τα φτερά. Δίαυλος γίνεται η πτήση, όταν κάποιος πετά και επιστρέφει.
 """
 
@@ -37,6 +39,8 @@ This is the <i>diaulos</i> in its ancient sense: the race of two stades, in whic
 The word has a second root, the <i>aulos</i>: the pipe through which breath passes and becomes sound. A <i>diaulos</i> is a double pipe. Here something appears that the craftsman need not say: the instrument has no breath of its own. It sounds when someone blows into it. The language the machine gives out is the breath of the people who wrote it, kept, together with the breath of the one who now asks and sets it moving. An <i>aulos</i> without a mouth is a tube. It becomes an instrument the moment someone plays.
 
 Every <i>diaulos</i> has two ends, and the course exists to be run. Great works open slowly. First the construction is finished, then it is settled who may enter and how, and only with time does the course fill with runners. The name given to a work shows where on this path it stands. "Daedalus" is the name of the moment the work is completed. "Diaulos" is the name of the moment it begins to be used.
+
+The myth itself, read to the end, knows this. Daedalus is not the one who fell. He flew with measure, neither so low that the sea would wet his wings nor so high that the sun would melt the wax, and he arrived safely. It was Icarus who fell, because he did not keep the measure. In one version, Daedalus also gave Ariadne the clew, the thread by which Theseus found his way out of the labyrinth. The same craftsman made the corridor that closes and the thread that leads back. You go in holding one end and come out by following it. Read to the end, Daedalus is already half a <i>diaulos</i>.
 
 Perhaps, then, every construction of language has two names. One is given by its maker. The other is earned by use, and no one writes it on it. Daedalus made the wings. The flight becomes a <i>diaulos</i> when someone flies and returns.
 """
@@ -54,6 +58,8 @@ Le mot a une seconde racine, l'<i>aulos</i> : le tuyau par lequel passe le souff
 
 Tout <i>diaulos</i> a deux extrémités, et la piste existe pour être courue. Les grandes œuvres s'ouvrent lentement. D'abord la construction s'achève, ensuite on fixe qui entrera et comment, et ce n'est qu'avec le temps que la piste se remplit de coureurs. Le nom donné à une œuvre montre où elle se trouve sur ce parcours. « Dédale » est le nom du moment où l'œuvre s'achève. « Diaulos » est le nom du moment où l'on commence à s'en servir.
 
+Le mythe lui-même, lu jusqu'au bout, le sait. Dédale n'est pas celui qui est tombé. Il a volé avec mesure, ni si bas que la mer mouille ses ailes, ni si haut que le soleil fasse fondre la cire, et il est arrivé sain et sauf. C'est Icare qui est tombé, pour n'avoir pas gardé la mesure. Selon une version, c'est aussi Dédale qui donna à Ariane le fil grâce auquel Thésée sortit du labyrinthe. Le même artisan a fait le couloir qui enferme et le fil qui ramène. On entre en tenant un bout et l'on sort en le suivant. Lu jusqu'au bout, Dédale est déjà à moitié un <i>diaulos</i>.
+
 Peut-être, alors, toute construction de langue a-t-elle deux noms. L'un est donné par le constructeur. L'autre est gagné par l'usage, et personne ne l'inscrit sur elle. Dédale a fait les ailes. Le vol devient <i>diaulos</i> quand quelqu'un vole et revient.
 """
 
@@ -69,6 +75,8 @@ Das ist der <i>Diaulos</i> im antiken Sinn: der Lauf über zwei Stadien, bei dem
 Das Wort hat eine zweite Wurzel, den <i>Aulos</i>: das Rohr, durch das der Atem geht und zu Klang wird. Der <i>Diaulos</i> ist ein Doppelaulos. Hier zeigt sich etwas, das der Handwerker nicht sagen muss: Das Instrument hat keinen eigenen Atem. Es klingt, wenn jemand hineinbläst. Die Sprache, die die Maschine hergibt, ist der Atem der Menschen, die sie geschrieben haben, aufbewahrt, zusammen mit dem Atem dessen, der sie jetzt befragt und in Bewegung setzt. Ein Aulos ohne Mund ist ein Rohr. Zum Instrument wird er in dem Augenblick, in dem jemand spielt.
 
 Jeder <i>Diaulos</i> hat zwei Enden, und die Bahn ist da, um gelaufen zu werden. Große Werke öffnen sich langsam. Zuerst wird der Bau vollendet, dann wird festgelegt, wer hinein darf und wie, und erst mit der Zeit füllt sich die Bahn mit Läufern. Der Name, den ein Werk erhält, zeigt, wo auf diesem Weg es steht. „Daidalos“ ist der Name des Augenblicks, in dem das Werk vollendet ist. „Diaulos“ ist der Name des Augenblicks, in dem man beginnt, es zu gebrauchen.
+
+Der Mythos selbst, bis zum Ende gelesen, weiß es. Daidalos ist nicht der, der stürzte. Er flog mit Maß, weder so tief, dass das Meer die Flügel nässte, noch so hoch, dass die Sonne das Wachs schmolz, und kam wohlbehalten an. Ikaros stürzte, weil er das Maß nicht hielt. Einer Überlieferung nach gab Daidalos auch Ariadne den Faden, mit dem Theseus aus dem Labyrinth herausfand. Derselbe Handwerker schuf den Gang, der einschließt, und den Faden, der zurückführt. Man geht hinein, ein Ende in der Hand, und kommt heraus, indem man ihm folgt. Bis zum Ende gelesen, ist Daidalos schon ein halber <i>Diaulos</i>.
 
 Vielleicht hat also jede Konstruktion der Sprache zwei Namen. Den einen gibt ihr der Erbauer. Den anderen erwirbt sie im Gebrauch, und niemand schreibt ihn auf sie. Daidalos schuf die Flügel. Zum <i>Diaulos</i> wird der Flug, wenn jemand fliegt und zurückkehrt.
 """
