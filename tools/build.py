@@ -197,7 +197,7 @@ def head(frm, lang, title, desc, canon_path, alts=None, extra='', img=None):
 <meta name="description" content="{E(desc)}">
 <meta name="author" content="Ιβάν Δ. Αθανασόπουλος">
 <meta name="theme-color" content="#FBF8F2">
-<script>try{{var t=localStorage.getItem('ivan-theme');if(t)document.documentElement.dataset.theme=t;}}catch(e){{}}</script>
+<script>try{{var d=document.documentElement,t=localStorage.getItem('ivan-theme');if(t)d.dataset.theme=t;if(sessionStorage.getItem('from-ek')){{sessionStorage.removeItem('from-ek');d.classList.add('from-ek');}}}}catch(e){{}}</script>
 <meta name="referrer" content="no-referrer">
 <link rel="canonical" href="{SITE}/{canon_path.replace('index.html','')}">
 {alt}<meta property="og:title" content="{E(title)}">
@@ -224,9 +224,12 @@ def langnav(frm, cur, targets):
         lab = L[l]['name']
         if l == cur: out.append(f'<span aria-current="true" lang="{l}">{lab}</span>')
         else: out.append(f'<a href="{rel(frm, targets[l])}" lang="{l}" hreflang="{l}">{lab}</a>')
-    return '<nav class="langs" aria-label="Γλώσσα · Language">' + '<i>·</i>'.join(out) + '</nav>'
+    return '<nav class="langs" aria-label="Γλώσσα · Language">' + ''.join(out) + '</nav>'
 
-NIGHT_BTN = '<button type="button" class="night" aria-label="Νυχτερινή ανάγνωση" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>'
+NIGHT_BTN = ('<button type="button" class="night" aria-label="Νυχτερινή ανάγνωση" aria-pressed="false">'
+    '<svg class="i-moon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.6 14.8c-.9.4-2 .6-3.1.6a7.2 7.2 0 0 1-6.6-10.2 8.1 8.1 0 1 0 9.7 9.6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><path d="M16.8 5.2l.4 1.1 1.1.4-1.1.4-.4 1.1-.4-1.1-1.1-.4 1.1-.4z" fill="currentColor" opacity=".7"/></svg>'
+    '<svg class="i-sun" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 2.6v2.6M12 18.9v2.4M2.7 12h2.5M18.9 12h2.4M5.4 5.5l1.7 1.7M16.9 17l1.6 1.6M5.5 18.6l1.7-1.7M17 7.1l1.6-1.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
+    '</button>')
 
 def footer(frm, lang='el'):
     # κάτω, μαζί με το ivan.gr: η μία πρόταση που λέει τι είναι ο τόπος, όρθια, όχι πλάγια
@@ -382,9 +385,10 @@ def front():
     s = head(frm, 'el', T['author'] + ' · ivan.gr', PLAIN_DESC['el'], 'index.html', dict(FRONT), extra=ld)
     s += '<body class="front">\n' + masthead(frm, 'el', 'front', dict(FRONT))
     today = datetime.date.today()
-    s += (f'<div class="daybar" aria-label="Σήμερα"><span class="dday" data-today>{E(issue_date(today.isoformat()))}</span>'
+    yr = today.year - 2024; GN = ['', 'Α΄', 'Β΄', 'Γ΄', 'Δ΄', 'Ε΄', 'ΣΤ΄', 'Ζ΄', 'Η΄', 'Θ΄', 'Ι΄']
+    s += (f'<div class="daybar" aria-label="Σήμερα"><span class="dyear">Έτος {GN[yr] if yr < len(GN) else yr}</span><span class="dday" data-today>{E(issue_date(today.isoformat()))}</span>'
           '<svg class="sunarc" viewBox="0 0 120 34" aria-hidden="true"><path d="M6 30 Q60 -8 114 30" fill="none"/><line x1="2" y1="30" x2="118" y2="30"/><circle r="3.4" cx="6" cy="30"/></svg>'
-          '<span class="dtime" data-clock></span></div>\n')
+          f'<span class="dtime" data-clock></span><span class="dcount">{len(items)} κείμενα</span></div>\n')
     s += '<main class="tetradio">\n<h1 class="vh">ivan.gr</h1>\n'
     sk = sketch_of(lead)
     s += '<article class="sheet-lead">\n'
@@ -550,9 +554,9 @@ def xartis():
     s = head(frm, 'el', 'Χάρτης των κειμένων · ivan.gr', 'Κάθε σημείο είναι ένα κείμενο· οι γραμμές ενώνουν κείμενα με κοινό λεξιλόγιο.', frm, alts)
     s += '<body class="mapp">\n' + masthead(frm, 'el', 'map', alts) + '<main class="wrap wide">\n'
     s += '<h1 class="libh">Χάρτης των κειμένων</h1>\n'
-    s += '<p class="intro">Κάθε σημείο είναι ένα κείμενο και οι γραμμές ενώνουν κείμενα με κοινό λεξιλόγιο. Τη γειτονιά τη βρίσκει μέτρηση λέξεων, όχι ανάγνωση.</p>\n'
+    s += '<p class="intro">Κάθε σημείο είναι ένα κείμενο και οι γραμμές ενώνουν κείμενα με κοινό λεξιλόγιο. Τη γειτονιά τη βρίσκει μέτρηση λέξεων, όχι ανάγνωση. Σύρετε για να μετακινηθείτε· με δύο δάχτυλα ή με τα κουμπιά, μεγέθυνση.</p>\n'
     s += '<p class="cap" aria-live="polite">Περάστε πάνω από ένα σημείο.</p>\n'
-    s += f'<div class="mapbox"><svg class="map" viewBox="0 0 {W} {H}" role="group" aria-label="Χάρτης των κειμένων"><g class="edges">'
+    s += f'<div class="mapbox"><svg class="map" viewBox="0 0 {W} {H}" data-w="{W}" data-h="{H}" role="group" aria-label="Χάρτης των κειμένων"><g class="vp"><g class="tr"><g class="edges">'
     for a, b in sorted(edges):
         s += f'<line x1="{X[a]:.1f}" y1="{Y[a]:.1f}" x2="{X[b]:.1f}" y2="{Y[b]:.1f}" data-a="{a}" data-b="{b}"/>'
     s += '</g><g class="nodes">'
@@ -561,7 +565,7 @@ def xartis():
         r = min(11, 3.2 + (words ** .5) / 9); yr = p['published'][:4]
         s += (f'<a href="{rel(frm, k)}" data-i="{i}" data-t="{E(t)}" data-d="{E(dlong(p["published"], "el"))}" aria-label="{E(t)}">'
               f'<circle class="y{yr}" cx="{X[i]:.1f}" cy="{Y[i]:.1f}" r="{r:.1f}"/></a>')
-    s += '</g></svg></div>\n'
+    s += '</g></g></g></svg></div>\n'
     s += '<p class="legend"><span class="k y2026"></span>2026 <span class="k y2025"></span>2025 · μέγεθος σημείου: μήκος κειμένου</p>\n'
     s += '</main>\n' + footer(frm) + '</body>\n</html>\n'
     write(frm, s)

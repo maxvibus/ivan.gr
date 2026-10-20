@@ -27,6 +27,12 @@
     e.preventDefault(); glide(t);
   });
 
+  /* προς το ivan.gr: η επόμενη σελίδα ξεκινά από την ώχρα και σβήνει στο χαρτί */
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href^="../"], a[href="/"]');
+    if(a){ try{ sessionStorage.setItem('from-ek', '1'); }catch(err){} }
+  }, true);
+
   /* διακόπτης νύχτας, κοινός με το ivan.gr */
   var root = document.documentElement, meta = document.querySelector('meta[name="theme-color"]');
   function sync(){ var n = root.dataset.theme === 'night';
