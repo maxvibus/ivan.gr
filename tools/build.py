@@ -267,7 +267,14 @@ def library(lang, frm=None):
     for it in items: years.setdefault(it['date'][:4], []).append(it)
     alts = dict(HOME)
     is_front = frm == FRONT[lang]
-    s = head(frm, lang, 'ivan.gr' if is_front else LIBNAME[lang] + ' · ivan.gr', T['intro'], HOME[lang], alts)
+    ld = ''
+    if is_front:
+        ld = ('<script type="application/ld+json">' + json.dumps({
+            '@context': 'https://schema.org', '@type': 'WebSite', 'name': 'ivan.gr', 'url': SITE + '/',
+            'inLanguage': lang, 'description': T['intro'],
+            'author': {'@type': 'Person', 'name': L['el']['author'], 'alternateName': [L['en']['author'], 'ivan'], 'url': SITE + '/'}},
+            ensure_ascii=False) + '</script>\n')
+    s = head(frm, lang, T['author'] + ' · ivan.gr' if is_front else LIBNAME[lang] + ' · ivan.gr', T['intro'], HOME[lang], alts, extra=ld)
     s += '<body class="lib">\n' + masthead(frm, lang, 'lib', alts)
     s += '<main id="texts" class="wrap">\n'
     s += f'<h1 class="vh">{E("ivan.gr" if is_front else LIBNAME[lang])}</h1>\n'
