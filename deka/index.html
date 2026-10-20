@@ -152,7 +152,8 @@ select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radiu
 const BASE=12, LAST=8, CLASH=1.0, TARGET=10, PREFIX='ivangr-deka-';
 const BOTNAMES=['▲','●','■'];
 // επίθεση: πόσο συχνά ο υπολογιστής «χτυπά» έναν προβλέψιμο παίκτη· γέμισμα: πόσο συχνά λέει ο ίδιος τον αριθμό όταν διστάζετε
-const LEVELS=[{attack:0.3,act:0.7,react:[0.15,0.4],keep:0.97},{attack:0.6,act:1.0,react:[0.3,0.7],keep:0.93},{attack:0.9,act:1.25,react:[0.5,0.95],keep:0.88}];
+// Η δυσκολία πιέζει τον άνθρωπο (πρόβλεψη, ρυθμός, σιωπές)· μεταξύ τους οι παίκτες του υπολογιστή μένουν καλοί συμπαίκτες με σπάνια λάθη.
+const LEVELS=[{attack:0.35,act:0.8,react:[0.2,0.45],keep:0.97},{attack:0.65,act:1.0,react:[0.2,0.5],keep:0.93},{attack:0.95,act:1.2,react:[0.25,0.55],keep:0.88}];
 // Κάθε παίκτης του υπολογιστή έχει δικό του «χαρακτήρα» που αλλάζει σε κάθε γύρο: ρυθμό, διασπορά, βιασύνη, πόσο συχνά συμμετέχει.
 function persona(){ return {mu:Math.exp(Math.log(0.8)+Math.random()*Math.log(5)), sg:0.25+Math.random()*0.35, eager:0.4+Math.random()*0.35, act:0.35+Math.random()*0.35, react:0.5, prev:-9}; }
 const $=id=>document.getElementById(id);
