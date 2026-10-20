@@ -397,8 +397,13 @@ def front():
     s += f'<h2><a href="{rel(frm, lead["path"])}">{E(lead["t"])}</a></h2>\n<p class="ex">{E(excerpt(lead["txt"]))}</p>\n'
     s += f'<p class="go"><a href="{rel(frm, lead["path"])}">{E(T["read"])}</a></p></div>\n</article>\n'
     s += '<section class="pages" aria-label="Πρόσφατα"><h2 class="h">Στο τετράδιο</h2><div class="pgrid">\n'
+    def thumb(it):
+        sk = SKETCHES.get(it['path'])
+        if not (sk and sk.get('approved')): return ''
+        try: return '<span class="pimg">' + open(os.path.join(ROOT, 'assets', 'sketches', sk['slug'] + '.svg'), encoding='utf-8').read() + '</span>'
+        except OSError: return ''
     for it in rest:
-        s += (f'<a class="page" href="{rel(frm, it["path"])}"><time datetime="{it["date"][:10]}">{E(dlong(it["date"], "el"))}</time>'
+        s += (f'<a class="page" href="{rel(frm, it["path"])}">{thumb(it)}<time datetime="{it["date"][:10]}">{E(dlong(it["date"], "el"))}</time>'
               f'<span class="pt">{E(it["t"])}</span><span class="pe">{E(excerpt(it["txt"], 170))}</span></a>\n')
     s += '</div></section>\n'
     s += (f'<p class="more"><a href="{rel(frm, "keimena/index.html")}">Όλα τα κείμενα · {len(items)}</a>'

@@ -310,3 +310,26 @@ body.text main.wrap{background:var(--card);border:1px solid var(--rule2);border-
 }
 @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(.8px,-.9px)}}
 @keyframes drift2{0%,100%{transform:translate(0,0)}50%{transform:translate(-.9px,.7px)}}
+/* σκίτσα: κοινές απαλές κινήσεις (κάθε σκίτσο χρησιμοποιεί μία ή δύο) */
+svg [class*="sk-"]{transform-box:view-box}
+@media (prefers-reduced-motion:no-preference){
+  .sk-sway{animation:sk-sway 5.5s ease-in-out infinite}
+  .sk-flutter{animation:sk-flutter 4.8s ease-in-out infinite}
+  .sk-bob{animation:sk-bob 4.2s ease-in-out infinite}
+  .sk-tilt{animation:sk-tilt 6s ease-in-out infinite}
+  .sk-glow{animation:sk-sig 4.4s ease-in-out infinite}
+  .sk-flicker{animation:sk-flicker 1.9s ease-in-out infinite}
+  .sk-blink{animation:sk-blink 6s ease-in-out infinite}
+  .sk-blink-c{opacity:0;animation:sk-blink-c 6s ease-in-out infinite}
+  .sk-ripple{animation:sk-ripple 6s ease-out infinite;opacity:0} .sk-r1{animation-delay:-2s} .sk-r2{animation-delay:-4s}
+}
+@keyframes sk-sway{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
+@keyframes sk-flutter{0%,100%{transform:rotate(0) skewX(0)}40%{transform:rotate(1.4deg) skewX(-1.2deg)}70%{transform:rotate(-.8deg) skewX(.6deg)}}
+@keyframes sk-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes sk-tilt{0%,30%,100%{transform:rotate(0)}45%,75%{transform:rotate(-9deg)}}
+@keyframes sk-flicker{0%,100%{transform:scale(1,1)}30%{transform:scale(.92,1.08)}60%{transform:scale(1.05,.95)}}
+@keyframes sk-blink{0%,40%,60%,100%{opacity:1}45%,55%{opacity:0}}
+@keyframes sk-blink-c{0%,40%,60%,100%{opacity:0}45%,55%{opacity:1}}
+@keyframes sk-ripple{0%{transform:scale(.6);opacity:0}25%{opacity:.9}100%{transform:scale(1.5);opacity:0}}
+.page .pimg{display:block;margin:-1rem -1.1rem .5rem;padding:.3rem .4rem;border-radius:4px 4px 0 0;background:var(--card);border-bottom:1px solid var(--rule2);color:var(--blue)}
+.page .pimg svg{display:block;width:100%;height:auto}
