@@ -61,12 +61,17 @@ def wing(x, y, side):
         mx, my = (x + ex) / 2 + side * 4, (y + ey) / 2 - 8
         out.append(f'<path d="M{x:.1f} {y:.1f} Q{mx:.1f} {my:.1f} {ex:.1f} {ey:.1f}" stroke="{OCHRE}" stroke-width="7" stroke-linecap="round" fill="none"/>')
         out.append(f'<path d="M{x:.1f} {y:.1f} Q{mx:.1f} {my:.1f} {ex:.1f} {ey:.1f}" stroke="currentColor" stroke-width="1.4" fill="none" opacity=".8"/>')
-wing(cx0 + 30, cy0 - 6, -1)
-wing(cx0 + cw - 30, cy0 - 6, 1)
+# κινούμενα μέρη: ομάδες με όνομα, για την απαλή λούπα του ιστότοπου (το CSS ορίζει την κίνηση)
+for k, (wx, sd) in enumerate(((cx0 + 30, -1), (cx0 + cw - 30, 1))):
+    out.append(f'<g class="sk-wing sk-w{k}" style="transform-origin:{wx:.0f}px {cy0 - 6:.0f}px">')
+    wing(wx, cy0 - 6, sd)
+    out.append('</g>')
 # κινητικές γραμμούλες: τα φτερά φτερουγίζουν
+out.append('<g class="sk-flap">')
 for s, x in ((-1, cx0 - 40), (1, cx0 + cw + 40)):
     for k in range(3):
         line(arc(x, cy0 - 70, 14 + k * 9, 14 + k * 9, math.radians(-60 if s > 0 else 120), math.radians(-20 if s > 0 else 160), 6), w=1.4, op=.55)
+out.append('</g>')
 
 # --- ο άνθρωπος στο σκαμνί ---------------------------------------------------
 sx, sy = 250, 600
@@ -108,15 +113,17 @@ line([(hx - 44, hy - 6), (hx - 66, hy - 18), (hx - 70, hy + 16), (hx - 44, hy + 
 # νότες/λέξεις που ταξιδεύουν
 out.append(f'<text x="{hx + 70}" y="{hy - 26}" font-family="EB Garamond, Garamond, serif" font-style="italic" font-size="30" fill="currentColor">Καλημέρα!</text>')
 out.append(f'<text x="{hx - 230}" y="{hy + 50}" font-family="EB Garamond, Garamond, serif" font-style="italic" font-size="24" fill="currentColor" opacity=".85">…καλημέρα</text>')
-for x, y in ((560, 573), (690, 574), (600, 152), (420, 133)):
-    out.append(f'<circle cx="{x}" cy="{y}" r="3" fill="{OCHRE}"/>')
+for i, (x, y) in enumerate(((560, 573), (690, 574), (600, 152), (420, 133))):
+    out.append(f'<circle class="sk-sig sk-s{i}" cx="{x}" cy="{y}" r="3" fill="{OCHRE}"/>')
 
 # --- το φλιτζάνι του καφέ ------------------------------------------------------
 fx, fy = 150, 600
 line([(fx - 22, fy - 34), (fx - 18, fy), (fx + 18, fy), (fx + 22, fy - 34), (fx - 22, fy - 34)], w=2.2)
 line(arc(fx + 28, fy - 18, 9, 10, -math.pi / 2, math.pi / 2, 8), w=2)
-for k in (-8, 6):
+for i, k in enumerate((-8, 6)):
+    out.append(f'<g class="sk-steam sk-st{i}">')
     line([(fx + k, fy - 44), (fx + k + 6, fy - 58), (fx + k, fy - 72), (fx + k + 6, fy - 86)], w=1.4, op=.6)
+    out.append('</g>')
 
 svg = (f'<svg viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" role="img" '
        f'aria-label="Ένας άνθρωπος σε σκαμνί λέει «Καλημέρα!» σε έναν διπλό σωλήνα που φτάνει ως ένα ψηλό ντουλάπι υπολογιστή με δύο μικρά φτερά· ο σωλήνας γυρίζει πίσω στο αυτί του, όπου ακούγεται «…καλημέρα».">'

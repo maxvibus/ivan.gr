@@ -28,6 +28,23 @@
       sync();
     }); });
 
+    /* η γραμμή της ημέρας: ημερομηνία και ώρα του αναγνώστη, και ο ήλιος (ή η σελήνη) πάνω στο τόξο της μέρας */
+    var dday = document.querySelector('[data-today]'), clock = document.querySelector('[data-clock]'), arc = document.querySelector('.sunarc');
+    if(dday){
+      var tick = function(){
+        var d = new Date();
+        try{ var t = d.toLocaleDateString('el-GR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+             dday.textContent = t.charAt(0).toUpperCase() + t.slice(1).replace(',', ''); }catch(e){}
+        if(clock) clock.textContent = ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2);
+        if(arc){ var h = d.getHours() + d.getMinutes()/60, day = h >= 6 && h < 20;
+          var u = day ? (h-6)/14 : ((h+4)%24)/10;  /* ημέρα 06–20, νύχτα 20–06 */
+          var x = 6 + 108*u, y = 30 - 38*u*(1-u)*2;
+          var c = arc.querySelector('circle'); c.setAttribute('cx', x.toFixed(1)); c.setAttribute('cy', y.toFixed(1));
+          arc.classList.toggle('night', !day); }
+      };
+      tick(); setInterval(tick, 30000);
+    }
+
     /* παράθυρα: μεγαλώνουν από το πλαίσιο και ξαναμαζεύονται εκεί */
     var from = null;
     function flip(dlg, card, opening){

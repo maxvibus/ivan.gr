@@ -246,7 +246,7 @@ def masthead(frm, lang, cur, alts):
     if lang == 'el':
         links = [('front', 'Σήμερα', 'index.html'), ('lib', 'Κείμενα', 'keimena/index.html'), ('arch', 'Αρχείο φύλλων', 'fylla/index.html'), ('map', 'Χάρτης', 'xartis/index.html')] + ([('letters', 'Επιστολές', 'epistoles/index.html')] if LETTERS_EMAIL else [])
         for key, lab, to in links:
-            if key in ('front', 'arch') and not ISSUES: continue
+            if key == 'arch' and not ISSUES: continue
             a = ' aria-current="page"' if key == cur else ''
             n.append(f'<a href="{rel(frm, to)}"{a}>{lab}</a>')
         n.append(f'<a class="ek" href="{rel(frm, "ek/index.html")}">εκ</a>')
@@ -367,9 +367,44 @@ def issue_page(iss, frm, is_front):
     s += '</main>\n' + ''.join(wins) + '\n' + footer(frm) + '</body>\n</html>\n'
     write(frm, s)
 
+def front():
+    """Η πρώτη σελίδα ως τετράδιο: η γραμμή της ημέρας, το νεότερο κείμενο με το σκίτσο του, και σελίδες-κάρτες."""
+    frm = 'index.html'; T = L['el']
+    items = [dict(t=p['title'].strip(), path=p['path'], date=p['published'], html=p['html'], txt=text_of(p['html'])) for p in posts]
+    lead, rest = items[0], items[1:9]
+    def sketch_of(it):
+        m = re.search(r'<figure[^>]*>\s*<svg.*?</figure>', it['html'], re.S)
+        return m.group(0) if m else ''
+    ld = ('<script type="application/ld+json">' + json.dumps({
+        '@context': 'https://schema.org', '@type': 'WebSite', 'name': 'ivan.gr', 'url': SITE + '/', 'inLanguage': 'el',
+        'author': {'@type': 'Person', 'name': L['el']['author'], 'alternateName': [L['en']['author'], 'ivan'], 'url': SITE + '/'}},
+        ensure_ascii=False) + '</script>\n')
+    s = head(frm, 'el', T['author'] + ' · ivan.gr', PLAIN_DESC['el'], 'index.html', dict(FRONT), extra=ld)
+    s += '<body class="front">\n' + masthead(frm, 'el', 'front', dict(FRONT))
+    today = datetime.date.today()
+    s += (f'<div class="daybar" aria-label="Σήμερα"><span class="dday" data-today>{E(issue_date(today.isoformat()))}</span>'
+          '<svg class="sunarc" viewBox="0 0 120 34" aria-hidden="true"><path d="M6 30 Q60 -8 114 30" fill="none"/><line x1="2" y1="30" x2="118" y2="30"/><circle r="3.4" cx="6" cy="30"/></svg>'
+          '<span class="dtime" data-clock></span></div>\n')
+    s += '<main class="tetradio">\n<h1 class="vh">ivan.gr</h1>\n'
+    sk = sketch_of(lead)
+    s += '<article class="sheet-lead">\n'
+    if sk: s += sk
+    s += f'<div class="lt"><p class="kicker">{E(T["latest"])} · <time datetime="{lead["date"][:10]}">{E(dlong(lead["date"], "el"))}</time></p>\n'
+    s += f'<h2><a href="{rel(frm, lead["path"])}">{E(lead["t"])}</a></h2>\n<p class="ex">{E(excerpt(lead["txt"]))}</p>\n'
+    s += f'<p class="go"><a href="{rel(frm, lead["path"])}">{E(T["read"])}</a></p></div>\n</article>\n'
+    s += '<section class="pages" aria-label="Πρόσφατα"><h2 class="h">Στο τετράδιο</h2><div class="pgrid">\n'
+    for it in rest:
+        s += (f'<a class="page" href="{rel(frm, it["path"])}"><time datetime="{it["date"][:10]}">{E(dlong(it["date"], "el"))}</time>'
+              f'<span class="pt">{E(it["t"])}</span><span class="pe">{E(excerpt(it["txt"], 170))}</span></a>\n')
+    s += '</div></section>\n'
+    s += (f'<p class="more"><a href="{rel(frm, "keimena/index.html")}">Όλα τα κείμενα · {len(items)}</a>'
+          f'<span>·</span><a class="ek" href="{rel(frm, "ek/index.html")}">«εκ» — βιβλίο, 2027</a></p>\n')
+    s += '</main>\n' + footer(frm) + '</body>\n</html>\n'
+    write(frm, s)
+
 def issues_build():
     if not ISSUES:
-        library('el', 'index.html')
+        front()
         return
     issue_page(ISSUES[0], 'index.html', True)
     for iss in ISSUES:
