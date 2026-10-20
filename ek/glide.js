@@ -42,8 +42,10 @@
   document.addEventListener('click', function(e){
     var b = e.target.closest && e.target.closest('button.night'); if(!b) return;
     var n = root.dataset.theme !== 'night';
-    if(n) root.dataset.theme = 'night'; else delete root.dataset.theme;
+    function flip(){ if(n) root.dataset.theme = 'night'; else delete root.dataset.theme; sync(); }
     try{ if(n) localStorage.setItem('ivan-theme','night'); else localStorage.removeItem('ivan-theme'); }catch(err){}
-    sync();
+    if(!reduce && document.startViewTransition){ root.classList.add('theming');
+      document.startViewTransition(flip).finished.then(function(){ root.classList.remove('theming'); }, function(){ root.classList.remove('theming'); }); }
+    else flip();
   });
 })();

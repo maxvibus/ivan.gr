@@ -387,7 +387,8 @@ def front():
     today = datetime.date.today()
     yr = today.year - 2024; GN = ['', 'Α΄', 'Β΄', 'Γ΄', 'Δ΄', 'Ε΄', 'ΣΤ΄', 'Ζ΄', 'Η΄', 'Θ΄', 'Ι΄']
     s += (f'<div class="daybar" aria-label="Σήμερα"><span class="dyear">Έτος {GN[yr] if yr < len(GN) else yr}</span><span class="dday" data-today>{E(issue_date(today.isoformat()))}</span>'
-          '<svg class="sunarc" viewBox="0 0 120 34" aria-hidden="true"><path d="M6 30 Q60 -8 114 30" fill="none"/><line x1="2" y1="30" x2="118" y2="30"/><circle r="3.4" cx="6" cy="30"/></svg>'
+          '<button type="button" class="orrery" aria-pressed="false" aria-label="Το ηλιακό σύστημα σήμερα· πάτημα για παύση ή συνέχεια της κίνησης">'
+          '<svg viewBox="0 0 132 32" aria-hidden="true"><g class="orb"></g><circle class="sun" cx="66" cy="16" r="2.6"/><g class="pl"></g></svg></button>'
           f'<span class="dtime" data-clock></span><span class="dcount">{len(items)} κείμενα</span></div>\n')
     s += '<main class="tetradio">\n<h1 class="vh">ivan.gr</h1>\n'
     sk = sketch_of(lead)
@@ -403,8 +404,8 @@ def front():
         try: return '<span class="pimg">' + open(os.path.join(ROOT, 'assets', 'sketches', sk['slug'] + '.svg'), encoding='utf-8').read() + '</span>'
         except OSError: return ''
     for it in rest:
-        s += (f'<a class="page" href="{rel(frm, it["path"])}">{thumb(it)}<time datetime="{it["date"][:10]}">{E(dlong(it["date"], "el"))}</time>'
-              f'<span class="pt">{E(it["t"])}</span><span class="pe">{E(excerpt(it["txt"], 170))}</span></a>\n')
+        s += (f'<div class="page">{thumb(it)}<a class="pa" href="{rel(frm, it["path"])}"><time datetime="{it["date"][:10]}">{E(dlong(it["date"], "el"))}</time>'
+              f'<span class="pt">{E(it["t"])}</span><span class="pe">{E(excerpt(it["txt"], 170))}</span></a></div>\n')
     s += '</div></section>\n'
     s += (f'<p class="more"><a href="{rel(frm, "keimena/index.html")}">Όλα τα κείμενα · {len(items)}</a>'
           f'<span>·</span><a class="ek" href="{rel(frm, "ek/index.html")}">«εκ» — βιβλίο, 2027</a></p>\n')

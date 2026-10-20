@@ -23,24 +23,23 @@
     sync();
     btns.forEach(function(b){ b.addEventListener('click', function(){
       var n = root.dataset.theme !== 'night';
-      if(n) root.dataset.theme = 'night'; else delete root.dataset.theme;
+      function flip(){ if(n) root.dataset.theme = 'night'; else delete root.dataset.theme; sync(); }
       try{ if(n) localStorage.setItem('ivan-theme','night'); else localStorage.removeItem('ivan-theme'); }catch(e){}
-      sync();
+      /* η μέρα και η νύχτα περνούν η μία στην άλλη αργά, σαν σούρουπο */
+      if(!reduce && document.startViewTransition){ root.classList.add('theming');
+        var vt = document.startViewTransition(flip); vt.finished.then(function(){ root.classList.remove('theming'); }, function(){ root.classList.remove('theming'); }); }
+      else flip();
     }); });
 
     /* η γραμμή της ημέρας: ημερομηνία και ώρα του αναγνώστη, και ο ήλιος (ή η σελήνη) πάνω στο τόξο της μέρας */
-    var dday = document.querySelector('[data-today]'), clock = document.querySelector('[data-clock]'), arc = document.querySelector('.sunarc');
+    var dday = document.querySelector('[data-today]'), clock = document.querySelector('[data-clock]');
     if(dday){
       var tick = function(){
         var d = new Date();
         try{ var t = d.toLocaleDateString('el-GR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
              dday.textContent = t.charAt(0).toUpperCase() + t.slice(1).replace(',', ''); }catch(e){}
         if(clock) clock.textContent = ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2);
-        if(arc){ var h = d.getHours() + d.getMinutes()/60, day = h >= 6 && h < 20;
-          var u = day ? (h-6)/14 : ((h+4)%24)/10;  /* ημέρα 06–20, νύχτα 20–06 */
-          var x = 6 + 108*u, y = 30 - 38*u*(1-u)*2;
-          var c = arc.querySelector('circle'); c.setAttribute('cx', x.toFixed(1)); c.setAttribute('cy', y.toFixed(1));
-          arc.classList.toggle('dark', !day); }
+
       };
       tick(); setInterval(tick, 30000);
     }
@@ -222,6 +221,58 @@ window.ivanPanZoom = function(map){
       else { main.style.transform = ''; }
       hint.style.opacity = 0; });
     addEventListener('pageshow', function(){ main.style.transform = ''; main.style.opacity = ''; });
+  }
+  if(document.readyState !== 'loading') go(); else document.addEventListener('DOMContentLoaded', go);
+})();
+
+/* το ηλιακό σύστημα της ημέρας: οι πλανήτες στις θέσεις τους σήμερα (μέσες ηλιοκεντρικές αποστάσεις, J2000)
+   και κίνηση με τις πραγματικές περιόδους, πολύ αργή· η μόνη κίνηση του ιστότοπου που σταματά με ένα πάτημα */
+(function(){
+  function go(){
+    var btn = document.querySelector('.orrery'); if(!btn) return;
+    var svg = btn.querySelector('svg'), orb = svg.querySelector('.orb'), pl = svg.querySelector('.pl'), NS = 'http://www.w3.org/2000/svg';
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    /* μέση ηλιοκεντρική μήκος στις 1.1.2000 (μοίρες), ημερήσια μετατόπιση, απόσταση σε ΑΜ, μέγεθος σημείου */
+    var P = [
+      ['Ερμής',   252.25032, 4.09233445, 0.387, .8],
+      ['Αφροδίτη',181.97910, 1.60213034, 0.723, 1.1],
+      ['Γη',      100.46457, 0.98560910, 1.000, 1.2],
+      ['Άρης',    355.44657, 0.52402068, 1.524, .95],
+      ['Δίας',     34.39645, 0.08308529, 5.203, 1.7],
+      ['Κρόνος',   49.95424, 0.03346972, 9.537, 1.5],
+      ['Ουρανός', 313.23810, 0.01173129, 19.19, 1.2],
+      ['Ποσειδών',304.87997, 0.00598106, 30.07, 1.2]];
+    var CX = 66, CY = 16, RX = 63, K = .265;                 /* ελλείψεις: τροχιές ιδωμένες λοξά */
+    function rad(a){ return 6 + (RX - 6) * Math.pow(Math.log(1 + a / .3) / Math.log(1 + 30.07 / .3), 1.05); }
+    var dots = P.map(function(p, i){
+      var r = rad(p[3]), e = document.createElementNS(NS, 'ellipse');
+      e.setAttribute('cx', CX); e.setAttribute('cy', CY); e.setAttribute('rx', r.toFixed(1)); e.setAttribute('ry', (r * K + .6).toFixed(1)); orb.appendChild(e);
+      var c = document.createElementNS(NS, 'circle'); c.setAttribute('r', p[4]); if(p[0] === 'Γη') c.setAttribute('class', 'earth');
+      var t = document.createElementNS(NS, 'title'); t.textContent = p[0]; c.appendChild(t); pl.appendChild(c);
+      return { c: c, r: r, p: p };
+    });
+    var J2000 = Date.UTC(2000, 0, 1, 12), DAY = 864e5;
+    var SPEED = 1 / 1.6;                                     /* μία ημέρα κάθε 1,6 δευτερόλεπτα */
+    var simDays = (Date.now() - J2000) / DAY, last = null, paused = false, raf = 0, acc = 0;
+    try{ paused = localStorage.getItem('ivan-orrery') === 'paused'; }catch(e){}
+    function draw(){
+      dots.forEach(function(d){
+        var L = (d.p[1] + d.p[2] * simDays) * Math.PI / 180;
+        var x = CX + d.r * Math.cos(L), y = CY - d.r * K * Math.sin(L);
+        d.c.setAttribute('cx', x.toFixed(2)); d.c.setAttribute('cy', y.toFixed(2));
+        d.c.style.opacity = Math.sin(L) > 0 ? .55 : 1;     /* πίσω από τον ήλιο λίγο πιο σβηστοί */
+      });
+    }
+    function loop(ts){
+      if(last !== null){ var dt = Math.min(.1, (ts - last) / 1000); acc += dt;
+        if(acc >= 1 / 24){ simDays += acc * SPEED; acc = 0; draw(); } }
+      last = ts; raf = requestAnimationFrame(loop);
+    }
+    function set(p){ paused = p; btn.setAttribute('aria-pressed', String(p)); btn.classList.toggle('paused', p);
+      cancelAnimationFrame(raf); last = null; if(!p && !reduce) raf = requestAnimationFrame(loop); }
+    draw(); set(paused || reduce);
+    btn.addEventListener('click', function(){ if(reduce) return; set(!paused); try{ localStorage.setItem('ivan-orrery', paused ? 'paused' : 'on'); }catch(e){} });
+    document.addEventListener('visibilitychange', function(){ if(document.hidden){ cancelAnimationFrame(raf); } else if(!paused && !reduce){ last = null; raf = requestAnimationFrame(loop); } });
   }
   if(document.readyState !== 'loading') go(); else document.addEventListener('DOMContentLoaded', go);
 })();

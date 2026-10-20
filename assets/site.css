@@ -191,11 +191,6 @@ body.front{background-image:linear-gradient(var(--grid) 1px,transparent 1px),lin
 :root{--grid:rgba(0,94,171,.055)} :root[data-theme="night"]{--grid:rgba(141,187,234,.045)}
 .daybar{display:flex;align-items:center;justify-content:center;gap:.9rem;max-width:72rem;margin:0 auto;padding:.5rem 1.25rem;color:var(--muted);font-style:italic;font-size:.95rem;border-bottom:1px solid var(--rule2)}
 .daybar .dtime{font-style:normal;font-variant-numeric:tabular-nums;min-width:3.2em}
-.sunarc{width:4.6rem;height:1.3rem;overflow:visible}
-.sunarc path{stroke:var(--rule);stroke-width:1.2;stroke-dasharray:2 3}
-.sunarc line{stroke:var(--rule2);stroke-width:1}
-.sunarc circle{fill:var(--ochre);transition:cx 1s,cy 1s}
-.sunarc.dark circle{fill:var(--blue)}
 .tetradio{max-width:64rem;margin:0 auto;padding:1.6rem 1.25rem 3rem}
 .sheet-lead{background:var(--card);border:1px solid var(--rule2);border-radius:4px;box-shadow:0 1px 2px rgba(31,53,80,.05),0 14px 40px rgba(31,53,80,.07);padding:1.2rem 1.4rem 1.6rem;color:var(--blue)}
 :root[data-theme="night"] .sheet-lead{box-shadow:0 1px 2px rgba(0,0,0,.4),0 18px 48px rgba(0,0,0,.35)}
@@ -333,3 +328,26 @@ svg [class*="sk-"]{transform-box:view-box}
 @keyframes sk-ripple{0%{transform:scale(.6);opacity:0}25%{opacity:.9}100%{transform:scale(1.5);opacity:0}}
 .page .pimg{display:block;margin:-1rem -1.1rem .5rem;padding:.3rem .4rem;border-radius:4px 4px 0 0;background:var(--card);border-bottom:1px solid var(--rule2);color:var(--blue)}
 .page .pimg svg{display:block;width:100%;height:auto}
+
+/* το ηλιακό σύστημα της ημέρας, στη γραμμή του φύλλου: στο ύψος της φράσης, ήσυχο */
+.orrery{display:inline-grid;place-items:center;align-self:center;width:8.6rem;height:2.1rem;padding:0;margin:0 .2rem;border:0;background:none;color:var(--blue);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;border-radius:5px;position:relative;top:.06em}
+.orrery svg{width:100%;height:100%;overflow:visible;display:block}
+.orrery .orb ellipse{fill:none;stroke:var(--rule);stroke-width:.45}
+.orrery .sun{fill:var(--ochre)}
+:root:not([data-theme="night"]) .orrery .sun{fill:#D9A866}
+.orrery .pl circle{fill:var(--muted)}
+.orrery .pl circle.earth{fill:var(--blue)}
+.orrery.paused .orb ellipse{stroke-dasharray:1 1.6}
+.orrery:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+@media (max-width:600px){.orrery{width:6.6rem;height:1.7rem}}
+
+/* ήπια αλλαγή μέρας και νύχτας */
+:root.theming::view-transition-old(root),:root.theming::view-transition-new(root){animation-duration:1.6s;animation-timing-function:cubic-bezier(.45,0,.25,1)}
+
+/* κανένα μπλε «φλας» στο άγγιγμα· τα σκίτσα δεν πατιούνται */
+a,button,.page{-webkit-tap-highlight-color:transparent}
+figure.sketch,figure.sketch svg,.pimg,.pimg svg{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+figure.sketch svg,.pimg svg{pointer-events:none}
+.page .pa{display:flex;flex-direction:column;gap:.35rem;color:var(--ink);text-decoration:none}
+.page .pa:focus-visible{outline:2px solid var(--blue);outline-offset:4px;border-radius:2px}

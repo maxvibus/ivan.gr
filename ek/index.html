@@ -126,6 +126,8 @@ footer{text-align:center;color:var(--blue);opacity:.75;font-size:.85em;padding:2
 
 /* νύχτα: το βιβλίο ως αντικείμενο κάτω από λάμπα, η ώχρα ανασαίνει όπως στο ivan.gr */
 @view-transition{navigation:auto}
+:root.theming::view-transition-old(root),:root.theming::view-transition-new(root){animation-duration:1.6s!important;animation-timing-function:cubic-bezier(.45,0,.25,1)!important}
+a,button{-webkit-tap-highlight-color:transparent}
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.45s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
 :root[data-theme="night"]{--bg:#0F1620;--ink:#E9E3D8;--blue:#8DBBEA;--rule:rgba(141,187,234,.30);color-scheme:dark}
 html,body{transition:background-color .6s ease}
