@@ -133,6 +133,7 @@ select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radiu
   </div>
 
   <div class="log" id="log" role="log" aria-label="Το κανάλι"></div>
+  <div class="controls"><button id="short" hidden>Αντιγραφή σύντομου ιστορικού</button></div>
 
   <details>
     <summary>Οι κανόνες</summary>
@@ -212,10 +213,17 @@ function clearTimers(){ G.timers.forEach(clearTimeout); G.timers=[]; }
 function gauss(){ let u=0,v=0; while(!u)u=Math.random(); while(!v)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
 function windowFor(k){return BASE-(k-1)*(BASE-LAST)/(TARGET-1)}  // 12 → 8 δευτερόλεπτα
 function nBots(){ return role==='guest'?0:parseInt($('bots').value,10) }
+// Σύντομο ιστορικό: μία γραμμή ανά γύρο, «παίκτης:αριθμός@δευτερόλεπτα από τον προηγούμενο αριθμό».
+function rec(x){ const r=G.rec&&G.rec[G.rec.length-1]; if(r) r.items.push(x); }
+function shortLog(){
+  const d=new Date(), head='Ως το δέκα · '+d.toLocaleDateString('el-GR')+' '+d.toTimeString().slice(0,5)+' · παίκτες: '+[...G.humans,...G.bots].join(', ');
+  return [head,...(G.rec||[]).map(r=>r.n+') '+r.lv+' · '+r.items.join(' '))].join('\n');
+}
 function startRound(){
   clearTimers(); G.bots=BOTNAMES.slice(0,nBots());
   if(G.humans.length+G.bots.length<2){ G.status='Χρειάζονται τουλάχιστον δύο· βάλε έναν παίκτη του υπολογιστή ή περίμενε φίλο.'; return push(); }
   G.P={}; { const r=LEVELS[parseInt($('level').value,10)||0].react; G.bots.forEach(b=>{ G.P[b]=persona(); G.P[b].react=r[0]+Math.random()*(r[1]-r[0]); }); }
+  G.rec=G.rec||[]; G.rec.push({n:G.tries+1,lv:$('level').selectedOptions[0].text,items:[]});
   G.running=true; G.n=0; G.last=null; G.clash=null; G.tries++; G.cls='num'; startBtn.textContent='Από την αρχή';
   log('— νέος γύρος · '+[...G.humans,...G.bots].join(', ')+' —','sys'); openStep();
 }
@@ -249,7 +257,7 @@ function openStep(){
     // συνήθως κάποιος σώζει τον αριθμό· όχι πάντα — αν τους αφήσετε μόνους, ο γύρος μπορεί να σβήσει απρόβλεπτα
     if(!acted && Math.random()<L.keep){ at(eligible[Math.floor(Math.random()*eligible.length)], W*(0.3+Math.random()*0.45)); }
   }
-  G.timers.push(setTimeout(()=>{ if(G.running && G.n===k-1 && G.claims.length===0) fail('Πέρασε ο χρόνος· κανείς δεν είπε το '+k+'.'); }, G.win*1000));
+  G.timers.push(setTimeout(()=>{ if(G.running && G.n===k-1 && G.claims.length===0) { rec('⌛'+k); fail('Πέρασε ο χρόνος· κανείς δεν είπε το '+k+'.'); } }, G.win*1000));
   push();
 }
 function claim(who,k){
@@ -260,15 +268,16 @@ function claim(who,k){
   if(G.P&&G.P[who] && G.claims.length && t-G.claims[0].t>G.P[who].react*1000) return;
   if(G.humans.includes(who)){ const d=(t-G.stepAt)/1000;
     [(G.last||'αρχή')+'>'+who,'*>'+who].forEach(key=>{ const xs=G.hist[key]||(G.hist[key]=[]); xs.push(d); if(xs.length>8) xs.shift(); }); }
+  rec(who+':'+k+'@'+((t-G.stepAt)/1000).toFixed(1));
   G.claims.push({who,t}); log('<'+who+'> '+k, who===me?'me':'');
   if(G.claims.length===1) G.timers.push(setTimeout(()=>settle(k),CLASH*1000));
   push();
 }
 function settle(k){
   if(!G.running) return;
-  if(G.claims.length>1){ G.clash=G.claims.map(c=>c.who); return fail('Σύγκρουση στο '+k+': '+G.clash.join(' και ')+'.'); }
+  if(G.claims.length>1){ G.clash=G.claims.map(c=>c.who); rec('✗'+k+' '+G.clash.join('+')); return fail('Σύγκρουση στο '+k+': '+G.clash.join(' και ')+'.'); }
   clearTimers(); G.n=k; G.last=G.claims[0].who; if(k>G.best) G.best=k;
-  if(k>=TARGET){ G.running=false; G.cls='num win'; startBtn.textContent='Νέος γύρος'; G.status='Φτάσατε στο δέκα.'; log('*** φτάσατε στο δέκα ***','good'); return push(); }
+  if(k>=TARGET){ rec('✓'); G.running=false; G.cls='num win'; startBtn.textContent='Νέος γύρος'; G.status='Φτάσατε στο δέκα.'; log('*** φτάσατε στο δέκα ***','good'); return push(); }
   openStep();
 }
 function fail(msg){
@@ -280,7 +289,7 @@ function addHuman(name){ let n=name, i=2; while(G.humans.includes(n)||BOTNAMES.i
 /* ---------- ρόλοι ---------- */
 function asSolo(){
   const n=getName(); if(!n) return; role='solo'; me=n; G.humans=[n]; lockLobby();
-  $('hostopts').hidden=false; startBtn.hidden=false; showLog('* Μπήκες στο κανάλι #δέκα. Εδώ είναι οι παίκτες του υπολογιστή ▲ ● ■.','sys');
+  $('hostopts').hidden=false; startBtn.hidden=false; $('short').hidden=false; showLog('* Μπήκες στο κανάλι #δέκα. Εδώ είναι οι παίκτες του υπολογιστή ▲ ● ■.','sys');
   G.status='Πάτα «Ξεκίνα».'; push();
 }
 function asHost(){
@@ -300,7 +309,7 @@ function openRoom(c, onTaken){
 function becomeHost(c){
   role='host'; G.humans=[me]; $('hostopts').hidden=false; $('bots').value='1';
   try{ history.replaceState(null,'','#'+c); }catch(e){}
-  $('link').textContent=location.origin+location.pathname+'#'+c; $('share').hidden=false; startBtn.hidden=false;
+  $('link').textContent=location.origin+location.pathname+'#'+c; $('share').hidden=false; startBtn.hidden=false; $('short').hidden=false;
   showLog('* Άνοιξες το κανάλι #δέκα. Στείλε τον σύνδεσμο σε όποιον θέλεις να παίξει.','sys');
   showLog('* Κράτα αυτή τη σελίδα ανοιχτή και μπροστά σου όσο παίζετε· αν κλείσει, κλείνει και το δωμάτιο.','sys');
   G.status='Περιμένουμε φίλους· όταν είστε έτοιμοι, πάτα «Ξεκίνα».'; push();
@@ -357,6 +366,8 @@ function say(){
 }
 
 $('solo').addEventListener('click',asSolo);
+$('short').addEventListener('click',()=>{ const t=shortLog(); const done=()=>{ $('short').textContent='Αντιγράφηκε'; setTimeout(()=>$('short').textContent='Αντιγραφή σύντομου ιστορικού',2000); };
+  if(navigator.clipboard) navigator.clipboard.writeText(t).then(done,()=>prompt('Αντίγραψε:',t)); else prompt('Αντίγραψε:',t); });
 $('host').addEventListener('click',asHost);
 $('join').addEventListener('click',asGuest);
 startBtn.addEventListener('click',startRound);
