@@ -407,7 +407,14 @@ def page(item, lang, alts, prev=None, nxt=None):
     s += '<body class="text">\n<div class="prog" aria-hidden="true"></div>\n'
     s += f'<header class="bar"><a class="home-link" href="{rel(frm, FRONT[lang])}">ivan.gr</a>{langnav(frm, lang, alts) if len(alts) > 1 else ""}{NIGHT_BTN}</header>\n'
     s += f'<main class="wrap"><article class="post"><h1>{E(item["title"].strip())}</h1>\n'
-    s += f'<p class="date"><time datetime="{item["published"][:10]}">{E(dlong(item["published"], lang))}</time><span class="rt"> · {E(READ_MIN[lang](mins))}</span></p>\n'
+    dinfo = DATES.get(frm) or DATES.get(item.get('orig_path', '')) or {}
+    W = DWORDS[lang]
+    def dshow(v):  # «2019», «2019-05» ή πλήρης ημερομηνία
+        return v if len(v) == 4 else (dlong(v + '-01', lang).split(' ', 1)[1] if len(v) == 7 else dlong(v, lang))
+    parts = [f'{W["pub"]} <time datetime="{item["published"][:10]}">{E(dlong(item["published"], lang))}</time>']
+    if dinfo.get('written'): parts.append(f'{W["wr"]} <time datetime="{dinfo["written"]}">{E(dshow(dinfo["written"]))}</time>')
+    if dinfo.get('modified'): parts.append(f'{W["mod"]} <time datetime="{dinfo["modified"]}">{E(dshow(dinfo["modified"]))}</time>')
+    s += f'<p class="date">{" · ".join(parts)}<span class="rt"> · {E(READ_MIN[lang](mins))}</span></p>\n'
     s += f'<div class="body">{body}</div></article>\n'
     if lang == 'el':
         mine = [lt for lt in LETTERS if lt.get('about') == frm]
@@ -427,6 +434,13 @@ def page(item, lang, alts, prev=None, nxt=None):
     write(frm, s)
 
 NEAR, BYPATH = {}, {}
+# ημερομηνίες που δηλώνει ο ivan: πότε γράφτηκε ένα κείμενο, πότε τροποποιήθηκε ουσιαστικά
+try: DATES = json.load(open(os.path.join(ROOT, 'content', 'dates.json'), encoding='utf-8'))
+except Exception: DATES = {}
+DWORDS = {'el': dict(pub='Δημοσιεύτηκε', wr='Γράφτηκε', mod='Τροποποιήθηκε'),
+          'en': dict(pub='Published', wr='Written', mod='Revised'),
+          'fr': dict(pub='Publié le', wr='Écrit en', mod='Modifié le'),
+          'de': dict(pub='Veröffentlicht am', wr='Geschrieben', mod='Überarbeitet am')}
 try: SKETCHES = json.load(open(os.path.join(ROOT, 'content', 'sketches.json'), encoding='utf-8'))
 except Exception: SKETCHES = {}
 
