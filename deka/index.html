@@ -51,6 +51,7 @@ header p{margin:.3rem 0 0;color:var(--soft);max-width:60ch}
 .players{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:0;padding:0;list-style:none}
 .players li{font-size:.92rem;padding:.15em .75em;border:1px solid var(--rule);border-radius:999px;color:var(--soft);transition:all .2s}
 .players li.me{color:var(--ink);border-color:var(--ink)}
+.players li.bot{border-style:dashed}
 .players li.said{background:var(--accent);border-color:var(--accent);color:var(--paper)}
 .players li.clash{background:var(--warn);border-color:var(--warn);color:var(--paper)}
 .num.reset{color:var(--warn)} .num.win{color:var(--ok)}
@@ -107,8 +108,9 @@ select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radiu
     </div>
     <div class="row" id="hostopts" hidden>
       <label class="who" for="bots">Παίκτες του υπολογιστή</label>
-      <select id="bots"><option value="0">κανένας</option><option value="1">ένας</option><option value="2">δύο</option><option value="3" selected>τρεις</option></select>
-      <label class="who"><input type="checkbox" id="calm"> πιο ήρεμοι</label>
+      <select id="bots"><option value="0">κανένας</option><option value="1">Claude</option><option value="2">Claude, Gemini</option><option value="3" selected>Claude, Gemini, ChatGPT</option></select>
+      <label class="who" for="level">Δυσκολία</label>
+      <select id="level"><option value="0.08">εύκολο</option><option value="0.15" selected>κανονικό</option><option value="0.25">δύσκολο</option></select>
     </div>
     <p class="note" id="who"></p>
   </section>
@@ -139,6 +141,7 @@ select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radiu
       <li>Το ένα έχει 12 δευτερόλεπτα· κάθε επόμενος αριθμός λίγο λιγότερο, ως τα 8 για το δέκα. Όσο δεν πατά κανείς, ο κύκλος αδειάζει όλο και πιο γρήγορα.</li>
       <li>Αν δύο ή περισσότεροι πουν τον αριθμό μέσα σε ένα δευτερόλεπτο, είναι σύγκρουση· ξανά από το ένα.</li>
       <li>Αν τελειώσει ο χρόνος χωρίς να πει κανείς τον αριθμό, ξανά από το ένα.</li>
+      <li>Οι παίκτες του υπολογιστή (Claude, Gemini, ChatGPT, με διακεκομμένο περίγραμμα) μαθαίνουν πόσο γρήγορα απαντάτε και μιλούν κοντά σε εκείνη τη στιγμή· η δυσκολία ορίζει πόσο συχνά.</li>
       <li>Ο κύκλος γύρω από τον αριθμό είναι ο χρόνος που απομένει για τον επόμενο· οι τελείες δείχνουν πόσο έχετε φτάσει.</li>
       <li>Πλήκτρο: Enter ή διάστημα. Σε δωμάτιο, μόνο όποιος το άνοιξε ξεκινά τον γύρο.</li>
     </ul>
@@ -146,14 +149,14 @@ select{font:inherit;padding:.35em .6em;border:1px solid var(--rule);border-radiu
 </main>
 <script>
 const BASE=12, LAST=8, CLASH=1.0, TARGET=10, PREFIX='ivangr-deka-';
-const BOTNAMES=['Β','Γ','Δ'];
+const BOTNAMES=['Claude','Gemini','ChatGPT'];
 const $=id=>document.getElementById(id);
 const numEl=$('num'),statusEl=$('status'),logEl=$('log'),sayBtn=$('say'),startBtn=$('start'),arc=$('arc'),dial=$('dial');
 const CIRC=2*Math.PI*54; arc.style.strokeDasharray=CIRC; arc.style.strokeDashoffset=CIRC;
 $('pips').innerHTML='<i></i>'.repeat(TARGET);
 let role=null, me='', peer=null, conns=[], hostConn=null;
 // κατάσταση του παιχνιδιού: την κρατά μόνο ο «οικοδεσπότης» (ή ο μόνος παίκτης)
-let G={running:false,n:0,last:null,deadline:0,win:0,claims:[],timers:[],best:0,tries:0,status:'',cls:'num',humans:[],bots:[]};
+let G={delays:[],running:false,n:0,last:null,deadline:0,win:0,claims:[],timers:[],best:0,tries:0,status:'',cls:'num',humans:[],bots:[]};
 // αυτό που βλέπει ο καθένας στην οθόνη
 let V={running:false,n:0,last:null,until:0,win:0};
 let raf=0;
@@ -175,7 +178,7 @@ function render(st){
   [...$('pips').children].forEach((d,i)=>d.classList.toggle('on',i<st.n));
   const pl=$('players'); pl.innerHTML='';
   st.players.forEach(p=>{ const li=document.createElement('li'); li.textContent=p;
-    if(p===me) li.classList.add('me');
+    if(p===me) li.classList.add('me'); if(BOTNAMES.includes(p)) li.classList.add('bot');
     if((st.claimed||[]).includes(p)) li.classList.add((st.claimed||[]).length>1?'clash':'said');
     else if(!st.running && st.clash && st.clash.includes(p)) li.classList.add('clash');
     else if(p===st.last && st.running) li.classList.add('said');
@@ -202,6 +205,7 @@ function snapshot(){
 }
 function push(){ const s=snapshot(); render(s); broadcast({t:'state',st:s}); }
 function clearTimers(){ G.timers.forEach(clearTimeout); G.timers=[]; }
+function gauss(){ let u=0,v=0; while(!u)u=Math.random(); while(!v)v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
 function windowFor(k){return BASE-(k-1)*(BASE-LAST)/(TARGET-1)}  // 12 → 8 δευτερόλεπτα
 function nBots(){ return role==='guest'?0:parseInt($('bots').value,10) }
 function startRound(){
@@ -213,12 +217,19 @@ function startRound(){
 function openStep(){
   const k=G.n+1; G.claims=[]; G.win=windowFor(k); G.deadline=performance.now()+G.win*1000;
   G.status='Ποιος θα πει το '+k+';';
-  const chance=$('calm').checked?0.33:0.5;
-  const eligible=G.bots.filter(b=>b!==G.last);
-  let speakers=eligible.filter(()=>Math.random()<chance);
-  const humansFree=G.humans.filter(h=>h!==G.last);
-  if(humansFree.length===0 && speakers.length===0 && eligible.length) speakers=[eligible[Math.floor(Math.random()*eligible.length)]];
-  speakers.forEach(b=>{ const t=(0.8+Math.random()*(G.win-2))*1000; G.timers.push(setTimeout(()=>claim(b,k),t)); });
+  G.stepAt=performance.now();
+  const eligible=G.bots.filter(b=>b!==G.last), humansFree=G.humans.filter(h=>h!==G.last);
+  if(humansFree.length===0){
+    // μόνο οι παίκτες του υπολογιστή μπορούν να μιλήσουν: ένας τουλάχιστον μιλά, κάποια στιγμή μέσα στον χρόνο
+    let sp=eligible.filter(()=>Math.random()<0.35); if(!sp.length && eligible.length) sp=[eligible[Math.floor(Math.random()*eligible.length)]];
+    sp.forEach(b=>{ const t=(0.8+Math.random()*(G.win-2))*1000; G.timers.push(setTimeout(()=>claim(b,k),t)); });
+  } else if(eligible.length){
+    // Ο υπολογιστής μαθαίνει πόσο γρήγορα απαντάτε (διάμεσος των τελευταίων καθυστερήσεων) και μιλά κοντά σε εκείνη τη στιγμή.
+    // Q = πιθανότητα να μιλήσει κάποιος από αυτούς σε κάθε αριθμό· μοιράζεται ώστε η δυσκολία να μη εξαρτάται από το πόσοι είναι.
+    const Q=parseFloat($('level').value), q=1-Math.pow(1-Q,1/eligible.length);
+    const d=G.delays.length?[...G.delays].sort((a,b)=>a-b)[Math.floor(G.delays.length/2)]:1.8;
+    eligible.forEach(b=>{ if(Math.random()<q){ const t=Math.min(Math.max(d+gauss()*0.8,0.35),G.win-0.5)*1000; G.timers.push(setTimeout(()=>claim(b,k),t)); } });
+  }
   G.timers.push(setTimeout(()=>{ if(G.running && G.n===k-1 && G.claims.length===0) fail('Πέρασε ο χρόνος· κανείς δεν είπε το '+k+'.'); }, G.win*1000));
   push();
 }
@@ -226,6 +237,7 @@ function claim(who,k){
   if(!G.running || k!==G.n+1 || who===G.last || G.claims.some(c=>c.who===who)) return;
   const t=performance.now();
   if(G.claims.length && t-G.claims[0].t>CLASH*1000) return; // άργησε· ο αριθμός έχει ήδη κριθεί
+  if(G.humans.includes(who)){ G.delays.push((t-G.stepAt)/1000); if(G.delays.length>6) G.delays.shift(); }
   G.claims.push({who,t}); log('<'+who+'> '+k, who===me?'me':'');
   if(G.claims.length===1) G.timers.push(setTimeout(()=>settle(k),CLASH*1000));
   push();
@@ -246,7 +258,7 @@ function addHuman(name){ let n=name, i=2; while(G.humans.includes(n)||BOTNAMES.i
 /* ---------- ρόλοι ---------- */
 function asSolo(){
   const n=getName(); if(!n) return; role='solo'; me=n; G.humans=[n]; lockLobby();
-  $('hostopts').hidden=false; startBtn.hidden=false; showLog('* Μπήκες στο κανάλι #δέκα. Εδώ είναι οι Β, Γ, Δ.','sys');
+  $('hostopts').hidden=false; startBtn.hidden=false; showLog('* Μπήκες στο κανάλι #δέκα. Εδώ είναι οι Claude, Gemini και ChatGPT.','sys');
   G.status='Πάτα «Ξεκίνα».'; push();
 }
 function asHost(){
@@ -271,7 +283,7 @@ function becomeHost(c){
   showLog('* Κράτα αυτή τη σελίδα ανοιχτή και μπροστά σου όσο παίζετε· αν κλείσει, κλείνει και το δωμάτιο.','sys');
   G.status='Περιμένουμε φίλους· όταν είστε έτοιμοι, πάτα «Ξεκίνα».'; push();
   const drop=(conn,why)=>{ if(!conns.includes(conn)) return; conns=conns.filter(x=>x!==conn); try{conn.close()}catch(e){}
-    if(conn.who && !conns.some(c=>c.who===conn.who)){ G.humans=G.humans.filter(h=>h!==conn.who); if(why) log('* '+conn.who+' '+why,'sys'); push(); } };
+    if(conn.who && !conns.some(c=>c.who===conn.who)){ G.humans=G.humans.filter(h=>h!==conn.who); if(why) log('* '+why+': '+conn.who,'sys'); push(); } };
   peer.on('connection',conn=>{
     conn.seen=Date.now();
     conn.on('data',m=>{
@@ -285,10 +297,10 @@ function becomeHost(c){
         conns.push(conn); conn.send({t:'you',name:conn.who}); log('* '+conn.who+(old?' ξαναμπήκε':' μπήκε στο κανάλι'),'sys'); push(); }
       else if(m&&m.t==='say'&&conn.who){ claim(conn.who,m.k); }
     });
-    conn.on('close',()=>drop(conn,'έφυγε'));
+    conn.on('close',()=>drop(conn,'αποχώρησε'));
   });
   // όποιος δεν έχει δώσει σημεία ζωής για 10 δευτερόλεπτα θεωρείται ότι έφυγε
-  setInterval(()=>{ const now=Date.now(); conns.filter(c=>c.who && now-c.seen>10000).forEach(c=>drop(c,'χάθηκε')); },3000);
+  setInterval(()=>{ const now=Date.now(); conns.filter(c=>c.who && now-c.seen>10000).forEach(c=>drop(c,'αποχώρησε')); },3000);
 }
 // Με σύνδεσμο: όποιος μπει πρώτος ανοίγει το δωμάτιο, ο επόμενος μπαίνει σε αυτό.
 let tries=0;
