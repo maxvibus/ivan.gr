@@ -63,9 +63,9 @@ def wing(x, y, side):
         out.append(f'<path d="M{x:.1f} {y:.1f} Q{mx:.1f} {my:.1f} {ex:.1f} {ey:.1f}" stroke="currentColor" stroke-width="1.4" fill="none" opacity=".8"/>')
 # κινούμενα μέρη: ομάδες με όνομα, για την απαλή λούπα του ιστότοπου (το CSS ορίζει την κίνηση)
 for k, (wx, sd) in enumerate(((cx0 + 30, -1), (cx0 + cw - 30, 1))):
-    out.append(f'<g class="sk-wing sk-w{k}" style="transform-origin:{wx:.0f}px {cy0 - 6:.0f}px">')
+    out.append(f'<g transform="translate({wx:.0f} {cy0 - 6:.0f})"><g class="sk-wing sk-w{k}"><g transform="translate({-wx:.0f} {-(cy0 - 6):.0f})">')
     wing(wx, cy0 - 6, sd)
-    out.append('</g>')
+    out.append('</g></g></g>')
 # κινητικές γραμμούλες: τα φτερά φτερουγίζουν
 out.append('<g class="sk-flap">')
 for s, x in ((-1, cx0 - 40), (1, cx0 + cw + 40)):

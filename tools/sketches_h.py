@@ -59,13 +59,14 @@ def zyg(p):
     p.line(p.seg(600, 600, 600, 180, 8), w=2.6); p.line(p.seg(540, 600, 660, 600, 3), w=2.6)
     p.group('sk-sway', (600, 180))
     p.line(p.seg(360, 130, 840, 230, 10), w=2.6)
-    for x, y, txt, big in ((360, 130, 'απάντηση', True), (840, 230, '…', False)):
-        p.line([(x - 70, y + 120), (x, y), (x + 70, y + 120)], w=1.4, op=.7)
-        p.line(p.arc(x, y + 120, 90, 18, 0, PI, 12), w=2.4)
-        if big:
-            p.line(p.arc(x, y + 80, 76, 34, 0, 2 * PI, 20), w=1.8, op=.7); p.text(x, y + 88, txt, size=20, anchor='middle', op=.7)
+    for x, y, heavy in ((360, 130, False), (840, 230, True)):
+        py = y + 170
+        p.line([(x, y), (x - 80, py)], w=1.4, op=.7); p.line([(x, y), (x + 80, py)], w=1.4, op=.7)
+        p.line(p.arc(x, py, 90, 22, 0, PI, 14), w=2.4); p.line(p.seg(x - 90, py, x + 90, py, 6), w=1.6, op=.6)
+        if heavy:
+            p.text(x, py - 4, '…', size=64, italic=False, anchor='middle', col=OCHRE)
         else:
-            p.text(x, y + 112, txt, size=60, italic=False, anchor='middle', col=OCHRE)
+            p.line(p.arc(x, py - 40, 70, 30, 0, 2 * PI, 20), w=1.8, op=.75); p.text(x, py - 33, 'απάντηση', size=20, anchor='middle', op=.75)
     p.end()
     return 'Μια ζυγαριά: στη μία πλάστιγγα ένα μεγάλο συννεφάκι που γράφει «απάντηση», στην άλλη μόνο τρεις τελείες, και γέρνει προς τις τελείες.'
 

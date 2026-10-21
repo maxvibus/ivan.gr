@@ -75,12 +75,14 @@ a:hover,a:focus-visible{border-color:var(--blue)}
 }
 .cover-inner{display:flex;flex-direction:column;align-items:center}
 .cover-book{display:grid;place-items:center;
-  /* το εξώφυλλο έχει μόνο το «εκ»· σχήμα 11 × 14,5, αόρατο τη μέρα πάνω στην ώχρα, φωτισμένο τη νύχτα, ίδιο μέγεθος */
-  width:min(72vw,22rem);aspect-ratio:11/14.5;border-radius:4px 10px 10px 4px;margin-bottom:1.6rem;
-  background:var(--ochre);position:relative}
+  /* το εξώφυλλο στο φυσικό του μέγεθος, 11 × 14,5 εκ., με το «εκ» όπως είναι τυπωμένο (EB Garamond ExtraBold, ~32,8 στ.)·
+     σε στενότερη οθόνη μικραίνει αναλογικά, όλο μαζί */
+  width:min(11cm,78vw);aspect-ratio:11/14.5;border-radius:2px 6px 6px 2px;margin-bottom:1.6rem;container-type:inline-size;
+  background:var(--ochre);position:relative;box-shadow:0 0 0 1px rgba(0,94,171,.16),0 1px 1px rgba(31,53,80,.10),0 10px 28px rgba(31,53,80,.10)}
 .cover-book::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .6s ease;
   box-shadow:0 0 0 1px rgba(237,200,155,.5),0 0 34px 6px rgba(237,200,155,.18)}
-.cover-book h1{margin:0}
+.cover-book h1{margin:0;font-size:10.52cqw;line-height:1;letter-spacing:0}
+.cover-size{margin:-1rem 0 1.2rem;font-size:.82rem;color:var(--blue);opacity:.7;font-style:italic;font-variant-numeric:lining-nums}
 h1{
   font-family:"EB Garamond Ek","EB Garamond",serif;font-weight:800;color:var(--blue);
   font-size:clamp(7rem,30vw,15rem);line-height:.9;letter-spacing:-.01em;
@@ -150,7 +152,7 @@ html,body{transition:background-color .6s ease}
 .back-ivan{position:absolute;top:max(1rem,env(safe-area-inset-top));left:max(1rem,env(safe-area-inset-left));height:2.75rem;display:inline-flex;align-items:center;gap:.45rem;padding:0 .85rem 0 .7rem;z-index:2;
   border:1px solid var(--rule);border-radius:5px;background:rgba(255,255,255,.22);color:var(--blue);font-weight:800;font-size:1.02rem;letter-spacing:.01em;transition:background .25s,border-color .25s}
 .back-ivan:hover,.back-ivan:focus-visible{background:rgba(255,255,255,.4);border-color:var(--blue)}
-.back-ivan svg{transition:transform .3s}.back-ivan:hover svg{transform:translateX(-3px)}
+.back-ivan svg{transition:transform .3s;display:block;position:relative;top:.03em}.back-ivan span{display:block;line-height:1}.back-ivan:hover svg{transform:translateX(-3px)}
 :root[data-theme="night"] .back-ivan{background:rgba(255,255,255,.03)}
 
 /* διάθεση: έτοιμη, ανενεργή ως την έκδοση */
@@ -173,6 +175,7 @@ html,body{transition:background-color .6s ease}
   <button type="button" class="night" aria-label="Νυχτερινή ανάγνωση" aria-pressed="false"><svg class="i-moon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.6 14.8c-.9.4-2 .6-3.1.6a7.2 7.2 0 0 1-6.6-10.2 8.1 8.1 0 1 0 9.7 9.6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><path d="M16.8 5.2l.4 1.1 1.1.4-1.1.4-.4 1.1-.4-1.1-1.1-.4 1.1-.4z" fill="currentColor" opacity=".7"/></svg><svg class="i-sun" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 2.6v2.6M12 18.9v2.4M2.7 12h2.5M18.9 12h2.4M5.4 5.5l1.7 1.7M16.9 17l1.6 1.6M5.5 18.6l1.7-1.7M17 7.1l1.6-1.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
   <div class="cover-inner">
     <div class="cover-book"><h1><a class="ek" href="#book" aria-label="εκ — στο κείμενο για το βιβλίο">εκ</a></h1></div>
+    <p class="cover-size">σε φυσικό μέγεθος · 11 × 14,5 εκ.</p>
     <p class="author">Ιβάν Δ. Αθανασόπουλος</p>
     <p class="release">Εκδίδεται το 2027</p>
   </div>

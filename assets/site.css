@@ -321,10 +321,10 @@ svg [class*="sk-"]{transform-box:view-box}
   .sk-blink-c{opacity:0;animation:sk-blink-c 6s ease-in-out infinite}
   .sk-ripple{animation:sk-ripple 6s ease-out infinite;opacity:0} .sk-r1{animation-delay:-2s} .sk-r2{animation-delay:-4s}
 }
-@keyframes sk-sway{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
+@keyframes sk-sway{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}}
 @keyframes sk-flutter{0%,100%{transform:rotate(0) skewX(0)}40%{transform:rotate(1.4deg) skewX(-1.2deg)}70%{transform:rotate(-.8deg) skewX(.6deg)}}
 @keyframes sk-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-@keyframes sk-tilt{0%,30%,100%{transform:rotate(0)}45%,75%{transform:rotate(-9deg)}}
+@keyframes sk-tilt{0%,30%,100%{transform:rotate(0)}45%,75%{transform:rotate(-5deg)}}
 @keyframes sk-flicker{0%,100%{transform:scale(1,1)}30%{transform:scale(.92,1.08)}60%{transform:scale(1.05,.95)}}
 @keyframes sk-blink{0%,40%,60%,100%{opacity:1}45%,55%{opacity:0}}
 @keyframes sk-blink-c{0%,40%,60%,100%{opacity:0}45%,55%{opacity:1}}
@@ -372,3 +372,20 @@ figure.sketch svg,.pimg svg{pointer-events:none}
 /* και το ίδιο το φύλλο είναι τετράδιο: τετραγωνάκια και πάνω στο χαρτί */
 .sheet-lead,body.text main.wrap,.page,.letter,dialog.win{background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;background-position:-1px -1px}
 .page .pimg{background:transparent}
+/* σκίτσα: το σημείο περιστροφής δίνεται μέσα στο SVG (εμφωλευμένη μετατόπιση)· η μεγάλη κίνηση
+   γίνεται δύο φορές και ύστερα καταλαγιάζει σε μικρή, που συνεχίζει ήσυχα */
+svg [class*="sk-"]{transform-box:view-box;transform-origin:0 0}
+@media (prefers-reduced-motion:no-preference){
+  .sk-wing{animation:sk-wing 3.2s ease-in-out 2,sk-wing-s 4.4s ease-in-out 6.4s infinite}
+  .sk-flap{animation:sk-flap 3.2s ease-in-out 2,sk-flap-s 4.4s ease-in-out 6.4s infinite}
+  .sk-sway{animation:sk-sway 5.5s ease-in-out 2,sk-sway-s 7s ease-in-out 11s infinite}
+  .sk-flutter{animation:sk-flutter 4.8s ease-in-out 2,sk-flutter-s 6.5s ease-in-out 9.6s infinite}
+  .sk-bob{animation:sk-bob 4.2s ease-in-out 2,sk-bob-s 6s ease-in-out 8.4s infinite}
+  .sk-tilt{animation:sk-tilt 6s ease-in-out 2,sk-tilt-s 8s ease-in-out 12s infinite}
+}
+@keyframes sk-wing-s{0%,100%{transform:rotate(0)}50%{transform:rotate(calc(var(--a) * .3))}}
+@keyframes sk-flap-s{0%,100%{opacity:.15}50%{opacity:.45}}
+@keyframes sk-sway-s{0%,100%{transform:rotate(-.8deg)}50%{transform:rotate(.8deg)}}
+@keyframes sk-flutter-s{0%,100%{transform:rotate(0)}50%{transform:rotate(.5deg)}}
+@keyframes sk-bob-s{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.6px)}}
+@keyframes sk-tilt-s{0%,40%,100%{transform:rotate(0)}60%,80%{transform:rotate(-3deg)}}

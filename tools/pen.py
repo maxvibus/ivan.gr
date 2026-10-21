@@ -57,11 +57,19 @@ class Pen:
         self.out.append(f'<text{c} x="{x}" y="{y}" text-anchor="{anchor}" font-family="{FONT}"{st} font-size="{size}"{ls} fill="{col}" opacity="{op}">{s}</text>')
 
     def group(self, cls, origin=None):
-        o = f' style="transform-origin:{origin[0]:.0f}px {origin[1]:.0f}px"' if origin else ''
-        self.out.append(f'<g class="{cls}"{o}>')
+        """Ομάδα που κινείται. Το σημείο περιστροφής δίνεται με εμφωλευμένες μετατοπίσεις SVG
+        (όχι με transform-origin σε px, που το Safari δεν το τηρεί και τα κομμάτια «πετούν»)."""
+        st = getattr(self, '_st', None)
+        if st is None: st = self._st = []
+        if origin:
+            ox, oy = origin
+            self.out.append(f'<g transform="translate({ox:.0f} {oy:.0f})"><g class="{cls}"><g transform="translate({-ox:.0f} {-oy:.0f})">')
+            st.append(3)
+        else:
+            self.out.append(f'<g class="{cls}">'); st.append(1)
 
     def end(self):
-        self.out.append('</g>')
+        self.out.append('</g>' * self._st.pop())
 
     # --- μοτίβα ---------------------------------------------------------------
     def floor(self, y=600, x0=40, x1=1160):

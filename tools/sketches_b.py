@@ -124,10 +124,17 @@ def proeid(p):
     cx, cy = 900, 360
     p.line(p.poly([(cx, cy), (cx + 90, cy), (cx + 90, cy + 110), (cx, cy + 110), (cx, cy)], 4), w=2.4)
     p.line(p.poly([(cx + 8, cy + 54), (cx + 82, cy + 54), (cx + 82, cy + 100), (cx + 8, cy + 100), (cx + 8, cy + 54)], 3), w=1.8)
-    p.text(cx + 45, cy + 84, 'ΒΛΑΠΤΕΙ', size=13, italic=False, anchor='middle', spacing=1)
-    # τσιγάρο στο τασάκι με λίγο καπνό
+    p.text(cx + 45, cy + 82, 'ΒΛΑΠΤΕΙ', size=11, italic=False, anchor='middle')
+    # δύο-τρία τσιγάρα εξέχουν από το ανοιχτό καπάκι, με τη γόπα στη χρυσή ώχρα του τόπου
+    p.line(p.poly([(cx, cy), (cx + 10, cy - 34), (cx + 96, cy - 30), (cx + 90, cy)], 3), w=1.8, op=.8)   # καπάκι
+    for k, (x, h) in enumerate(((cx + 22, 46), (cx + 42, 58), (cx + 62, 40))):
+        p.line(p.poly([(x - 7, cy), (x - 7, cy - h), (x + 7, cy - h), (x + 7, cy)], 2), w=1.6)
+        p.out.append(f'<rect x="{x - 7}" y="{cy - h}" width="14" height="16" fill="{OCHRE}" opacity=".9"/>')
+        p.line(p.seg(x - 7, cy - h + 16, x + 7, cy - h + 16, 1), w=1.2)
+    # τσιγάρο στο τασάκι με λίγο καπνό, κι αυτό με χρυσή γόπα
     p.line(p.arc(820, 466, 34, 8, PI, 2 * PI, 10), w=2)
     p.line(p.seg(800, 460, 860, 446, 4), w=3)
+    p.line(p.seg(800, 460, 814, 457, 2), w=4, col=OCHRE)
     p.dot(862, 445, 3, OCHRE)
     p.steam(868, 430, 2)
     return 'Μια ανοιχτή εφημερίδα με τίτλο «Η ΤΝ επιτέθηκε»· μπροστά στον τίτλο λείπει μια λέξη και στη θέση της γράφει «ποιος;». Δίπλα ένα πακέτο τσιγάρα με την προειδοποίηση και ένα τσιγάρο που καπνίζει.'
