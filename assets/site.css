@@ -389,3 +389,6 @@ svg [class*="sk-"]{transform-box:view-box;transform-origin:0 0}
 @keyframes sk-flutter-s{0%,100%{transform:rotate(0)}50%{transform:rotate(.5deg)}}
 @keyframes sk-bob-s{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.6px)}}
 @keyframes sk-tilt-s{0%,40%,100%{transform:rotate(0)}60%,80%{transform:rotate(-3deg)}}
+/* ο φακός διαβάζει τη μικρή φράση από άκρη σε άκρη */
+@media (prefers-reduced-motion:no-preference){ .sk-read{animation:sk-read 8s ease-in-out infinite} }
+@keyframes sk-read{0%,100%{transform:translateX(-62px)}45%,55%{transform:translateX(62px)}}
