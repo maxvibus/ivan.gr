@@ -718,5 +718,214 @@
   },
   "approved": true,
   "alt": "Τα είκοσι τέσσερα γράμματα του ελληνικού αλφαβήτου σε κύκλο, ενωμένα μεταξύ τους με λεπτές καμπύλες σαν δίκτυο νευρώνων· τα Λ, Ο και Γ λάμπουν."
+ },
+ "2025/03/2000.html": {
+  "slug": "diktyo-2000",
+  "caption": {
+   "el": "Από το 2000 η νοημοσύνη απλώνεται σε δίκτυο.",
+   "en": "Since 2000, intelligence spreads as a network.",
+   "fr": "Depuis 2000, l’intelligence s’étend en réseau.",
+   "de": "Seit 2000 breitet sich Intelligenz als Netz aus."
+  },
+  "approved": true,
+  "alt": "Ένας εγκέφαλος, ένα κινητό, μια οθόνη και ένα δέντρο, ενωμένα με λεπτές γραμμές σε ένα δίκτυο που φωτίζεται στο κέντρο."
+ },
+ "2025/03/5-20-1900-2000.html": {
+  "slug": "tainia",
+  "caption": {
+   "el": "Η σκέψη σε ταινία με μηδενικά και ένα.",
+   "en": "Thought on a tape of zeros and ones.",
+   "fr": "La pensée sur un ruban de zéros et de uns.",
+   "de": "Denken auf einem Band aus Nullen und Einsen."
+  },
+  "approved": true,
+  "alt": "Μια μακριά ταινία χωρισμένη σε τετράγωνα με μηδενικά και άσσους, και από πάνω μια κεφαλή ανάγνωσης στέκεται πάνω από ένα φωτεινό ψηφίο."
+ },
+ "2025/03/blog-post_51.html": {
+  "slug": "pinakida-othoni",
+  "caption": {
+   "el": "Πήλινη πινακίδα, πάπυρος, βιβλίο, οθόνη.",
+   "en": "Clay tablet, papyrus, book, screen.",
+   "fr": "Tablette d’argile, papyrus, livre, écran.",
+   "de": "Tontafel, Papyrus, Buch, Bildschirm."
+  },
+  "approved": true,
+  "alt": "Στη σειρά, μια πήλινη πινακίδα, ένας πάπυρος, ένα ανοιχτό βιβλίο και μια οθόνη, με μια διακεκομμένη καμπύλη να περνά από πάνω τους."
+ },
+ "2025/03/blog-post_82.html": {
+  "slug": "balaki",
+  "caption": {
+   "el": "Η νοημοσύνη ως μπαλάκι που πηγαινοέρχεται.",
+   "en": "Intelligence as a ball passed back and forth.",
+   "fr": "L’intelligence comme une balle qui va et vient.",
+   "de": "Intelligenz als Ball, der hin und her geht."
+  },
+  "approved": true,
+  "alt": "Δύο άνθρωποι πετούν ο ένας στον άλλον ένα μπαλάκι, που διαγράφει τόξο ανάμεσά τους."
+ },
+ "2025/03/blog-post_50.html": {
+  "slug": "triti-floga",
+  "caption": {
+   "el": "Δύο φλόγες, και μια τρίτη ανάμεσα.",
+   "en": "Two flames, and a third between them.",
+   "fr": "Deux flammes, et une troisième entre elles.",
+   "de": "Zwei Flammen, und eine dritte dazwischen."
+  },
+  "approved": true,
+  "alt": "Δύο αναμμένα κεριά, και ανάμεσά τους, χωρίς κερί από κάτω, μια τρίτη φλόγα."
+ },
+ "2025/03/blog-post_92.html": {
+  "slug": "kampana",
+  "caption": {
+   "el": "Ο ήχος δεν φτάνει στο αυτί· γεμίζει τον τόπο.",
+   "en": "Sound does not reach the ear; it fills the place.",
+   "fr": "Le son n’atteint pas l’oreille ; il remplit le lieu.",
+   "de": "Der Klang erreicht nicht das Ohr; er füllt den Ort."
+  },
+  "approved": true,
+  "alt": "Ένα μικρό καμπαναριό σε μια κοιλάδα· η καμπάνα κουνιέται και ο ήχος της απλώνεται σε μεγάλους κύκλους πάνω από τους λόφους."
+ },
+ "2025/03/blog-post_66.html": {
+  "slug": "agalma",
+  "caption": {
+   "el": "Ένα άγαλμα ανάμεσα σε κίονες, κι ένα πουλί στον ώμο του.",
+   "en": "A statue among columns, and a bird on its shoulder.",
+   "fr": "Une statue parmi les colonnes, et un oiseau sur son épaule.",
+   "de": "Eine Statue zwischen Säulen, und ein Vogel auf ihrer Schulter."
+  },
+  "approved": true,
+  "alt": "Ένα μαρμάρινο άγαλμα με πτυχωτό ένδυμα στέκει ήσυχο ανάμεσα σε κίονες· ένα μικρό πουλί έχει καθίσει στον ώμο του."
+ },
+ "2025/03/blog-post_15.html": {
+  "slug": "sfragida",
+  "caption": {
+   "el": "Η σφραγίδα αφήνει έκτυπο· το χέρι αφήνει πράξη.",
+   "en": "The seal leaves an imprint; the hand leaves an act.",
+   "fr": "Le sceau laisse une empreinte ; la main laisse un acte.",
+   "de": "Das Siegel hinterlässt einen Abdruck; die Hand hinterlässt eine Tat."
+  },
+  "approved": true,
+  "alt": "Ένα χέρι κρατά μια σφραγίδα που μόλις σηκώθηκε από ένα κομμάτι κερί, όπου έμεινε τυπωμένο το γράμμα Π."
+ },
+ "2025/03/blog-post_38.html": {
+  "slug": "rigma",
+  "caption": {
+   "el": "Ένα ρήγμα στον χρόνο, κι από εκεί φως.",
+   "en": "A rift in time, and light coming through.",
+   "fr": "Une faille dans le temps, et de là de la lumière.",
+   "de": "Ein Riss in der Zeit, und von dort Licht."
+  },
+  "approved": true,
+  "alt": "Ένα μεγάλο ρολόι με ένα ρήγμα που το διασχίζει διαγώνια· από τη ρωγμή περνά φως."
+ },
+ "2025/03/blog-post_23.html": {
+  "slug": "daxtylo-sta-xeili",
+  "caption": {
+   "el": "Ένα δάχτυλο στα χείλη που μένει για χρόνια.",
+   "en": "A finger on the lips that stays for years.",
+   "fr": "Un doigt sur les lèvres qui reste des années.",
+   "de": "Ein Finger auf den Lippen, der jahrelang bleibt."
+  },
+  "approved": true,
+  "alt": "Ένα παιδί, και ένα μεγάλο χέρι ενήλικα που του ακουμπά ένα δάχτυλο στα χείλη· δίπλα του ένα συννεφάκι λόγου διαγραμμένο."
+ },
+ "2025/03/blog-post_27.html": {
+  "slug": "veli",
+  "caption": {
+   "el": "Λέξεις σαν βέλη, κι ένας που δεν απαντά με βέλη.",
+   "en": "Words like arrows, and one who does not answer with arrows.",
+   "fr": "Des mots comme des flèches, et quelqu’un qui ne répond pas par des flèches.",
+   "de": "Worte wie Pfeile, und einer, der nicht mit Pfeilen antwortet."
+  },
+  "approved": true,
+  "alt": "Από ένα βήμα ρήτορα ξεκινούν λέξεις σαν βέλη· απέναντι, ένας άνθρωπος δεν απαντά με βέλη, κρατά ένα λουλούδι."
+ },
+ "2025/03/blog-post_87.html": {
+  "slug": "idios-sporos",
+  "caption": {
+   "el": "Σιωπή και λόγος φυτρώνουν από τον ίδιο σπόρο.",
+   "en": "Silence and speech sprout from the same seed.",
+   "fr": "Le silence et la parole germent de la même graine.",
+   "de": "Schweigen und Wort keimen aus demselben Samen."
+  },
+  "approved": true,
+  "alt": "Από έναν σπόρο κάτω από το χώμα βγαίνουν δύο βλαστοί· στον έναν ένα φύλλο γράφει «λόγος», ο άλλος έχει ένα φύλλο άγραφο."
+ },
+ "2025/03/blog-post_20.html": {
+  "slug": "grothia-palami",
+  "caption": {
+   "el": "Μια γροθιά και μια ανοιχτή παλάμη· η αλλαγή διαλέγει.",
+   "en": "A fist and an open palm; change chooses.",
+   "fr": "Un poing et une paume ouverte ; le changement choisit.",
+   "de": "Eine Faust und eine offene Hand; der Wandel wählt."
+  },
+  "approved": true,
+  "alt": "Αριστερά μια σφιγμένη γροθιά σηκωμένη, αχνή· δεξιά μια ανοιχτή παλάμη που κρατά ένα μικρό λουλούδι."
+ },
+ "2025/03/blog-post_9.html": {
+  "slug": "xaos-xari",
+  "caption": {
+   "el": "Το χάος ως άνοιγμα, πριν γίνει χάρη.",
+   "en": "Chaos as an opening, before it becomes grace.",
+   "fr": "Le chaos comme ouverture, avant de devenir grâce.",
+   "de": "Das Chaos als Öffnung, bevor es zur Gnade wird."
+  },
+  "approved": true,
+  "alt": "Αριστερά μια μουτζούρα από μπερδεμένες γραμμές· από μέσα της ξεκινά μια καμπύλη σε ώχρα που ξετυλίγεται ήρεμη προς τα δεξιά."
+ },
+ "2025/03/blog-post_41.html": {
+  "slug": "matia-xoros",
+  "caption": {
+   "el": "Η ματιά απλώνει τον χώρο.",
+   "en": "The gaze unfolds space.",
+   "fr": "Le regard déploie l’espace.",
+   "de": "Der Blick entfaltet den Raum."
+  },
+  "approved": true,
+  "alt": "Ένα μάτι αριστερά, και από αυτό ακτίνες που ανοίγουν σε προοπτική ένα δωμάτιο με ένα φωτεινό παράθυρο στο βάθος."
+ },
+ "2025/03/blog-post_83.html": {
+  "slug": "orizontas",
+  "caption": {
+   "el": "Στη γραμμή όπου θάλασσα και ουρανός είναι ένα.",
+   "en": "At the line where sea and sky are one.",
+   "fr": "Sur la ligne où mer et ciel ne font qu’un.",
+   "de": "An der Linie, wo Meer und Himmel eins sind."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος στην ακτή κοιτάζει τον ορίζοντα, εκεί που η θάλασσα και ο ουρανός ενώνονται σε μία γραμμή με ένα φως."
+ },
+ "2025/03/blog-post_8.html": {
+  "slug": "apokrisi",
+  "caption": {
+   "el": "Κάποιος φάνηκε· κάποιος άνοιξε το παράθυρο.",
+   "en": "Someone appeared; someone opened the window.",
+   "fr": "Quelqu’un est apparu ; quelqu’un a ouvert la fenêtre.",
+   "de": "Jemand erschien; jemand öffnete das Fenster."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος με ένα φανάρι στέκεται έξω από ένα σπίτι· ένα παράθυρο ανοίγει και φωτίζεται σαν απάντηση."
+ },
+ "2025/03/blog-post_75.html": {
+  "slug": "xoris-kena",
+  "caption": {
+   "el": "Πριν τα κενά ανάμεσα στις λέξεις.",
+   "en": "Before the spaces between words.",
+   "fr": "Avant les espaces entre les mots.",
+   "de": "Vor den Abständen zwischen den Wörtern."
+  },
+  "approved": true,
+  "alt": "Μια πέτρινη πλάκα με επιγραφή σε κεφαλαία γράμματα, όπου οι λέξεις γράφονται συνεχόμενες χωρίς κενά· δίπλα μια σμίλη."
+ },
+ "2025/03/blog-post_10.html": {
+  "slug": "melani-ryaki",
+  "caption": {
+   "el": "Η γραμμή του μελανιού γίνεται ρυάκι.",
+   "en": "The line of ink becomes a stream.",
+   "fr": "La ligne d’encre devient ruisseau.",
+   "de": "Die Tintenlinie wird zum Bach."
+  },
+  "approved": true,
+  "alt": "Μια πένα γράφει πάνω σε ένα φύλλο· η γραμμή του μελανιού βγαίνει από το χαρτί και συνεχίζει σαν ρυάκι προς τα δεξιά."
  }
 }
