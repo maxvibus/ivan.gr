@@ -542,5 +542,181 @@
   },
   "approved": true,
   "alt": "Ένας όγκος πέτρας από τον οποίο αρχίζει να φανερώνεται μια ανθρώπινη μορφή· μια σμίλη και ένα σφυρί αφαιρούν, και θραύσματα πετιούνται."
+ },
+ "2025/05/blog-post.html": {
+  "slug": "diavasi",
+  "caption": {
+   "el": "Στη μέση της διάβασης, χωρίς να ξέρεις γιατί περνάς.",
+   "en": "Halfway across, without knowing why you cross.",
+   "fr": "Au milieu du passage, sans savoir pourquoi tu traverses.",
+   "de": "Mitten auf dem Übergang, ohne zu wissen, warum man geht."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος στη μέση μιας διάβασης πεζών· στην απέναντι πλευρά ένα φανάρι ανάβει, μέσα σε λίγη ομίχλη."
+ },
+ "2025/04/blog-post_46.html": {
+  "slug": "afti-ston-kormo",
+  "caption": {
+   "el": "Ένα αυτί στον κορμό, και ο κόσμος που μιλά.",
+   "en": "An ear to the trunk, and the world speaking.",
+   "fr": "Une oreille contre le tronc, et le monde qui parle.",
+   "de": "Ein Ohr am Stamm, und die Welt, die spricht."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος με κλειστά μάτια ακουμπά το αυτί του σε έναν κορμό δέντρου· από μέσα απλώνονται απαλοί κυματισμοί ήχου."
+ },
+ "2025/04/blog-post_28.html": {
+  "slug": "syn",
+  "caption": {
+   "el": "Κανείς δεν χτίζει μόνος απέναντι στον κόσμο.",
+   "en": "No one builds alone against the world.",
+   "fr": "Personne ne bâtit seul face au monde.",
+   "de": "Niemand baut allein gegen die Welt."
+  },
+  "approved": true,
+  "alt": "Δύο άνθρωποι, ένας από κάθε πλευρά, σηκώνουν μαζί ένα δοκάρι για τη σκεπή ενός μισοχτισμένου σπιτιού."
+ },
+ "2025/04/blog-post_26.html": {
+  "slug": "eimai",
+  "caption": {
+   "el": "Έξω από την αφήγηση, περισσότερο εσύ.",
+   "en": "Outside the narrative, more yourself.",
+   "fr": "Hors du récit, davantage toi-même.",
+   "de": "Außerhalb der Erzählung, mehr du selbst."
+  },
+  "approved": true,
+  "alt": "Πίσω, ένα ρολό χαρτιού ξετυλιγμένο στο έδαφος και ετικέτες που γράφουν «ρόλος», «όνομα», «προσδοκία»· μπροστά, ένας άνθρωπος όρθιος με σηκωμένο χέρι."
+ },
+ "2025/04/blog-post_22.html": {
+  "slug": "skalopatia",
+  "caption": {
+   "el": "Τα σκαλοπάτια της συνείδησης, και στο τελευταίο μια κουβέντα.",
+   "en": "The steps of consciousness, and on the last one a conversation.",
+   "fr": "Les marches de la conscience, et sur la dernière une conversation.",
+   "de": "Die Stufen des Bewusstseins, und auf der letzten ein Gespräch."
+  },
+  "approved": true,
+  "alt": "Μια σκάλα με τέσσερα σκαλοπάτια· πάνω τους μια φωτιά, ένας κίονας, ένα βιβλίο και μια οθόνη, και στο τελευταίο δύο άνθρωποι που μιλούν."
+ },
+ "2025/04/the-invitation-of-consciousness-towards.html": {
+  "slug": "invitation-envelope",
+  "caption": {
+   "el": "Ένας φάκελος ανοιχτός, κι από μέσα φως.",
+   "en": "An opened envelope, and light inside.",
+   "fr": "Une enveloppe ouverte, et de la lumière dedans.",
+   "de": "Ein geöffneter Umschlag, und darin Licht."
+  },
+  "approved": true,
+  "alt": "A large envelope lies open; from inside it rises a soft triangle of light."
+ },
+ "2025/04/beyond-2025.html": {
+  "slug": "prosklisi-syneidisis",
+  "caption": {
+   "el": "Ένα φανάρι στο σταυροδρόμι της επιστήμης, της τεχνικής και του βιώματος.",
+   "en": "A lantern at the crossroads of science, technique and lived experience.",
+   "fr": "Une lanterne au carrefour de la science, de la technique et du vécu.",
+   "de": "Eine Laterne an der Kreuzung von Wissenschaft, Technik und Erleben."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος με ένα φανάρι στέκεται εκεί όπου τρεις δρόμοι χωρίζουν· στο τέλος του καθενός ένα μικροσκόπιο, ένα γρανάζι και μια καρδιά."
+ },
+ "2025/04/blog-post.html": {
+  "slug": "voi",
+  "caption": {
+   "el": "Η κραυγή που ανεβαίνει είναι ήδη βοήθεια.",
+   "en": "The cry that rises is already help.",
+   "fr": "Le cri qui monte est déjà secours.",
+   "de": "Der Schrei, der aufsteigt, ist schon Hilfe."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος με τα χέρια χωνί στο στόμα φωνάζει προς τα πάνω· κύματα φωνής ανεβαίνουν προς τα αστέρια, όπου ένα ανάβει."
+ },
+ "2025/03/blog-post_74.html": {
+  "slug": "mia-grammi",
+  "caption": {
+   "el": "Μέσα στην ορχήστρα, η προσοχή ακολουθεί μία γραμμή.",
+   "en": "Within the orchestra, attention follows one line.",
+   "fr": "Dans l’orchestre, l’attention suit une seule ligne.",
+   "de": "Im Orchester folgt die Aufmerksamkeit einer einzigen Linie."
+  },
+  "approved": true,
+  "alt": "Τρία πεντάγραμμα με νότες, σαν παρτιτούρα ορχήστρας· οι νότες της μεσαίας γραμμής λάμπουν και ένα αυτί στην άκρη την ακολουθεί."
+ },
+ "2025/03/blog-post_21.html": {
+  "slug": "symmathites",
+  "caption": {
+   "el": "Μάτια που σε ξέρουν από τότε.",
+   "en": "Eyes that have known you since then.",
+   "fr": "Des yeux qui te connaissent depuis ce temps-là.",
+   "de": "Augen, die dich seit damals kennen."
+  },
+  "approved": true,
+  "alt": "Δύο πρόσωπα πάνω από δύο παλιά θρανία κοιτάζονται στα μάτια· μια διακεκομμένη γραμμή φωτός ενώνει τα βλέμματά τους."
+ },
+ "2025/03/blog-post_13.html": {
+  "slug": "sfaires",
+  "caption": {
+   "el": "Δύο σφαίρες, απαλά η μία δίπλα στην άλλη.",
+   "en": "Two spheres, gently side by side.",
+   "fr": "Deux sphères, doucement l’une à côté de l’autre.",
+   "de": "Zwei Kugeln, sanft nebeneinander."
+  },
+  "approved": true,
+  "alt": "Δύο σφαίρες χωρίς πρόσωπο ακουμπούν απαλά η μία στην άλλη· εκεί που αγγίζονται, ένα μικρό φως."
+ },
+ "2025/03/blog-post_73.html": {
+  "slug": "exo-apo-to-kadro",
+  "caption": {
+   "el": "Έξω από το κάδρο της ιστορίας.",
+   "en": "Out of the frame of history.",
+   "fr": "Hors du cadre de l’histoire.",
+   "de": "Aus dem Rahmen der Geschichte."
+  },
+  "approved": true,
+  "alt": "Ένας μεγάλος πίνακας με μια αχνή ιστορική σκηνή· μια διακεκομμένη γραμμή βγαίνει από το κάδρο ως έναν άνθρωπο που στέκεται πια έξω του."
+ },
+ "2025/03/blog-post_19.html": {
+  "slug": "milo",
+  "caption": {
+   "el": "Ένα μήλο απλωμένο, όχι κρυμμένο.",
+   "en": "An apple held out, not hidden.",
+   "fr": "Une pomme tendue, non cachée.",
+   "de": "Ein Apfel, hingehalten, nicht versteckt."
+  },
+  "approved": true,
+  "alt": "Κάτω από μια μηλιά, δύο άνθρωποι· ο ένας απλώνει φανερά ένα μήλο προς τον άλλον."
+ },
+ "2025/03/blog-post_96.html": {
+  "slug": "ion-ion",
+  "caption": {
+   "el": "Ό,τι πηγαίνει και ό,τι μένει: η ροή και η πέτρα στο ίδιο νερό.",
+   "en": "What goes and what stays: the flow and the stone in the same water.",
+   "fr": "Ce qui va et ce qui demeure : le flux et la pierre dans la même eau.",
+   "de": "Was geht und was bleibt: der Fluss und der Stein im selben Wasser."
+  },
+  "approved": true,
+  "alt": "Ένα ποτάμι κυλά γύρω από μια πέτρα που μένει ακίνητη· πάνω γράφει «ἰών» και «ἴον»."
+ },
+ "2025/03/blog-post_81.html": {
+  "slug": "kvanto",
+  "caption": {
+   "el": "Κύμα που γίνεται κόκκος, και ξανά κύμα.",
+   "en": "A wave becoming a grain, and a wave again.",
+   "fr": "Une onde qui devient grain, puis de nouveau onde.",
+   "de": "Eine Welle, die zum Korn wird, und wieder zur Welle."
+  },
+  "approved": true,
+  "alt": "Ένα κύμα που πυκνώνει στη μέση και γίνεται ένας φωτεινός κόκκος, πριν απλωθεί ξανά· από κάτω η λέξη «ἰέναι»."
+ },
+ "2025/03/blog-post_18.html": {
+  "slug": "grammata-neyrones",
+  "caption": {
+   "el": "Γράμματα που ενώνονται σαν νευρώνες.",
+   "en": "Letters joining like neurons.",
+   "fr": "Des lettres qui se relient comme des neurones.",
+   "de": "Buchstaben, die sich wie Neuronen verbinden."
+  },
+  "approved": true,
+  "alt": "Τα είκοσι τέσσερα γράμματα του ελληνικού αλφαβήτου σε κύκλο, ενωμένα μεταξύ τους με λεπτές καμπύλες σαν δίκτυο νευρώνων· τα Λ, Ο και Γ λάμπουν."
  }
 }
