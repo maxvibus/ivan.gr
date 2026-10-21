@@ -1136,5 +1136,379 @@
   },
   "approved": true,
   "alt": "Ένας ήλιος ανατέλλει πάνω από τη θάλασσα· ένας άνθρωπος μπροστά του κάνει ένα μικρό βήμα πίσω, με το χέρι μισοσηκωμένο."
+ },
+ "2025/03/blog-post_22.html": {
+  "slug": "dakry",
+  "caption": {
+   "el": "Η ωραιότητα που δακρύζει.",
+   "en": "Beauty that sheds a tear.",
+   "fr": "La beauté qui verse une larme.",
+   "de": "Schönheit, die eine Träne vergießt."
+  },
+  "approved": true,
+  "alt": "Ένα λουλούδι με ανοιχτά πέταλα· από την άκρη ενός πετάλου κρέμεται μια σταγόνα σαν δάκρυ."
+ },
+ "2025/03/blog-post_14.html": {
+  "slug": "pena-granazi",
+  "caption": {
+   "el": "Πένα και γρανάζι, από το ίδιο χέρι.",
+   "en": "Pen and gear, from the same hand.",
+   "fr": "Plume et engrenage, de la même main.",
+   "de": "Feder und Zahnrad, aus derselben Hand."
+  },
+  "approved": true,
+  "alt": "Ένα γρανάζι, και στο κέντρο του, στη θέση του άξονα, η μύτη μιας πένας."
+ },
+ "2025/03/blog-post_69.html": {
+  "slug": "ti-diavazo",
+  "caption": {
+   "el": "Ο αναγνώστης που απορεί.",
+   "en": "The reader who wonders.",
+   "fr": "Le lecteur qui s’étonne.",
+   "de": "Der Leser, der sich wundert."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος με γυαλιά διαβάζει ένα βιβλίο με σηκωμένα φρύδια· γύρω του αιωρούνται ερωτηματικά."
+ },
+ "2025/03/blog-post_26.html": {
+  "slug": "vivliothiki",
+  "caption": {
+   "el": "Μια βιβλιοθήκη όπου όλα είναι γραμμένα.",
+   "en": "A library where everything is written.",
+   "fr": "Une bibliothèque où tout est écrit.",
+   "de": "Eine Bibliothek, in der alles geschrieben steht."
+  },
+  "approved": true,
+  "alt": "Ένας μακρύς διάδρομος βιβλιοθήκης σε προοπτική, με ράφια γεμάτα βιβλία ως το βάθος· στο κέντρο ένα βιβλίο φωτίζεται."
+ },
+ "2025/03/blog-post_2.html": {
+  "slug": "pigaino-reo",
+  "caption": {
+   "el": "Πηγαίνω, ρέω: το ίδιο ρήμα.",
+   "en": "I go, I flow: the same verb.",
+   "fr": "Je vais, je coule : le même verbe.",
+   "de": "Ich gehe, ich fließe: dasselbe Verb."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος περπατά στην όχθη ενός ποταμού προς την ίδια κατεύθυνση με το νερό· πάνω γράφει «ἰέναι»."
+ },
+ "2025/03/blog-post_56.html": {
+  "slug": "grafo-xana",
+  "caption": {
+   "el": "Δεν σβήνω· γράφω ξανά.",
+   "en": "I do not erase; I write again.",
+   "fr": "Je n’efface pas ; j’écris de nouveau.",
+   "de": "Ich lösche nicht; ich schreibe neu."
+  },
+  "approved": true,
+  "alt": "Σε ένα φύλλο μια παλιά γραμμή σβήνεται με γόμα και ακριβώς από κάτω ένα μολύβι τραβά μια καινούρια, φωτεινή."
+ },
+ "2025/03/blog-post_25.html": {
+  "slug": "elika",
+  "caption": {
+   "el": "Η γλώσσα σαν έλικα που κρατά τον κώδικα.",
+   "en": "Language like a helix holding the code.",
+   "fr": "La langue comme une hélice qui garde le code.",
+   "de": "Sprache wie eine Helix, die den Code bewahrt."
+  },
+  "approved": true,
+  "alt": "Μια διπλή έλικα σαν του DNA· στα σκαλοπάτια της είναι γραμμένα ελληνικά γράμματα."
+ },
+ "2025/03/blog-post_71.html": {
+  "slug": "isyxo-nero",
+  "caption": {
+   "el": "Ένα ήσυχο νερό δεν είναι άδειο.",
+   "en": "Still water is not empty.",
+   "fr": "Une eau calme n’est pas vide.",
+   "de": "Stilles Wasser ist nicht leer."
+  },
+  "approved": true,
+  "alt": "Ένα δέντρο στην όχθη μιας ήσυχης λίμνης καθρεφτίζεται ολόκληρο στο νερό, μαζί με ένα αστέρι."
+ },
+ "2025/03/blog-post_3.html": {
+  "slug": "episkepsi",
+  "caption": {
+   "el": "Σε σκέφτομαι: μια επίσκεψη χωρίς δρόμο.",
+   "en": "I think of you: a visit without a road.",
+   "fr": "Je pense à toi : une visite sans chemin.",
+   "de": "Ich denke an dich: ein Besuch ohne Weg."
+  },
+  "approved": true,
+  "alt": "Δύο σπίτια μακριά το ένα από το άλλο, με φωτισμένα παράθυρα· μια διακεκομμένη καμπύλη φωτός ενώνει τα παράθυρά τους πάνω από το κενό."
+ },
+ "2025/03/blog-post_28.html": {
+  "slug": "to-ek",
+  "caption": {
+   "el": "Το εκ: μια αφετηρία που δεν λέει από πού.",
+   "en": "The ek: an origin that does not say from where.",
+   "fr": "Le ek : une origine qui ne dit pas d’où.",
+   "de": "Das ek: ein Ursprung, der nicht sagt, woher."
+  },
+  "approved": true,
+  "alt": "Η λέξη «εκ» στο κέντρο, και γύρω της ακτίνες που ξεκινούν προς όλες τις κατευθύνσεις."
+ },
+ "2025/03/anthropia.html": {
+  "slug": "anthropia",
+  "caption": {
+   "el": "Ανθρωπιά: ένα χέρι που σηκώνει.",
+   "en": "Anthropiá: a hand that lifts.",
+   "fr": "Anthropiá : une main qui relève.",
+   "de": "Anthropiá: eine Hand, die aufhilft."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος κάθεται πεσμένος στο έδαφος και απλώνει το χέρι· ένας άλλος σκύβει και το πιάνει για να τον σηκώσει."
+ },
+ "2025/03/blog-post_6.html": {
+  "slug": "pigi",
+  "caption": {
+   "el": "Η μάθηση γυρίζει στην πηγή.",
+   "en": "Learning returns to the source.",
+   "fr": "Apprendre revient à la source.",
+   "de": "Lernen kehrt zur Quelle zurück."
+  },
+  "approved": true,
+  "alt": "Ένα παιδί σκύβει και πίνει νερό από μια πέτρινη βρύση· πίσω του ένα μονοπάτι έκανε κύκλο για να καταλήξει εκεί."
+ },
+ "2025/03/blog-post_95.html": {
+  "slug": "titlos-doro",
+  "caption": {
+   "el": "Ο τίτλος σαν καρτελάκι σε δώρο.",
+   "en": "The title like a tag on a gift.",
+   "fr": "Le titre comme une étiquette sur un cadeau.",
+   "de": "Der Titel wie ein Anhänger an einem Geschenk."
+  },
+  "approved": true,
+  "alt": "Ένα κουτί δώρου με κορδέλα· από τον φιόγκο κρέμεται ένα καρτελάκι που γράφει «τίτλος»."
+ },
+ "2025/03/blog-post_90.html": {
+  "slug": "anorthosi",
+  "caption": {
+   "el": "Η ανάσταση ως ανόρθωση.",
+   "en": "Resurrection as rising upright.",
+   "fr": "La résurrection comme redressement.",
+   "de": "Auferstehung als Aufrichtung."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος ανασηκώνεται από το έδαφος, με το ένα χέρι υψωμένο προς ένα φως από πάνω."
+ },
+ "2025/03/blog-post_61.html": {
+  "slug": "neos-vlastos",
+  "caption": {
+   "el": "Από τον πεσμένο κορμό, ένας νέος βλαστός.",
+   "en": "From the fallen trunk, a new shoot.",
+   "fr": "Du tronc tombé, une nouvelle pousse.",
+   "de": "Aus dem gefallenen Stamm ein neuer Trieb."
+  },
+  "approved": true,
+  "alt": "Ένας κορμός δέντρου πεσμένος στο έδαφος, και από τη μέση του φυτρώνει ένας νέος βλαστός."
+ },
+ "2025/03/blog-post_99.html": {
+  "slug": "kardia-mati",
+  "caption": {
+   "el": "Η καρδιά ως κέντρο αντίληψης, όχι μόνο συναίσθημα.",
+   "en": "The heart as a centre of perception, not only feeling.",
+   "fr": "Le cœur comme centre de perception, pas seulement d’émotion.",
+   "de": "Das Herz als Zentrum der Wahrnehmung, nicht nur des Gefühls."
+  },
+  "approved": true,
+  "alt": "Μια μεγάλη καρδιά, και μέσα της ένα ανοιχτό μάτι που βλέπει."
+ },
+ "2025/03/blog-post_44.html": {
+  "slug": "apo-to-ena",
+  "caption": {
+   "el": "Από το ένα στο εμείς.",
+   "en": "From the one to the we.",
+   "fr": "De l’un au nous.",
+   "de": "Vom Einen zum Wir."
+  },
+  "approved": true,
+  "alt": "Ένα φωτεινό σημείο στο κέντρο, και γύρω του τρεις όλο και μεγαλύτεροι κύκλοι από σημεία ενωμένα μεταξύ τους."
+ },
+ "2025/03/blog-post_46.html": {
+  "slug": "gefyra-dia",
+  "caption": {
+   "el": "Το «δια»: γέφυρα, όχι διαχωρισμός.",
+   "en": "“Dia”: a bridge, not a division.",
+   "fr": "« Dia » : un pont, non une séparation.",
+   "de": "„Dia“: eine Brücke, keine Trennung."
+  },
+  "approved": true,
+  "alt": "Μια τοξωτή γέφυρα ενώνει δύο όχθες που γράφουν «προ» και «μετά»· στη μέση της γράφει «διά»."
+ },
+ "2025/03/blog-post_79.html": {
+  "slug": "enikos",
+  "caption": {
+   "el": "Ένα γράμμα στον ενικό, για όποιον το διαβάζει.",
+   "en": "A letter in the singular, for whoever reads it.",
+   "fr": "Une lettre au singulier, pour qui la lit.",
+   "de": "Ein Brief in der Einzahl, für jeden, der ihn liest."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος με γυαλιά κρατά ένα γράμμα που αρχίζει με τη λέξη «Εσύ,»."
+ },
+ "2025/03/blog-post_42.html": {
+  "slug": "kefali-kardia",
+  "caption": {
+   "el": "Από το κεφάλι στην καρδιά, ένα σκαλί.",
+   "en": "From head to heart, one step.",
+   "fr": "De la tête au cœur, une marche.",
+   "de": "Vom Kopf zum Herzen, eine Stufe."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος όρθιος· μια φωτεινή διακεκομμένη γραμμή κατεβαίνει από το κεφάλι του ως μια μικρή καρδιά στο στήθος."
+ },
+ "2025/03/blog-post_30.html": {
+  "slug": "ergo-pou-vrike",
+  "caption": {
+   "el": "Δεν το σχεδιάσαμε· μας βρήκε.",
+   "en": "We did not plan it; it found us.",
+   "fr": "Nous ne l’avons pas prévu ; il nous a trouvés.",
+   "de": "Wir haben es nicht geplant; es hat uns gefunden."
+  },
+  "approved": true,
+  "alt": "Πάνω σε ένα παγκάκι στο πάρκο, ένα δεμένο χειρόγραφο που κάποιος βρήκε, φωτισμένο· γύρω του πέφτουν φύλλα."
+ },
+ "2025/03/blog-post_31.html": {
+  "slug": "e-ton-delfon",
+  "caption": {
+   "el": "Το Ε των Δελφών: είσαι.",
+   "en": "The E at Delphi: you are.",
+   "fr": "Le E de Delphes : tu es.",
+   "de": "Das E von Delphi: du bist."
+  },
+  "approved": true,
+  "alt": "Ανάμεσα σε δύο κίονες, μια πέτρινη πλάκα με ένα μεγάλο χαραγμένο Ε, και από κάτω «ΕΙ · ΝΑΙ»."
+ },
+ "2025/03/blog-post_55.html": {
+  "slug": "laouto",
+  "caption": {
+   "el": "Ερωτοαποκρίσεις, όχι απαντήσεις.",
+   "en": "Questions and replies, not answers.",
+   "fr": "Des questions-réponses, non des réponses.",
+   "de": "Frage und Erwiderung, keine Antworten."
+  },
+  "approved": true,
+  "alt": "Ένα λαούτο, με το κεφάλι του μπράτσου του να γυρίζει σαν ερωτηματικό· γύρω του αιωρούνται νότες."
+ },
+ "2025/03/blog-post_64.html": {
+  "slug": "pyli",
+  "caption": {
+   "el": "Να περνάς από την πύλη χωρίς να φεύγεις.",
+   "en": "To pass through the gate without leaving.",
+   "fr": "Passer la porte sans partir.",
+   "de": "Durch das Tor gehen, ohne fortzugehen."
+  },
+  "approved": true,
+  "alt": "Μια μεγάλη θριαμβική αψίδα· στο φωτισμένο της άνοιγμα στέκεται ένας μικρός άνθρωπος."
+ },
+ "2025/03/blog-post_16.html": {
+  "slug": "plision",
+  "caption": {
+   "el": "Ο πιο κοντινός πλησίον.",
+   "en": "The nearest neighbour.",
+   "fr": "Le prochain le plus proche.",
+   "de": "Der nächste Nächste."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος με το χέρι στο στήθος· δίπλα του, σχεδόν πάνω του, ένα φωτεινό περίγραμμα του ίδιου."
+ },
+ "2025/03/blog-post_77.html": {
+  "slug": "kleps-ydra",
+  "caption": {
+   "el": "Μια στιγμή που απλώνεται αντί να περάσει.",
+   "en": "A moment that spreads instead of passing.",
+   "fr": "Un instant qui s’étend au lieu de passer.",
+   "de": "Ein Augenblick, der sich ausdehnt, statt zu vergehen."
+  },
+  "approved": true,
+  "alt": "Μια κλεψύδρα όπου οι κόκκοι της άμμου αιωρούνται σταματημένοι στη μέση, αντί να πέφτουν."
+ },
+ "2025/03/blog-post_1.html": {
+  "slug": "periballon",
+  "caption": {
+   "el": "Είμαι περιβάλλον, και με περιβάλλει.",
+   "en": "I am an environment, and it surrounds me.",
+   "fr": "Je suis environnement, et il m’environne.",
+   "de": "Ich bin Umwelt, und sie umgibt mich."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος μέσα σε έναν κύκλο από δέντρα· στο σημείο όπου λείπουν δύο δέντρα στέκεται μια φωτεινή πόρτα."
+ },
+ "2025/03/blog-post.html": {
+  "slug": "ion-pedio",
+  "caption": {
+   "el": "Ό,τι κινείται σχηματίζεται από ό,τι το περιβάλλει.",
+   "en": "What moves is shaped by what surrounds it.",
+   "fr": "Ce qui bouge est formé par ce qui l’entoure.",
+   "de": "Was sich bewegt, wird von dem geformt, was es umgibt."
+  },
+  "approved": true,
+  "alt": "Ένα φορτισμένο σωματίδιο με τροχιές γύρω του, μέσα σε γραμμές πεδίου που λυγίζουν προς το μέρος του."
+ },
+ "2025/02/blog-post_62.html": {
+  "slug": "vroxi-vlastari",
+  "caption": {
+   "el": "Το λυπηρό ποτίζει ό,τι θα φυτρώσει.",
+   "en": "Sorrow waters what will grow.",
+   "fr": "Le chagrin arrose ce qui va pousser.",
+   "de": "Das Traurige gießt, was wachsen wird."
+  },
+  "approved": true,
+  "alt": "Ένα σύννεφο βρέχει πάνω σε ένα μικρό βλαστάρι που μόλις βγήκε από το χώμα."
+ },
+ "2025/02/blog-post_40.html": {
+  "slug": "rythmos",
+  "caption": {
+   "el": "Η συγχώρεση έρχεται σαν ρυθμός, όχι σαν απόφαση.",
+   "en": "Forgiveness comes as rhythm, not as decision.",
+   "fr": "Le pardon vient comme un rythme, non comme une décision.",
+   "de": "Vergebung kommt als Rhythmus, nicht als Entschluss."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος κάθεται στην ακτή μπροστά σε κύματα που έρχονται το ένα πίσω από το άλλο με σταθερό ρυθμό."
+ },
+ "2025/02/blog-post_97.html": {
+  "slug": "motiva-ammou",
+  "caption": {
+   "el": "Τα μοτίβα είναι το αποτύπωμα της ροής.",
+   "en": "Patterns are the imprint of the flow.",
+   "fr": "Les motifs sont l’empreinte du flux.",
+   "de": "Muster sind der Abdruck des Fließens."
+  },
+  "approved": true,
+  "alt": "Αμμόλοφοι με κυματιστά μοτίβα που χάραξε ο άνεμος, και ένα φτερό που αιωρείται από πάνω."
+ },
+ "2025/02/blog-post_49.html": {
+  "slug": "kremasti-gefyra",
+  "caption": {
+   "el": "Ούτε πια εκεί, ούτε ακόμα εδώ.",
+   "en": "No longer there, not yet here.",
+   "fr": "Plus là-bas, pas encore ici.",
+   "de": "Nicht mehr dort, noch nicht hier."
+  },
+  "approved": true,
+  "alt": "Ένας άνθρωπος στη μέση μιας κρεμαστής γέφυρας που κουνιέται ελαφρά, ανάμεσα σε δύο γκρεμούς."
+ },
+ "2025/02/blog-post_28.html": {
+  "slug": "anamesa-xeria",
+  "caption": {
+   "el": "Λίγο πριν αγγιχτούν.",
+   "en": "Just before they touch.",
+   "fr": "Juste avant qu’elles se touchent.",
+   "de": "Kurz bevor sie sich berühren."
+  },
+  "approved": true,
+  "alt": "Δύο χέρια από αντίθετες πλευρές απλώνονται το ένα προς το άλλο· ανάμεσα στα δάχτυλά τους, που δεν αγγίζονται ακόμα, ένα φως."
+ },
+ "2025/02/blog-post.html": {
+  "slug": "rogmi-revma",
+  "caption": {
+   "el": "Από τη ρωγμή, το ρεύμα.",
+   "en": "From the crack, the current.",
+   "fr": "De la fissure, le courant.",
+   "de": "Aus dem Riss die Strömung."
+  },
+  "approved": true,
+  "alt": "Ένας μεγάλος βράχος με μια ρωγμή από πάνω ως κάτω· από τη βάση της βγαίνει νερό και κυλά προς τα δεξιά."
  }
 }
