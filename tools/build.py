@@ -95,6 +95,7 @@ def hyphenate(soup, lang):
 def clean(h, frm, lang='el'):
     soup = BeautifulSoup(h, 'html.parser')
     for t in soup.find_all(True):
+        if t.name in ('svg', 'figure') or t.find_parent('svg'): continue   # τα σκίτσα κρατούν τις κλάσεις της κίνησης
         for a in ('style', 'class', 'id', 'dir', 'align', 'face', 'size', 'color'):
             if a in t.attrs and not (a == 'class' and t.name == 'div' and 'ivan-translation' in ' '.join(t.get('class', []))):
                 if a == 'class' and 'ivan-translation-note' in ' '.join(t.get('class', [])): continue
@@ -393,16 +394,28 @@ def front():
     s += f'<div class="lt"><p class="kicker">{E(T["latest"])} · <time datetime="{lead["date"][:10]}">{E(dlong(lead["date"], "el"))}</time></p>\n'
     s += f'<h2><a href="{rel(frm, lead["path"])}">{E(lead["t"])}</a></h2>\n<p class="ex">{E(excerpt(lead["txt"]))}</p>\n'
     s += f'<p class="go"><a href="{rel(frm, lead["path"])}">{E(T["read"])}</a></p></div>\n</article>\n'
-    s += '<section class="pages" aria-label="Στο τετράδιο"><h2 class="h">Στο τετράδιο</h2><div class="pgrid">\n'
-    def thumb(it):
+    s += f'<section class="pages" aria-label="Στο τετράδιο"><div class="phead"><h2 class="h">Στο τετράδιο</h2><a class="pall" href="{rel(frm, "keimena/index.html")}">όλα σε λίστα · {len(items)}</a></div><div class="pgrid">\n'
+    def sketch_src(it):
+        """Η διαδρομή του σκίτσου μιας κάρτας: από τον κατάλογο σκίτσων ή, για τα νέα κείμενα, από το σκίτσο μέσα στο ίδιο το κείμενο."""
         sk = SKETCHES.get(it['path'])
-        if not (sk and sk.get('approved')): return ''
-        try: return '<span class="pimg">' + open(os.path.join(ROOT, 'assets', 'sketches', sk['slug'] + '.svg'), encoding='utf-8').read() + '</span>'
+        if sk and sk.get('approved'): return 'assets/sketches/' + sk['slug'] + '.svg'
+        m = re.search(r'<figure[^>]*>\s*(<svg.*?</svg>)', it['html'], re.S)
+        if not m: return ''
+        sp = 'assets/sketches/post-' + posixpath.basename(it['path'])[:-5] + '.svg'
+        write(sp, m.group(1)); return sp
+    def thumb(it):
+        sp = sketch_src(it)
+        if not sp: return ''
+        try: return '<span class="pimg">' + open(os.path.join(ROOT, sp), encoding='utf-8').read() + '</span>'
         except OSError: return ''
     for it in rest:
         s += (f'<div class="page">{thumb(it)}<a class="pa" href="{rel(frm, it["path"])}"><time datetime="{it["date"][:10]}">{E(dlong(it["date"], "el"))}</time>'
               f'<span class="pt">{E(it["t"])}</span><span class="pe">{E(excerpt(it["txt"], 170))}</span></a></div>\n')
-    s += '</div></section>\n'
+    # τα υπόλοιπα κείμενα έρχονται με το κύλισμα, οκτώ τη φορά· χωρίς σενάρια μένει ο σύνδεσμος για όλα
+    more = [dict(h=rel(frm, it['path']), i=it['date'][:10], d=dlong(it['date'], 'el'), t=it['t'], e=excerpt(it['txt'], 170), s=sketch_src(it)) for it in items[9:]]
+    s += '</div><div class="pmore" aria-hidden="true"></div>\n'
+    s += '<script type="application/json" id="tetradio-more">' + json.dumps(more, ensure_ascii=False).replace('</', '<\\/') + '</script>\n'
+    s += '</section>\n'
     s += (f'<p class="more"><a href="{rel(frm, "keimena/index.html")}">Όλα τα κείμενα · {len(items)}</a>'
           f'<span>·</span><a class="ek" href="{rel(frm, "ek/index.html")}">«εκ» — βιβλίο, 2027</a></p>\n')
     s += '</main>\n' + footer(frm) + '</body>\n</html>\n'

@@ -436,3 +436,35 @@ function placeLabel(el, x, y, w){
   }
   if(document.readyState !== 'loading') go(); else document.addEventListener('DOMContentLoaded', go);
 })();
+
+/* Τετράδιο: τα επόμενα κείμενα έρχονται με το κύλισμα, οκτώ τη φορά, με το σκίτσο τους. */
+(function () {
+  var data = document.getElementById('tetradio-more'), grid = document.querySelector('.tetradio .pgrid'), end = document.querySelector('.tetradio .pmore');
+  if (!data || !grid || !end || !('IntersectionObserver' in window)) return;
+  var items; try { items = JSON.parse(data.textContent); } catch (e) { return; }
+  var i = 0, busy = false;
+  function card(it) {
+    var d = document.createElement('div'); d.className = 'page new';
+    var a = document.createElement('a'); a.className = 'pa'; a.href = it.h;
+    var t = document.createElement('time'); t.dateTime = it.i; t.textContent = it.d;
+    var pt = document.createElement('span'); pt.className = 'pt'; pt.textContent = it.t;
+    var pe = document.createElement('span'); pe.className = 'pe'; pe.textContent = it.e;
+    a.appendChild(t); a.appendChild(pt); a.appendChild(pe);
+    if (it.s) {
+      var im = document.createElement('span'); im.className = 'pimg'; d.appendChild(im);
+      fetch(it.s).then(function (r) { return r.ok ? r.text() : ''; }).then(function (svg) {
+        if (svg.indexOf('<svg') === 0) im.innerHTML = svg; else im.remove();
+      }).catch(function () { im.remove(); });
+    }
+    d.appendChild(a); return d;
+  }
+  function more() {
+    if (busy || i >= items.length) return; busy = true;
+    var f = document.createDocumentFragment();
+    items.slice(i, i + 8).forEach(function (it) { f.appendChild(card(it)); });
+    i += 8; grid.appendChild(f); busy = false;
+    if (i >= items.length) io.disconnect();
+  }
+  var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) more(); }, { rootMargin: '600px 0px' });
+  io.observe(end);
+})();
