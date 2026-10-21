@@ -369,3 +369,6 @@ figure.sketch svg,.pimg svg{pointer-events:none}
 .maplabel b,.maplabel a{display:block;font-weight:600;color:var(--blue)}
 .maplabel small{display:block;font-style:italic;color:var(--muted);font-size:.82rem;margin-top:.15rem}
 :root[data-theme="night"] .maplabel{box-shadow:0 6px 24px rgba(0,0,0,.4)}
+/* και το ίδιο το φύλλο είναι τετράδιο: τετραγωνάκια και πάνω στο χαρτί */
+.sheet-lead,body.text main.wrap,.page,.letter,dialog.win{background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;background-position:-1px -1px}
+.page .pimg{background:transparent}
