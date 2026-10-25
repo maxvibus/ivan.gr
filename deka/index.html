@@ -26,8 +26,8 @@
 /* Χαρτί την ημέρα, σκοτάδι τη νύχτα — τα ίδια χρώματα με τον ιστότοπο.
    Στο κέντρο ο αριθμός μέσα στον κύκλο του χρόνου, οι παίκτες γύρω του· δίπλα (ή από κάτω) ο πίνακας και το κανάλι. */
 :root{
-  --paper:#FBF8F2; --card:#FFFFFF; --ink:#1F3550; --soft:#4A5A70; --rule:rgba(0,94,171,.22); --rule2:rgba(0,94,171,.10);
-  --accent:#005EAB; --ochre:#C99A5E; --warn:#A23B2A; --ok:#2F6B4F; --panel:#F3EEE3; --glow:0 0 0 transparent;
+  --paper:#FBF8F2; --card:#FFFFFF; --ink:#1F3550; --soft:#4A5A70; --rule:rgba(0,51,160,.22); --rule2:rgba(0,51,160,.10);
+  --accent:#0033A0; --ochre:#C99A5E; --warn:#A23B2A; --ok:#2F6B4F; --panel:#F3EEE3; --glow:0 0 0 transparent;
   --shade:0 1px 2px rgba(31,53,80,.06),0 8px 28px rgba(31,53,80,.07);
   --serif:"EB Garamond",Garamond,Georgia,serif; --mono:ui-monospace,"SF Mono",Menlo,monospace;
   color-scheme:light;
@@ -44,7 +44,7 @@ body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 :root[data-theme="night"]{background:#0F1620}
 body{background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;background-position:center top}
-:root{--grid:rgba(0,94,171,.10)} :root[data-theme="night"]{--grid:rgba(141,187,234,.06)}
+:root{--grid:rgba(0,51,160,.10)} :root[data-theme="night"]{--grid:rgba(141,187,234,.06)}
 :root[data-theme="night"] body{background-color:#0F1620}
 :root.theming::view-transition-old(root),:root.theming::view-transition-new(root){animation-duration:1.6s;animation-timing-function:cubic-bezier(.45,0,.25,1)}
 button,a{-webkit-tap-highlight-color:transparent}
@@ -246,7 +246,7 @@ const BASE=12, LAST=8, CLASH=1.0, TARGET=10, PREFIX='ivangr-deka-', IDLE_ROUNDS=
 // Οι παίκτες του υπολογιστή έχουν ονόματα χρωμάτων· οι άνθρωποι παίρνουν χρώμα με τη σειρά που μπαίνουν.
 const BOTNAMES=['Α΄','Β΄','Γ΄'];
 const BOTCOLORS={'Α΄':'#B58A55','Β΄':'#5D7392','Γ΄':'#6F8A7E'};
-const HUMANCOLORS=['#005EAB','#B04A6F','#7A5AA8','#2E8C9A','#9A6B2E','#5B7F2A'];
+const HUMANCOLORS=['#0033A0','#B04A6F','#7A5AA8','#2E8C9A','#9A6B2E','#5B7F2A'];
 // Η δυσκολία πιέζει τον άνθρωπο (πρόβλεψη, ρυθμός, σιωπές)· μεταξύ τους οι παίκτες του υπολογιστή μένουν καλοί συμπαίκτες.
 const LEVELS=[{attack:0.35,act:0.8,react:[0.2,0.45],keep:0.97},{attack:0.65,act:1.0,react:[0.2,0.5],keep:0.93},{attack:0.95,act:1.2,react:[0.25,0.55],keep:0.88}];
 function persona(){ return {mu:Math.exp(Math.log(0.8)+Math.random()*Math.log(5)), sg:0.25+Math.random()*0.35, eager:0.4+Math.random()*0.35, act:0.35+Math.random()*0.35, react:0.5, prev:-9}; }
@@ -277,7 +277,7 @@ function stamp(){return new Date().toTimeString().slice(0,8)}
 function showLog(text,cls){const d=document.createElement('div');d.className=cls||'';d.textContent='['+stamp()+'] '+text;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight}
 function getName(){let n=$('name').value.trim().slice(0,16); if(!n){$('name').focus(); statusEl.textContent='Γράψε πρώτα ένα όνομα.'; return null} return n}
 function lockLobby(){ document.body.classList.add('playing'); $('pick').hidden=true; $('name').disabled=true; $('leave').hidden=false; $('chatform').hidden=false; $('chatnote').hidden=false; }
-function colorOf(p,colors){ return BOTCOLORS[p] || (colors&&colors[p]) || '#005EAB'; }
+function colorOf(p,colors){ return BOTCOLORS[p] || (colors&&colors[p]) || '#0033A0'; }
 
 /* ---------- προβολή ---------- */
 let seatsKey='';

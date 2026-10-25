@@ -361,7 +361,7 @@ function placeLabel(el, x, y, w){
       var night = document.documentElement.dataset.theme === 'night';
       ctx.clearRect(0, 0, W, H);
       /* το χαρτί από κάτω: κάνναβος σε προοπτική */
-      ctx.lineWidth = 1; ctx.strokeStyle = night ? 'rgba(141,187,234,.10)' : 'rgba(0,94,171,.11)';
+      ctx.lineWidth = 1; ctx.strokeStyle = night ? 'rgba(141,187,234,.10)' : 'rgba(0,51,160,.11)';
       var FY = 1.12, G = 1.2, st = .12;
       ctx.beginPath();
       for(var g = -G; g <= G + 1e-6; g += st){ var a = proj(g, FY, -G), b = proj(g, FY, G); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
@@ -370,7 +370,7 @@ function placeLabel(el, x, y, w){
       for(var i = 0; i < Nn.length; i++){ var q = proj(Nn[i][0], Nn[i][1] * .9, Nn[i][2]); P[i] = q; }
       var on = sel >= 0 ? sel : hov, mark = {}; if(on >= 0){ mark[on] = 1; nb[on].forEach(function(j){ mark[j] = 1; }); }
       /* σκιές πάνω στο χαρτί, και για το επιλεγμένο μια κάθετος ως εκεί */
-      ctx.fillStyle = night ? 'rgba(141,187,234,.16)' : 'rgba(0,94,171,.13)';
+      ctx.fillStyle = night ? 'rgba(141,187,234,.16)' : 'rgba(0,51,160,.13)';
       for(i = 0; i < Nn.length; i++){ var fl = proj(Nn[i][0], FY, Nn[i][2]); ctx.beginPath(); ctx.ellipse(fl.x, fl.y, 2.2 * fl.f, .9 * fl.f, 0, 0, 6.2832); ctx.fill();
         if(mark[i]){ ctx.strokeStyle = night ? 'rgba(237,200,155,.35)' : 'rgba(201,154,94,.45)'; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.moveTo(P[i].x, P[i].y); ctx.lineTo(fl.x, fl.y); ctx.stroke(); ctx.setLineDash([]); } }
       /* ακμές */

@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 HERE = os.path.dirname(os.path.abspath(__file__))
 FONTS = os.path.join(HERE, '..', 'assets', 'fonts')
 W, H, M = 1200, 630, 96
-BG, INK, BLUE, MUTED, OCHRE = '#FBF8F2', '#1F3550', '#005EAB', '#4A5A70', '#EDC89B'
+BG, INK, BLUE, MUTED, OCHRE = '#FBF8F2', '#1F3550', '#0033A0', '#4A5A70', '#EDC89B'
 _f = {}
 def font(name, size):
     k = (name, size)

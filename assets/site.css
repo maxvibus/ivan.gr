@@ -5,8 +5,8 @@
 @font-face{font-family:"EB Garamond";src:url(fonts/ebgaramond-bolditalic.woff2) format("woff2");font-weight:600 700;font-style:italic;font-display:swap}
 @font-face{font-family:"EB Garamond";src:url(fonts/ebgaramond-extrabold.woff2) format("woff2");font-weight:800;font-style:normal;font-display:swap}
 
-:root{--bg:#FBF8F2;--card:#FFFFFF;--win:#FFFDF8;--ink:#1F3550;--muted:#4A5A70;--blue:#005EAB;--blue2:#00528F;--ochre:#EDC89B;
-  --rule:rgba(0,94,171,.26);--rule2:rgba(0,94,171,.12);--veil:rgba(31,53,80,.30);--glow:none;--measure:38rem;color-scheme:light}
+:root{--bg:#FBF8F2;--card:#FFFFFF;--win:#FFFDF8;--ink:#1F3550;--muted:#4A5A70;--blue:#0033A0;--blue2:#0033A0;--ochre:#EDC89B;
+  --rule:rgba(0,51,160,.26);--rule2:rgba(0,51,160,.12);--veil:rgba(31,53,80,.30);--glow:none;--measure:38rem;color-scheme:light}
 :root[data-theme="night"]{--bg:#0F1620;--card:#16202C;--win:#121B26;--ink:#E9E3D8;--muted:#B8B2A6;--blue:#8DBBEA;--blue2:#9CC4EC;--ochre:#EDC89B;
   --rule:rgba(141,187,234,.30);--rule2:rgba(141,187,234,.14);--veil:rgba(5,9,14,.66);color-scheme:dark}
 *{box-sizing:border-box}
@@ -16,7 +16,7 @@ body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);
   font-feature-settings:"kern","liga","onum";-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;transition:background .5s ease,color .5s ease}
 a{color:var(--blue);text-decoration:none}
 :focus-visible{outline:2px solid var(--blue);outline-offset:3px}
-::selection{background:rgba(0,94,171,.2)}
+::selection{background:rgba(0,51,160,.2)}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .wrap{max-width:var(--measure);margin:0 auto;padding:0 1.25rem 3rem}
 time{font-variant-numeric:lining-nums}
@@ -188,7 +188,7 @@ figure{margin:0}figure img{width:100%;border-radius:6px}figcaption{margin-top:.8
 
 /* ---------- πρώτη σελίδα: τετράδιο ---------- */
 body.front{background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;background-position:center top}
-:root{--grid:rgba(0,94,171,.10)} :root[data-theme="night"]{--grid:rgba(141,187,234,.06)}
+:root{--grid:rgba(0,51,160,.10)} :root[data-theme="night"]{--grid:rgba(141,187,234,.06)}
 .daybar{display:flex;align-items:center;justify-content:center;gap:.9rem;max-width:72rem;margin:0 auto;padding:.5rem 1.25rem;color:var(--muted);font-style:italic;font-size:.95rem;border-bottom:1px solid var(--rule2)}
 .daybar .dtime{font-style:normal;font-variant-numeric:tabular-nums;min-width:3.2em}
 .tetradio{max-width:64rem;margin:0 auto;padding:1.6rem 1.25rem 3rem}
