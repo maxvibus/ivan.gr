@@ -17,7 +17,7 @@ def body(ps):
 
 EL = [
     'Οι γονείς μου μού έλεγαν να προσέχω τους ξένους. Δεν μου είπαν να προσέχω και τους συγγενείς μου.',
-    'Δύο μέρες μετά το μνημόσυνο της τελευταίας θείας μου, βρέθηκα μπροστά σε ένα γράμμα του πατέρα μου, γραμμένο το 2010 στην οικογένειά του για μένα. Δεν το αναζητούσα. Το βρήκα μέσα από μια γενικότερη αναζήτηση στην παλιά του αλληλογραφία. Είχαν περάσει δεκαέξι χρόνια από τότε που γράφτηκε και δεκατέσσερα από τον θάνατο του πατέρα μου.',
+    'Δύο μέρες μετά το μνημόσυνο της τελευταίας θείας μου, βρέθηκα μπροστά σε ένα γράμμα του πατέρα μου, γραμμένο το 2010 στην οικογένειά του για μένα. Δεν το αναζητούσα. Το βρήκα μέσα από μια γενικότερη αναζήτηση στην παλιά του αλληλογραφία. Είχαν περάσει δεκαέξι χρόνια από τότε που γράφτηκε και δεκατέσσερα από τον θάνατό του.',
     'Μέσα από αυτό έμαθα ότι η παρουσία μου στην οικογένεια δεν ήταν μόνο χαρά. Για κάποιους ήταν και μια απώλεια: δεν θα κληρονομούσαν εκείνοι τον άτεκνο θείο τους. Ο πατέρας μου δεν απευθύνθηκε στα αδέλφια του, αλλά σε μία από τις κόρες τους, ζητώντας της να μιλήσει στη μητέρα της και στη θεία της. Ήθελε να μη σταθούν εμπόδιο στην προσπάθειά του να νιώσω μέλος της οικογένειας, ακόμη κι όταν εκείνος δεν θα ήταν πια εκεί.',
     'Αυτό που ζητούσε ήταν η δωρεά ενός μικρού ισόγειου διαμερίσματος από τον άλλο μου θείο, εν ζωή, ώστε να μη δημιουργηθούν αμφισβητήσεις αργότερα. Ο πατέρας μου ήθελε ο Ιβάν να μη λάβει μόνο από τους γονείς του, αλλά και από τους συγγενείς του.',
     'Με το ζόρι παντρειά δεν γίνεται, Αθανασόπουλε. Αυτό θα του έλεγα, αν ήξερα τότε την αλήθεια.',
@@ -35,7 +35,7 @@ EL = [
 
 EN = [
     'My parents told me to beware of strangers. They did not tell me to beware of my relatives as well.',
-    'Two days after the memorial service for my last aunt, I came upon a letter from my father, written in 2010 to his family about me. I was not looking for it. I found it during a broader search through his old correspondence. Sixteen years had passed since it was written, and fourteen since my father’s death.',
+    'Two days after the memorial service for my last aunt, I came upon a letter from my father, written in 2010 to his family about me. I was not looking for it. I found it during a broader search through his old correspondence. Sixteen years had passed since it was written, and fourteen since his death.',
     'Through it I learned that my presence in the family had not been only a joy. For some it was also a loss: they would not be the ones to inherit their childless uncle. My father did not turn to his siblings but to one of their daughters, asking her to speak to her mother and her aunt. He wanted them not to stand in the way of his effort to make me feel a member of the family, even when he would no longer be there.',
     'What he asked for was the donation, during his lifetime, of a small ground-floor flat from my other uncle, so that no disputes would arise later. My father wanted Ivan to receive not only from his parents, but from his relatives as well.',
     'You cannot force a marriage, Athanasopoulos. That is what I would have told him, had I known the truth then.',
@@ -53,7 +53,7 @@ EN = [
 
 FR = [
     'Mes parents me disaient de me méfier des étrangers. Ils ne m’ont pas dit de me méfier aussi de ma famille.',
-    'Deux jours après la commémoration de ma dernière tante, je me suis trouvé devant une lettre de mon père, écrite en 2010 à sa famille à mon sujet. Je ne la cherchais pas. Je l’ai trouvée au cours d’une recherche plus générale dans sa vieille correspondance. Seize ans s’étaient écoulés depuis qu’elle avait été écrite, et quatorze depuis la mort de mon père.',
+    'Deux jours après la commémoration de ma dernière tante, je me suis trouvé devant une lettre de mon père, écrite en 2010 à sa famille à mon sujet. Je ne la cherchais pas. Je l’ai trouvée au cours d’une recherche plus générale dans sa vieille correspondance. Seize ans s’étaient écoulés depuis qu’elle avait été écrite, et quatorze depuis sa mort.',
     'J’y ai appris que ma présence dans la famille n’avait pas été seulement une joie. Pour certains, elle était aussi une perte : ce ne seraient pas eux qui hériteraient de leur oncle sans enfants. Mon père ne s’est pas adressé à ses frères et sœurs, mais à l’une de leurs filles, en lui demandant de parler à sa mère et à sa tante. Il voulait qu’ils ne fassent pas obstacle à ses efforts pour que je me sente membre de la famille, même quand il ne serait plus là.',
     'Ce qu’il demandait, c’était la donation, de son vivant, d’un petit appartement en rez-de-chaussée par mon autre oncle, afin qu’aucune contestation ne survienne plus tard. Mon père voulait qu’Ivan ne reçoive pas seulement de ses parents, mais aussi de sa famille.',
     'On ne force pas un mariage, Athanassopoulos. C’est ce que je lui aurais dit, si j’avais su alors la vérité.',
@@ -71,7 +71,7 @@ FR = [
 
 DE = [
     'Meine Eltern sagten mir, ich solle mich vor Fremden in Acht nehmen. Sie sagten mir nicht, ich solle mich auch vor meinen Verwandten in Acht nehmen.',
-    'Zwei Tage nach der Gedenkfeier für meine letzte Tante stand ich vor einem Brief meines Vaters, 2010 an seine Familie über mich geschrieben. Ich habe ihn nicht gesucht. Ich fand ihn bei einer allgemeineren Suche in seiner alten Korrespondenz. Sechzehn Jahre waren vergangen, seit er geschrieben wurde, und vierzehn seit dem Tod meines Vaters.',
+    'Zwei Tage nach der Gedenkfeier für meine letzte Tante stand ich vor einem Brief meines Vaters, 2010 an seine Familie über mich geschrieben. Ich habe ihn nicht gesucht. Ich fand ihn bei einer allgemeineren Suche in seiner alten Korrespondenz. Sechzehn Jahre waren vergangen, seit er geschrieben wurde, und vierzehn seit seinem Tod.',
     'Durch ihn erfuhr ich, dass meine Anwesenheit in der Familie nicht nur Freude gewesen war. Für manche war sie auch ein Verlust: Nicht sie würden ihren kinderlosen Onkel beerben. Mein Vater wandte sich nicht an seine Geschwister, sondern an eine ihrer Töchter und bat sie, mit ihrer Mutter und ihrer Tante zu sprechen. Er wollte, dass sie seinem Bemühen nicht im Weg stünden, mich als Mitglied der Familie fühlen zu lassen, auch wenn er nicht mehr da sein würde.',
     'Worum er bat, war die Schenkung einer kleinen Erdgeschosswohnung durch meinen anderen Onkel, zu Lebzeiten, damit später keine Anfechtungen entstünden. Mein Vater wollte, dass Ivan nicht nur von seinen Eltern empfange, sondern auch von seinen Verwandten.',
     'Mit Gewalt wird keine Ehe, Athanasopoulos. Das hätte ich ihm gesagt, hätte ich damals die Wahrheit gekannt.',
