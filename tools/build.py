@@ -184,7 +184,7 @@ def og_save():
     if OG_IDX_P:
         json.dump(OG_IDX, open(OG_IDX_P, 'w', encoding='utf-8'), ensure_ascii=False, indent=0, sort_keys=True)
 
-def head(frm, lang, title, desc, canon_path, alts=None, extra='', img=None):
+def head(frm, lang, title, desc, canon_path, alts=None, extra='', img=None, ogtype='website'):
     img = img or og_image('site', 'Ιβάν Δ. Αθανασόπουλος', '')
     css = rel(frm, 'assets/site.css'); ico = rel(frm, 'assets/icon-32.png'); ico180 = rel(frm, 'assets/icon-180.png')
     fr = rel(frm, 'assets/fonts/ebgaramond-regular.woff2')
@@ -206,6 +206,7 @@ def head(frm, lang, title, desc, canon_path, alts=None, extra='', img=None):
 {alt}<meta property="og:title" content="{E(title)}">
 <meta property="og:description" content="{E(desc)}">
 <meta property="og:url" content="{SITE}/{canon_path.replace('index.html','')}">
+<meta property="og:type" content="{ogtype}">
 <meta property="og:site_name" content="ivan.gr">
 <meta property="og:image" content="{SITE}/{img}">
 <meta property="og:image:width" content="1200">
@@ -459,7 +460,7 @@ def page(item, lang, alts, prev=None, nxt=None):
     desc = excerpt(text_of(item['html']), 180)
     mins = max(1, round(len(text_of(item['html']).split()) / 200))
     img = og_image(frm[:-5] if frm.endswith('.html') else frm, item['title'].strip(), dlong(item['published'], lang) + ' · ' + READ_MIN[lang](mins))
-    s = head(frm, lang, item['title'].strip() + ' · ivan.gr', desc, frm, alts, img=img)
+    s = head(frm, lang, item['title'].strip() + ' · ivan.gr', desc, frm, alts, img=img, ogtype='article')
     s += '<body class="text">\n<div class="prog" aria-hidden="true"></div>\n'
     s += f'<header class="bar"><a class="home-link" href="{rel(frm, FRONT[lang])}">ivan.gr</a>{langnav(frm, lang, alts) if len(alts) > 1 else ""}{NIGHT_BTN}</header>\n'
     s += f'<main class="wrap"><article class="post"><h1>{E(item["title"].strip())}</h1>\n'
