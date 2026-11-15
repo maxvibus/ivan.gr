@@ -173,9 +173,11 @@ def og_image(key, title, meta):
         OG_IDX_P = os.path.join(OUT, 'og', 'index.json')
         try: OG_IDX = json.load(open(OG_IDX_P, encoding='utf-8'))
         except Exception: OG_IDX = {}
-    rp = 'og/' + key + '.png'; h = hashlib.sha1((title + '|' + meta).encode()).hexdigest()[:12]
-    if OG_IDX.get(rp) != h or not os.path.exists(os.path.join(OUT, rp)):
-        og.card(title, meta, os.path.join(OUT, rp)); OG_IDX[rp] = h
+    # Από 15.11.2026 όλες οι σελίδες δείχνουν την ίδια κάρτα με το σήμα στο κέντρο, γιατί το Facebook
+    # στα σχόλια κόβει την εικόνα σε μικρό τετράγωνο από το κέντρο και ο τίτλος γινόταν θραύσματα.
+    # Τον τίτλο και την περιγραφή τα γράφει το ίδιο το Facebook δίπλα στην εικόνα. Οι παλιές κάρτες με τίτλο μένουν στο og/.
+    rp = 'og/ivan.png'
+    if not os.path.exists(os.path.join(OUT, rp)): og.mark(os.path.join(OUT, rp))
     return rp
 
 def og_save():

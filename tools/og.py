@@ -21,6 +21,18 @@ def wrap(text, f, width):
     if cur: lines.append(cur)
     return lines
 
+def mark(out):
+    """Κάρτα κοινοποίησης που αντέχει το τετράγωνο κόψιμο του Facebook (στα σχόλια κρατά μόνο το κέντρο):
+    χαρτί, και στο κεντρικό τετράγωνο 630×630 η ώχρα με το «ivan» σε μπλε. Τίτλο και περιγραφή τα γράφει δίπλα το ίδιο το Facebook."""
+    img = Image.new('RGB', (W, H), BG); d = ImageDraw.Draw(img)
+    x0 = (W - H) // 2
+    d.rectangle([x0, 0, x0 + H - 1, H - 1], fill=OCHRE)
+    f = font('extrabold', 200); t = 'ivan'
+    l, tp, r, b = d.textbbox((0, 0), t, font=f)
+    d.text(((W - (r - l)) // 2 - l, (H - (b - tp)) // 2 - tp), t, font=f, fill=BLUE)
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    img.quantize(colors=48, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE).save(out, optimize=True)
+
 def card(title, meta, out):
     img = Image.new('RGB', (W, H), BG); d = ImageDraw.Draw(img)
     d.rectangle([0, H - 14, W, H], fill=OCHRE)
