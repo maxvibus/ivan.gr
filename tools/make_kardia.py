@@ -71,6 +71,7 @@ post = dict(
     slug='kardia-ochi-chartia',
     date='2026-11-18T21:45:00.000+02:00',
     title='Μου απαντούν όσοι έχουν καρδιά, όχι χαρτιά',
+    og='og/2026/11/kardia-ochi-chartia.png',   # κάρτα κοινοποίησης: το σκίτσο, ώστε το τετράγωνο κόψιμο κρατά τον άνθρωπο και το γράμμα
     html=fig('Από απέναντι.') + body(EL),
     translations=dict(
         en=dict(slug='hearts-not-papers', title='Those who answer me have hearts, not papers',
