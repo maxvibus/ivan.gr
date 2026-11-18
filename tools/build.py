@@ -460,6 +460,10 @@ def page(item, lang, alts, prev=None, nxt=None):
     desc = excerpt(text_of(item['html']), 180)
     mins = max(1, round(len(text_of(item['html']).split()) / 200))
     # Κείμενο με δική του κάρτα κοινοποίησης (π.χ. το σκίτσο του): την κρατά, αλλιώς το σήμα.
+    # Από 18.11.2026 κάθε κείμενο με σκίτσο δείχνει το σκίτσο του (og/sk/<όνομα>.png, από tools/og_sketches.js).
+    if not item.get('og'):
+        skn = sk['slug'] if (sk and sk.get('approved')) else ('post-' + posixpath.basename(item.get('orig_path') or frm)[:-5] if '<figure' in item['html'] else '')
+        if skn and os.path.exists(os.path.join(ROOT, 'og', 'sk', skn + '.png')): item['og'] = 'og/sk/' + skn + '.png'
     img = item.get('og') or og_image(frm[:-5] if frm.endswith('.html') else frm, item['title'].strip(), dlong(item['published'], lang) + ' · ' + READ_MIN[lang](mins))
     s = head(frm, lang, item['title'].strip() + ' · ivan.gr', desc, frm, alts, img=img, ogtype='article')
     s += '<body class="text">\n<div class="prog" aria-hidden="true"></div>\n'
