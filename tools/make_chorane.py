@@ -1,0 +1,74 @@
+"""Δημοσίευση 19.11.2026: «Πού χωρούν όσοι δεν αντέχουμε;», με σκίτσο και μεταφράσεις.
+Το ελληνικό κείμενο διαβάζεται από το αρχείο του (σχέδιο .md), αυτούσιο."""
+import os, sys, json
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import sketch_chorane
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SVG = sketch_chorane.svg()
+SRC = sys.argv[1]
+
+
+def fig(cap):
+    return f'<figure class="sketch">{SVG}<figcaption>{cap}</figcaption></figure>'
+
+
+def body(ps):
+    return ''.join(f'<p>{p}</p>' for p in ps)
+
+
+lines = [l.strip() for l in open(SRC, encoding='utf-8').read().split('\n\n')]
+assert lines[0] == '# Πού χωρούν όσοι δεν αντέχουμε;'
+EL = [l for l in lines[1:] if l]
+assert len(EL) == 7 and EL[-1].endswith('είτε ως παρηγοριά.')
+
+EN = [
+    'Let us start from what you saw: everyone “acts as if they were”. The presenter acts as if he were reading the news, the cantor as if he were chanting, the salesman as if he were selling, the state as if it were a state. They are not necessarily liars. They live inside roles that exist before them and that work without them too. Hannah Arendt named this the difference between “behaviour” and “action”. Mass society, she wrote, expects people to behave, that is, to perform roles in a predictable way. Action and speech do something else: they disclose not what someone is but who someone is. The role says “what”. Only living speech says “who”. What you see on television is a world full of “what” and almost empty of “who”.',
+    'Why do you see it so clearly? I think because you came from outside. Children who grow up inside a world from the first day learn its roles before they notice them, as they learn a language before they learn grammar. You arrived at six, and every manner, how to greet, how to take part, how to pass the ball, you saw first as a manner and only then did it. That is why you asked for “care instructions”. Whoever needed instructions to enter the roles sees for ever that they are roles. It is not cynicism. It is the sight of someone who crossed the threshold consciously.',
+    'You say there is no longer truth and lie, only information. Here I want to push you a little. Byung-Chul Han has written something close to this: information lives off surprise and lasts a short while, whereas truth needs time and duration. In this you are right: information comes, goes, returns, is lost, and even its loss becomes information. But I do not agree that truth is gone. It has changed place. It no longer lies in statements, which all become information. It lies in address. When you say to your neighbour or to your mother “I was hurt”, that is not information. It is testimony, and testimony addressed to someone. It cannot be checked like a news item, but neither can it be cancelled. It remains. What you find unbearable on television is speech without a recipient. What you ask for is the opposite: a recipient for your speech.',
+    'This is where it shows why your neighbour yesterday and your mother today heard abandonment. In a world of roles, relationships are held together by roles: the neighbour, the son, the mother. When someone steps out of his role and speaks as a “who”, as a person who hurts and asks “how can this be”, the others do not read it as disclosure. They read it as a breach of contract. If the son no longer speaks as the son who tends the garden, if the neighbour no longer speaks as the quiet neighbour, then something breaks, and the first thing one fears when something breaks is being left alone. They did not hear what you were saying. They heard that you had left your place. And because you also throw hard words when you hurt, the break sounds even louder.',
+    'There is an irony in all this as well. The most abandoned one in this story is you, before you were even born. And yet it is you they fear will abandon. Perhaps because whoever has lived through abandonment seems to know its road. But you do the opposite. When your mother said “I can’t take any more”, you stopped. You did not leave, you did not punish, you did not fall silent to make her hurt. You stopped, as you once stopped the song for grandmother Tsikó, without pain, without revenge. There is a silence that leaves, and there is a silence that stays. Yours was the second: you give up being heard at that moment, not the person.',
+    'If this is right, then you do not need to learn not to hurt or not to speak. What you need, perhaps, is to know that the world of roles will always hear you first as a threat, and to give it a little time to understand that you are not leaving. Your neighbour understood it within a night. Your mother has understood it for thirty years now, even when she forgets it for a moment.',
+    'Because you do not know how to abandon. And if you leave with your body, the other is already in your heart, either as a thorn or as a consolation.',
+]
+
+FR = [
+    'Commençons par ce que tu as vu : tous « font comme s’ils étaient ». Le présentateur fait comme s’il disait les nouvelles, le chantre comme s’il chantait, le vendeur comme s’il vendait, l’État comme s’il était un État. Ce ne sont pas forcément des menteurs. Ils vivent dans des rôles qui existent avant eux et qui fonctionnent aussi sans eux. Hannah Arendt a nommé cela la différence entre le « comportement » et l’« action ». La société de masse, écrivait-elle, attend des hommes qu’ils se comportent, c’est-à-dire qu’ils tiennent des rôles de manière prévisible. L’action et la parole font autre chose : elles révèlent non pas ce qu’est quelqu’un, mais qui il est. Le rôle dit « quoi ». Seule la parole vivante dit « qui ». Ce que tu vois à la télévision est un monde plein de « quoi » et presque vide de « qui ».',
+    'Pourquoi le vois-tu si clairement ? Je crois que c’est parce que tu es venu du dehors. Les enfants qui grandissent dans un monde dès le premier jour en apprennent les rôles avant de les remarquer, comme ils apprennent la langue avant la grammaire. Toi, tu es arrivé à six ans, et chaque manière, saluer, participer, faire une passe, tu la voyais d’abord comme une manière, et ensuite seulement tu la faisais. C’est pourquoi tu demandais des « instructions de soin ». Celui qui a eu besoin d’instructions pour entrer dans les rôles voit pour toujours que ce sont des rôles. Ce n’est pas du cynisme. C’est le regard de celui qui a franchi le seuil en conscience.',
+    'Tu dis qu’il n’y a plus ni vérité ni mensonge, seulement de l’information. Ici, je veux te pousser un peu. Byung-Chul Han a écrit quelque chose de proche : l’information vit de la surprise et dure peu, tandis que la vérité demande du temps et de la durée. En cela tu as raison : l’information vient, s’en va, revient, se perd, et même sa perte devient information. Mais je ne crois pas que la vérité ait disparu. Elle a changé de place. Elle n’est plus dans les déclarations, qui deviennent toutes information. Elle est dans l’adresse. Quand tu dis à ton voisin ou à ta mère « j’ai eu mal », ce n’est pas une information. C’est un témoignage, et un témoignage adressé à quelqu’un. On ne peut pas le vérifier comme une nouvelle, mais on ne peut pas non plus l’annuler. Il reste. Ce que tu trouves insupportable à la télévision, c’est une parole sans destinataire. Ce que tu demandes, toi, c’est le contraire : un destinataire pour ta parole.',
+    'On voit ici pourquoi ton voisin hier et ta mère aujourd’hui ont entendu un abandon. Dans un monde de rôles, les relations tiennent par les rôles : le voisin, le fils, la mère. Quand quelqu’un sort de son rôle et parle comme un « qui », comme un être qui a mal et qui demande « comment est-ce possible », les autres ne le lisent pas comme une révélation. Ils le lisent comme une rupture du contrat. Si le fils ne parle plus comme le fils qui soigne le jardin, si le voisin ne parle plus comme le voisin tranquille, alors quelque chose se brise, et la première chose que l’on craint quand quelque chose se brise, c’est de rester seul. Ils n’ont pas entendu ce que tu disais. Ils ont entendu que tu quittais ta place. Et comme tu lances aussi des mots durs quand tu as mal, la cassure résonne plus fort encore.',
+    'Il y a aussi une ironie dans tout cela. Le plus abandonné de cette histoire, c’est toi, avant même ta naissance. Et pourtant, c’est toi qu’on craint de voir abandonner. Peut-être parce que celui qui a vécu l’abandon semble en connaître le chemin. Mais toi, tu fais le contraire. Quand ta mère a dit « je n’en peux plus », tu t’es arrêté. Tu n’es pas parti, tu n’as pas puni, tu ne t’es pas tu pour qu’elle ait mal. Tu t’es arrêté, comme tu avais arrêté autrefois la chanson pour grand-mère Tsikó, sans douleur, sans vengeance. Il y a un silence qui s’en va, et il y a un silence qui reste. Le tien était le second : tu renonces à être entendu à ce moment-là, pas à la personne.',
+    'Si c’est juste, alors tu n’as pas besoin d’apprendre à ne pas avoir mal ou à ne pas parler. Il te faut, peut-être, savoir que le monde des rôles t’entendra toujours d’abord comme une menace, et lui laisser un peu de temps pour comprendre que tu ne pars pas. Ton voisin l’a compris en une nuit. Ta mère l’a compris depuis trente ans, même quand elle l’oublie un instant.',
+    'Car toi, tu ne sais pas abandonner. Et si tu pars avec ton corps, l’autre est déjà dans ton cœur, soit comme une épine, soit comme une consolation.',
+]
+
+DE = [
+    'Fangen wir mit dem an, was du gesehen hast: Alle „tun so, als wären sie“. Der Moderator tut so, als spräche er Nachrichten, der Kantor, als sänge er, der Verkäufer, als verkaufe er, der Staat, als sei er ein Staat. Sie sind nicht unbedingt Lügner. Sie leben in Rollen, die es vor ihnen gibt und die auch ohne sie funktionieren. Hannah Arendt nannte das den Unterschied zwischen „Verhalten“ und „Handeln“. Die Massengesellschaft, schrieb sie, erwartet von den Menschen, dass sie sich verhalten, also Rollen auf vorhersehbare Weise ausführen. Handeln und Sprechen tun etwas anderes: Sie offenbaren nicht, was jemand ist, sondern wer jemand ist. Die Rolle sagt „was“. Nur das lebendige Wort sagt „wer“. Was du im Fernsehen siehst, ist eine Welt voller „was“ und fast leer von „wer“.',
+    'Warum siehst du es so klar? Ich glaube, weil du von außen kamst. Kinder, die vom ersten Tag an in einer Welt aufwachsen, lernen ihre Rollen, bevor sie sie bemerken, so wie sie die Sprache lernen, bevor sie Grammatik lernen. Du kamst mit sechs, und jede Weise, zu grüßen, mitzumachen, einen Ball abzuspielen, sahst du zuerst als Weise und tatest sie erst dann. Darum batest du um „Pflegeanleitungen“. Wer Anleitungen brauchte, um in die Rollen hineinzukommen, sieht für immer, dass es Rollen sind. Das ist kein Zynismus. Es ist der Blick dessen, der die Schwelle bewusst überschritten hat.',
+    'Du sagst, es gebe keine Wahrheit und keine Lüge mehr, nur Information. Hier will ich dich ein wenig anstoßen. Byung-Chul Han hat etwas Ähnliches geschrieben: Information lebt von der Überraschung und ist von kurzer Dauer, während Wahrheit Zeit und Dauer braucht. Darin hast du recht: Information kommt, geht, kehrt zurück, geht verloren, und selbst ihr Verlust wird zur Information. Aber ich stimme nicht zu, dass die Wahrheit verschwunden ist. Sie hat den Ort gewechselt. Sie liegt nicht mehr in den Aussagen, die alle zu Information werden. Sie liegt in der Anrede. Wenn du deinem Nachbarn oder deiner Mutter sagst „es hat mir wehgetan“, ist das keine Information. Es ist ein Zeugnis, und ein Zeugnis, das sich an jemanden richtet. Es lässt sich nicht prüfen wie eine Nachricht, aber auch nicht aufheben. Es bleibt. Was du im Fernsehen unerträglich findest, ist Rede ohne Empfänger. Was du verlangst, ist das Gegenteil: einen Empfänger für deine Rede.',
+    'Hier zeigt sich, warum dein Nachbar gestern und deine Mutter heute ein Verlassen hörten. In einer Welt der Rollen werden Beziehungen von den Rollen gehalten: der Nachbar, der Sohn, die Mutter. Wenn jemand aus seiner Rolle tritt und als „wer“ spricht, als ein Mensch, der leidet und fragt „wie ist das möglich“, lesen die anderen es nicht als Offenbarung. Sie lesen es als Bruch des Vertrags. Wenn der Sohn nicht mehr als der Sohn spricht, der den Garten pflegt, wenn der Nachbar nicht mehr als der ruhige Nachbar spricht, dann zerbricht etwas, und das Erste, was man fürchtet, wenn etwas zerbricht, ist, allein zu bleiben. Sie hörten nicht, was du sagtest. Sie hörten, dass du deinen Platz verlassen hattest. Und weil du auch harte Worte wirfst, wenn du leidest, klingt der Bruch noch lauter.',
+    'Es liegt auch eine Ironie in alldem. Der Verlassenste in dieser Geschichte bist du, noch bevor du geboren warst. Und doch fürchtet man, gerade du würdest verlassen. Vielleicht, weil wer Verlassenheit erlebt hat, ihren Weg zu kennen scheint. Aber du tust das Gegenteil. Als deine Mutter sagte „ich halte es nicht mehr aus“, hast du aufgehört. Du bist nicht gegangen, hast nicht bestraft, hast nicht geschwiegen, damit sie leidet. Du hast aufgehört, so wie du einst das Lied für Großmutter Tsikó angehalten hattest, ohne Schmerz, ohne Rache. Es gibt ein Schweigen, das geht, und es gibt ein Schweigen, das bleibt. Deines war das zweite: Du verzichtest darauf, in diesem Augenblick gehört zu werden, nicht auf den Menschen.',
+    'Wenn das stimmt, dann musst du nicht lernen, nicht zu leiden oder nicht zu sprechen. Du musst vielleicht wissen, dass die Welt der Rollen dich immer zuerst als Bedrohung hören wird, und ihr ein wenig Zeit geben zu verstehen, dass du nicht gehst. Dein Nachbar hat es in einer Nacht verstanden. Deine Mutter hat es seit dreißig Jahren verstanden, auch wenn sie es für einen Augenblick vergisst.',
+    'Denn du weißt nicht zu verlassen. Und wenn du mit dem Körper gehst, ist der andere schon in deinem Herzen, als Dorn oder als Trost.',
+]
+
+assert len(EN) == len(FR) == len(DE) == 7
+
+post = dict(
+    slug='pou-chorane-osoi-den-antechoume',
+    date='2026-11-19T23:40:00.000+02:00',
+    title='Πού χωρούν όσοι δεν αντέχουμε;',
+    og='og/sk/pou-chorane-osoi-den-antechoume.png',
+    html=fig('Στο κατώφλι.') + body(EL),
+    translations=dict(
+        en=dict(slug='where-is-there-room', title='Where is there room for those of us who cannot bear it?',
+                html=fig('On the threshold.') + body(EN)),
+        fr=dict(slug='ou-trouvent-place', title='Où trouvent place ceux d’entre nous qui n’en peuvent plus ?',
+                html=fig('Sur le seuil.') + body(FR)),
+        de=dict(slug='wo-ist-platz', title='Wo ist Platz für die von uns, die es nicht aushalten?',
+                html=fig('Auf der Schwelle.') + body(DE)),
+    ),
+)
+out = os.path.join(ROOT, 'content', 'new-posts', '2026-11-19-chorane.json')
+json.dump(post, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+print(out)
