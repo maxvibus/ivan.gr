@@ -9,8 +9,9 @@ SVG = sketch_chorane.svg()
 SRC = sys.argv[1]
 
 
-def fig(cap):
-    return f'<figure class="sketch">{SVG}<figcaption>{cap}</figcaption></figure>'
+def fig(cap=''):
+    # χωρίς λεζάντα: το σκίτσο δεν απαντά στον τίτλο (20.11.2026)
+    return f'<figure class="sketch">{SVG}</figure>'
 
 
 def body(ps):
@@ -59,14 +60,14 @@ post = dict(
     date='2026-11-19T23:40:00.000+02:00',
     title='Πού χωρούν όσοι δεν αντέχουμε;',
     og='og/sk/pou-chorane-osoi-den-antechoume.png',
-    html=fig('Στο κατώφλι.') + body(EL),
+    html=fig() + body(EL),
     translations=dict(
         en=dict(slug='where-is-there-room', title='Where is there room for those of us who cannot bear it?',
-                html=fig('On the threshold.') + body(EN)),
+                html=fig() + body(EN)),
         fr=dict(slug='ou-trouvent-place', title='Où trouvent place ceux d’entre nous qui n’en peuvent plus ?',
-                html=fig('Sur le seuil.') + body(FR)),
+                html=fig() + body(FR)),
         de=dict(slug='wo-ist-platz', title='Wo ist Platz für die von uns, die es nicht aushalten?',
-                html=fig('Auf der Schwelle.') + body(DE)),
+                html=fig() + body(DE)),
     ),
 )
 out = os.path.join(ROOT, 'content', 'new-posts', '2026-11-19-chorane.json')
