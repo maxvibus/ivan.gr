@@ -186,7 +186,7 @@ def og_save():
 
 def head(frm, lang, title, desc, canon_path, alts=None, extra='', img=None, ogtype='website'):
     img = img or og_image('site', 'Ιβάν Δ. Αθανασόπουλος', '')
-    css = rel(frm, 'assets/site.css'); ico = rel(frm, 'assets/icon-32.png'); ico180 = rel(frm, 'assets/icon-180.png')
+    css = rel(frm, 'assets/site.css'); ico = rel(frm, 'assets/icon-32.png') + '?v=20261125'; ico180 = rel(frm, 'assets/icon-180.png') + '?v=20261125'
     fr = rel(frm, 'assets/fonts/ebgaramond-regular.woff2')
     alt = ''
     for l, pth in (alts or {}).items():
